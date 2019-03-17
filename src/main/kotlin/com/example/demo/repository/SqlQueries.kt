@@ -1,13 +1,14 @@
 package com.example.demo.repository
 
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_INVOICE
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_INVOICE_DETAILS
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 
 object SqlQueries {
 
     enum class QUERY_TYPE{
         GET_INVOICE,
-        GET_INVOICE_DETAILS
+        GET_INVOICE_DETAILS,
+        GET_CATEGORY_LIST,
+        GET_CATEGORY_DETAILS,
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -15,7 +16,29 @@ object SqlQueries {
 
             GET_INVOICE -> getInvoices()
             GET_INVOICE_DETAILS -> getInvoiceDetails()
+            GET_CATEGORY_LIST -> getCategoryList()
+            GET_CATEGORY_DETAILS -> getCategoryDetails()
         }
+    }
+
+    private fun getCategoryList(): String {
+        return "select k.id id, nazwa, isnull(ps.price,0.00) monthSummary, pr.price yearSummary from kategoria k \n" +
+                "\tjoin (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
+                "\t\t\tjoin paragony p on p.ID = ps.id_paragonu where year(p.data) = year(getdate())\n" +
+                "\t\t\tgroup by kategoria) as pr on pr.kategoria = k.id\n" +
+                "\tleft join (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
+                "\t\t\tjoin paragony p on p.ID = ps.id_paragonu where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE()))))\n" +
+                "\t\t\tgroup by kategoria) as ps on ps.kategoria = k.id\n" +
+                "order by nazwa\t\n"
+    }
+
+    private fun getCategoryDetails(): String {
+        return "select sum(cena) cena,  a.NAZWA from paragony_szczegoly ps " +
+                "join paragony p on p.ID = ps.id_paragonu " +
+                "join ASORTYMENT a on a.id = ps.ID_ASO " +
+                "where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE())))) " +
+                "and ps.kategoria = ? " +
+                "group by a.NAZWA"
     }
 
     private fun getInvoices(): String {

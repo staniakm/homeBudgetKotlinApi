@@ -1,9 +1,10 @@
 package com.example.demo.repository
 
+import com.example.demo.entity.Category
+import com.example.demo.entity.CategoryDetails
 import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_INVOICE
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_INVOICE_DETAILS
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuerry
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -20,7 +21,6 @@ class Repository {
 
     fun getInvoices(): List<ShoppingList> {
         val list = ArrayList<ShoppingList>()
-        println("Connecting...")
 //        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         val sql = getQuerry(GET_INVOICE)
         DriverManager.getConnection(connectionUrl).use { con ->
@@ -61,6 +61,44 @@ class Repository {
             }
         }
         return items
+    }
 
+    fun getCategoryList():List<Category>{
+        val items = ArrayList<Category>()
+        val sql = getQuerry(GET_CATEGORY_LIST)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.createStatement().use { statement ->
+                statement.executeQuery(sql).use { resultSet ->
+                    while (resultSet.next()) {
+                        items.add(Category(
+                                resultSet.getLong("id"),
+                                resultSet.getString("nazwa"),
+                                resultSet.getDouble("monthSummary"),
+                                resultSet.getDouble("yearSummary")
+                        ))
+                    }
+                }
+            }
+        }
+        return items
+    }
+
+    fun getCategoryDetails(id : Long):List<CategoryDetails>{
+        val items = ArrayList<CategoryDetails>()
+        val sql = getQuerry(GET_CATEGORY_DETAILS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setLong(1,id)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        items.add(CategoryDetails(
+                                resultSet.getString("nazwa"),
+                                resultSet.getDouble("cena")
+                        ))
+                    }
+                }
+            }
+        }
+        return items
     }
 }
