@@ -4,6 +4,9 @@ import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
 import com.example.demo.service.ShoppingListService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.MediaTypes
+import org.springframework.hateoas.Resources
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -17,12 +20,13 @@ class Controller{
     lateinit var shoppingListService : ShoppingListService
 
     @GetMapping()
-    fun getAllLists(): List<ShoppingList>{
-        return shoppingListService.getAllLists()
+    fun getAllLists(): ResponseEntity<List<ShoppingList>> {
+        val list = shoppingListService.getAllLists()
+        return ResponseEntity(list, HttpStatus.OK)
     }
 
     @GetMapping("/{id}")
-    fun getItemDetails(@PathVariable("id") id: Long):List<ShoppingItem>?{
+    fun getItemDetails(@PathVariable("id") id: Long):List<ShoppingItem>{
         return shoppingListService.getShoppingsDetails(id)
     }
 

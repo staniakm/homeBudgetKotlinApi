@@ -9,6 +9,7 @@ object SqlQueries {
         GET_INVOICE_DETAILS,
         GET_CATEGORY_LIST,
         GET_CATEGORY_DETAILS,
+        GET_SHOP_LIST
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -18,7 +19,13 @@ object SqlQueries {
             GET_INVOICE_DETAILS -> getInvoiceDetails()
             GET_CATEGORY_LIST -> getCategoryList()
             GET_CATEGORY_DETAILS -> getCategoryDetails()
+            GET_SHOP_LIST -> getShopList()
         }
+    }
+
+    private fun getShopList(): String {
+        return "select id, sklep nazwa from sklepy order by sklep"
+
     }
 
     private fun getCategoryList(): String {

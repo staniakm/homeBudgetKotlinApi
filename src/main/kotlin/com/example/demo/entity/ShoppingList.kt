@@ -1,8 +1,9 @@
 package com.example.demo.entity
 
+import org.springframework.hateoas.ResourceSupport
 import java.math.BigDecimal
 import java.sql.Date
 
-data class ShoppingList(val id:Long, val name:String, val date: Date, val price: BigDecimal) {
+data class ShoppingList(val listId: Long, val name: String, val date: Date, val price: BigDecimal) {
 
 }
