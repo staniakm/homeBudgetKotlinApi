@@ -9,7 +9,8 @@ object SqlQueries {
         GET_INVOICE_DETAILS,
         GET_CATEGORY_LIST,
         GET_CATEGORY_DETAILS,
-        GET_SHOP_LIST
+        GET_SHOP_LIST,
+        GET_SHOP_MONTH_ITEMS
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -20,11 +21,24 @@ object SqlQueries {
             GET_CATEGORY_LIST -> getCategoryList()
             GET_CATEGORY_DETAILS -> getCategoryDetails()
             GET_SHOP_LIST -> getShopList()
+            GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
         }
     }
 
+    private fun getShopMonthShoppings(): String {
+        return "select ps.id, ps.cena, ps.opis, ps.ilosc, ps.cena_za_jednostke, a.NAZWA from paragony p " +
+                "join paragony_szczegoly ps on p.ID = ps.id_paragonu " +
+                "join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 " +
+                "where p.ID_sklep = ? " +
+                "and p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate())))"
+    }
+
     private fun getShopList(): String {
-        return "select id, sklep nazwa from sklepy order by sklep"
+        return "select s.id, s.sklep nazwa, y.yearSum, isnull(m.monthSummary, 0.00) monthSum from sklepy s\n" +
+                "join (select id_sklep, sum(suma) yearSum from paragony where year(data)= year(getdate()) group by ID_sklep) as y on y.ID_sklep = s.ID\n" +
+                "left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p \n" +
+                "\twhere p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate()))) group by ID_sklep) m on m.ID_sklep = s.ID \n" +
+                "order by s.sklep"
 
     }
 

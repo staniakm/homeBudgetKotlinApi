@@ -108,7 +108,32 @@ class Repository {
                     while (resultSet.next()) {
                         items.add(Shop(
                                 resultSet.getLong("id"),
-                                resultSet.getString("nazwa")
+                                resultSet.getString("nazwa"),
+                                resultSet.getDouble("monthSum"),
+                                resultSet.getDouble("yearSum")
+                        ))
+                    }
+                }
+            }
+        }
+        return items
+    }
+
+    fun getShopMonthItems(id: Long): List<ShoppingItem> {
+        val items = ArrayList<ShoppingItem>()
+        val sql = getQuerry(GET_SHOP_MONTH_ITEMS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setLong(1,id)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        items.add(ShoppingItem(
+                                resultSet.getLong("id"),
+                                resultSet.getString("nazwa"),
+                                resultSet.getDouble("ilosc"),
+                                resultSet.getDouble("cena"),
+                                resultSet.getDouble("cena_za_jednostke"),
+                                resultSet.getString("opis")
                         ))
                     }
                 }

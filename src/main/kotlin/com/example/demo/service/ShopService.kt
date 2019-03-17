@@ -1,6 +1,7 @@
 package com.example.demo.service
 
 import com.example.demo.entity.Shop
+import com.example.demo.entity.ShoppingItem
 import com.example.demo.repository.Repository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -13,6 +14,10 @@ class ShopService {
 
     fun getAllShops(): List<Shop> {
         return repository.getAllShops()
+    }
+
+    fun getMonthShoppings(id: Long): List<ShoppingItem> {
+        return repository.getShopMonthItems(id)
     }
 
 }
