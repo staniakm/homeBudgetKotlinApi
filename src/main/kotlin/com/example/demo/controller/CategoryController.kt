@@ -14,7 +14,7 @@ class CategoryController {
     @Autowired
     private lateinit var categoryService: CategoryService
 
-    @GetMapping()
+    @GetMapping
     fun getCategories (): List<Category> {
         return categoryService.getCategories()
     }

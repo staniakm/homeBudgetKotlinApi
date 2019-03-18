@@ -20,4 +20,8 @@ class ShopService {
         return repository.getShopMonthItems(id)
     }
 
+    fun getYearShoppings(id: Long): List<ShoppingItem> {
+        return repository.getShopYearItems(id)
+    }
+
 }

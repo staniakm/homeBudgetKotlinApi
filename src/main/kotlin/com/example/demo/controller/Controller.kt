@@ -29,10 +29,4 @@ class Controller{
     fun getItemDetails(@PathVariable("id") id: Long):List<ShoppingItem>{
         return shoppingListService.getShoppingsDetails(id)
     }
-
-    @GetMapping("/info")
-    fun getInfo():String{
-        return "hello world"
-    }
-
 }

@@ -1,4 +1,5 @@
 package com.example.demo.entity
 
-class CategoryDetails (val name: String, val price: Double) {
-}
+import java.math.BigDecimal
+
+class CategoryDetails (val name: String, val price: BigDecimal)

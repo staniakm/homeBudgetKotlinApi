@@ -10,7 +10,8 @@ object SqlQueries {
         GET_CATEGORY_LIST,
         GET_CATEGORY_DETAILS,
         GET_SHOP_LIST,
-        GET_SHOP_MONTH_ITEMS
+        GET_SHOP_MONTH_ITEMS,
+        GET_SHOP_YEAR_ITEMS
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -22,7 +23,16 @@ object SqlQueries {
             GET_CATEGORY_DETAILS -> getCategoryDetails()
             GET_SHOP_LIST -> getShopList()
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
+            GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
         }
+    }
+
+    private fun getShopYearShoppings(): String {
+        return "select ps.id, ps.cena, ps.opis, ps.ilosc, ps.cena_za_jednostke, a.NAZWA from paragony p " +
+                "join paragony_szczegoly ps on p.ID = ps.id_paragonu " +
+                "join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 " +
+                "where p.ID_sklep = ? " +
+                "and year(p.data) = year(getdate())"
     }
 
     private fun getShopMonthShoppings(): String {

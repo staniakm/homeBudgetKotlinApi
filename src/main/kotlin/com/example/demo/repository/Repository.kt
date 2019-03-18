@@ -4,7 +4,6 @@ import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuerry
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import java.sql.DriverManager
 import java.sql.ResultSet
@@ -37,30 +36,23 @@ class Repository {
         return list
     }
 
-    fun getInvoiceDetails(id : Long):List<ShoppingItem>{
-        val items = ArrayList<ShoppingItem>()
+    fun getInvoiceDetails(id: Long): List<ShoppingItem> {
         val sql = getQuerry(GET_INVOICE_DETAILS)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setLong(1,id)
-                statement.executeQuery().use { resultSet ->
-                    while (resultSet.next()) {
-                        items.add(ShoppingItem(
-                                resultSet.getLong("id"),
-                                resultSet.getString("nazwa"),
-                                resultSet.getDouble("ilosc"),
-                                resultSet.getDouble("cena"),
-                                resultSet.getDouble("cena_za_jednostke"),
-                                resultSet.getString("opis")
-                        ))
-                    }
-                }
-            }
-        }
-        return items
+        return getShoppingItems(sql, id)
     }
 
-    fun getCategoryList():List<Category>{
+    private fun mapToShoppingItem(items: ArrayList<ShoppingItem>, resultSet: ResultSet) {
+        items.add(ShoppingItem(
+                resultSet.getLong("id"),
+                resultSet.getString("nazwa"),
+                resultSet.getBigDecimal("ilosc"),
+                resultSet.getBigDecimal("cena"),
+                resultSet.getBigDecimal("cena_za_jednostke"),
+                resultSet.getString("opis")
+        ))
+    }
+
+    fun getCategoryList(): List<Category> {
         val items = ArrayList<Category>()
         val sql = getQuerry(GET_CATEGORY_LIST)
         DriverManager.getConnection(connectionUrl).use { con ->
@@ -70,8 +62,8 @@ class Repository {
                         items.add(Category(
                                 resultSet.getLong("id"),
                                 resultSet.getString("nazwa"),
-                                resultSet.getDouble("monthSummary"),
-                                resultSet.getDouble("yearSummary")
+                                resultSet.getBigDecimal("monthSummary"),
+                                resultSet.getBigDecimal("yearSummary")
                         ))
                     }
                 }
@@ -80,17 +72,17 @@ class Repository {
         return items
     }
 
-    fun getCategoryDetails(id : Long):List<CategoryDetails>{
+    fun getCategoryDetails(id: Long): List<CategoryDetails> {
         val items = ArrayList<CategoryDetails>()
         val sql = getQuerry(GET_CATEGORY_DETAILS)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
-                statement.setLong(1,id)
+                statement.setLong(1, id)
                 statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
                         items.add(CategoryDetails(
                                 resultSet.getString("nazwa"),
-                                resultSet.getDouble("cena")
+                                resultSet.getBigDecimal("cena")
                         ))
                     }
                 }
@@ -109,8 +101,8 @@ class Repository {
                         items.add(Shop(
                                 resultSet.getLong("id"),
                                 resultSet.getString("nazwa"),
-                                resultSet.getDouble("monthSum"),
-                                resultSet.getDouble("yearSum")
+                                resultSet.getBigDecimal("monthSum"),
+                                resultSet.getBigDecimal("yearSum")
                         ))
                     }
                 }
@@ -120,21 +112,25 @@ class Repository {
     }
 
     fun getShopMonthItems(id: Long): List<ShoppingItem> {
-        val items = ArrayList<ShoppingItem>()
         val sql = getQuerry(GET_SHOP_MONTH_ITEMS)
+        return getShoppingItems(sql, id)
+    }
+
+    fun getShopYearItems(shopId: Long): List<ShoppingItem> {
+        val sql = getQuerry(GET_SHOP_YEAR_ITEMS)
+        return getShoppingItems(sql, shopId)
+    }
+
+    fun getShoppingItems(query: String, id: Long? = null): List<ShoppingItem> {
+        val items = ArrayList<ShoppingItem>()
         DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setLong(1,id)
+            con.prepareStatement(query).use { statement ->
+                if (id != null) {
+                    statement.setLong(1, id)
+                }
                 statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
-                        items.add(ShoppingItem(
-                                resultSet.getLong("id"),
-                                resultSet.getString("nazwa"),
-                                resultSet.getDouble("ilosc"),
-                                resultSet.getDouble("cena"),
-                                resultSet.getDouble("cena_za_jednostke"),
-                                resultSet.getString("opis")
-                        ))
+                        mapToShoppingItem(items, resultSet)
                     }
                 }
             }

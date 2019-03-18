@@ -15,12 +15,17 @@ class ShopController {
     lateinit var shopService: ShopService
 
     @GetMapping
-    fun getShops(): List<Shop>{
+    fun getShops(): List<Shop> {
         return shopService.getAllShops()
     }
 
     @GetMapping("/{id}/month")
-    fun getShopMonthDetails(@PathVariable id: Long):List<ShoppingItem>{
+    fun getShopMonthDetails(@PathVariable id: Long): List<ShoppingItem> {
         return shopService.getMonthShoppings(id)
+    }
+
+    @GetMapping("/{id}/year")
+    fun getShopYearDetails(@PathVariable id: Long): List<ShoppingItem> {
+        return shopService.getYearShoppings(id)
     }
 }
