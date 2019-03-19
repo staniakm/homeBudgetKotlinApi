@@ -11,7 +11,8 @@ object SqlQueries {
         GET_CATEGORY_DETAILS,
         GET_SHOP_LIST,
         GET_SHOP_MONTH_ITEMS,
-        GET_SHOP_YEAR_ITEMS
+        GET_SHOP_YEAR_ITEMS,
+        GET_ITEM
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -24,7 +25,12 @@ object SqlQueries {
             GET_SHOP_LIST -> getShopList()
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
             GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
+            GET_ITEM -> getItemById()
         }
+    }
+
+    private fun getItemById(): String {
+        return ""
     }
 
     private fun getShopYearShoppings(): String {

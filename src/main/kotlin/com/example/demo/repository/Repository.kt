@@ -5,8 +5,10 @@ import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuerry
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.sql.DriverManager
 import java.sql.ResultSet
+import java.sql.RowId
 
 
 @Service
@@ -136,5 +138,9 @@ class Repository {
             }
         }
         return items
+    }
+
+    fun getItemById(itemId: Long): ShoppingItem {
+        return ShoppingItem(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
     }
 }
