@@ -12,7 +12,8 @@ object SqlQueries {
         GET_SHOP_LIST,
         GET_SHOP_MONTH_ITEMS,
         GET_SHOP_YEAR_ITEMS,
-        GET_ITEM
+        GET_ITEM,
+        GET_MONTH_SUMMARY_CHART_DATA
     }
 
     fun getQuerry(type: QUERY_TYPE): String {
@@ -26,7 +27,16 @@ object SqlQueries {
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
             GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
             GET_ITEM -> getItemById()
+            GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
         }
+    }
+
+    private fun getMonthSummary(): String {
+        return "select k.nazwa, sum(ps.cena) suma from paragony p\n" +
+                "join paragony_szczegoly ps on ps.id_paragonu = p.ID\n" +
+                "join kategoria k on k.id = ps.kategoria\n" +
+                "where year(p.data) = year(getdate()) and month(p.data) = month(getdate())\n" +
+                "group by k.nazwa"
     }
 
     private fun getItemById(): String {
@@ -53,19 +63,19 @@ object SqlQueries {
         return "select s.id, s.sklep nazwa, y.yearSum, isnull(m.monthSummary, 0.00) monthSum from sklepy s\n" +
                 "join (select id_sklep, sum(suma) yearSum from paragony where year(data)= year(getdate()) group by ID_sklep) as y on y.ID_sklep = s.ID\n" +
                 "left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p \n" +
-                "\twhere p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate()))) group by ID_sklep) m on m.ID_sklep = s.ID \n" +
+                "where p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate()))) group by ID_sklep) m on m.ID_sklep = s.ID \n" +
                 "order by s.sklep"
 
     }
 
     private fun getCategoryList(): String {
         return "select k.id id, nazwa, isnull(ps.price,0.00) monthSummary, pr.price yearSummary from kategoria k \n" +
-                "\tjoin (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
-                "\t\t\tjoin paragony p on p.ID = ps.id_paragonu where year(p.data) = year(getdate())\n" +
-                "\t\t\tgroup by kategoria) as pr on pr.kategoria = k.id\n" +
-                "\tleft join (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
-                "\t\t\tjoin paragony p on p.ID = ps.id_paragonu where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE()))))\n" +
-                "\t\t\tgroup by kategoria) as ps on ps.kategoria = k.id\n" +
+                "join (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
+                "join paragony p on p.ID = ps.id_paragonu where year(p.data) = year(getdate())\n" +
+                "group by kategoria) as pr on pr.kategoria = k.id\n" +
+                "left join (select sum(cena) price, kategoria from paragony_szczegoly ps \n" +
+                "join paragony p on p.ID = ps.id_paragonu where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE()))))\n" +
+                "group by kategoria) as ps on ps.kategoria = k.id\n" +
                 "order by nazwa\t\n"
     }
 

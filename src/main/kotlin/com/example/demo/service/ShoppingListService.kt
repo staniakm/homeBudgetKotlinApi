@@ -1,5 +1,6 @@
 package com.example.demo.service
 
+import com.example.demo.entity.ChartData
 import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,5 +27,9 @@ class ShoppingListService {
 
     fun getShoppingsDetails(id: Long): List<ShoppingItem> {
         return repository.getInvoiceDetails(id)
+    }
+
+    fun getMontchChardData(): List<ChartData> {
+        return repository.getMonthSummaryChartData()
     }
 }

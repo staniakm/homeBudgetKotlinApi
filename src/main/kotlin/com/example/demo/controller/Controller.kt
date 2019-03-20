@@ -1,5 +1,6 @@
 package com.example.demo.controller
 
+import com.example.demo.entity.ChartData
 import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
 import com.example.demo.service.ShoppingListService
@@ -33,17 +34,7 @@ class Controller{
 
     @GetMapping("/info")
     @ResponseBody
-    fun getInfo(): List<work> {
-        var map= listOf<work>(
-                work("TV",1),
-                work("work",8),
-                work("sleep",8),
-                work("learning",4),
-                work("other",3)
-        )
-
-        return map
+    fun getInfo(): String {
+        return "Info endpoint"
     }
 }
-
-data class work (val name: String, val value: Int)
