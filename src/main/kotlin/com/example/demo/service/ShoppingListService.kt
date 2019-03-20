@@ -4,12 +4,8 @@ import com.example.demo.entity.ChartData
 import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
-import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
-import java.time.Month
-import java.util.stream.Collectors
+import java.time.LocalDate
 
 @Service
 class ShoppingListService {
@@ -17,8 +13,10 @@ class ShoppingListService {
     @Autowired
     private lateinit var repository: com.example.demo.repository.Repository
 
-    fun getAllLists(): List<ShoppingList> {
-        return repository.getInvoices()
+    fun getAllLists(monthValue: Long): List<ShoppingList> {
+        val date = LocalDate.now().plusMonths(monthValue)
+        println(date)
+        return repository.getInvoices(date)
     }
 
 //    private fun addLink(item: ShoppingList): ShoppingList {

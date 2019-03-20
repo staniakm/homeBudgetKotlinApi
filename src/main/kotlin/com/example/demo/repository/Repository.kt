@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.sql.DriverManager
 import java.sql.ResultSet
+import java.time.LocalDate
 
 
 @Service
@@ -16,13 +17,15 @@ class Repository {
     @Value("\${sql.server.url}")
     private val connectionUrl: String? = null
 
-    fun getInvoices(): List<ShoppingList> {
+    fun getInvoices(date: LocalDate): List<ShoppingList> {
         val list = ArrayList<ShoppingList>()
 //        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         val sql = getQuerry(GET_INVOICE)
         DriverManager.getConnection(connectionUrl).use { con ->
-            con.createStatement().use { statement ->
-                statement.executeQuery(sql).use { resultSet ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, date.year)
+                statement.setInt(2, date.monthValue)
+                statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
                         list.add(ShoppingList(
                                 resultSet.getLong("id"),

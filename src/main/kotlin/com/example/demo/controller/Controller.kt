@@ -17,9 +17,10 @@ class Controller{
     @Autowired
     lateinit var shoppingListService : ShoppingListService
 
-    @GetMapping()
-    fun getAllLists(): ResponseEntity<List<ShoppingList>> {
-        val list = shoppingListService.getAllLists()
+    @GetMapping
+    fun getAllLists(@RequestParam("month") month:Long): ResponseEntity<List<ShoppingList>> {
+
+        val list = shoppingListService.getAllLists(month)
         return ResponseEntity(list, HttpStatus.OK)
     }
 

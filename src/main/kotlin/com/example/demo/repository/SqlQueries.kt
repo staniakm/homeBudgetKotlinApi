@@ -90,7 +90,7 @@ object SqlQueries {
 
     private fun getInvoices(): String {
         return "select p.ID, DATA, NR_PARAGONU, SUMA, s.sklep FROM dbo.paragony p\n" +
-                "\tjoin sklepy s on s.ID = p.ID_sklep where p.data >= '2019-01-01' order by data desc"
+                "\tjoin sklepy s on s.ID = p.ID_sklep where year(p.data) = ? and month(p.data) = ? order by data desc"
     }
 
     private fun getInvoiceDetails(): String {
