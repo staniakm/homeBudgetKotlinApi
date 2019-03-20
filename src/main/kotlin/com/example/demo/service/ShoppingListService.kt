@@ -15,7 +15,6 @@ class ShoppingListService {
 
     fun getAllLists(monthValue: Long): List<ShoppingList> {
         val date = LocalDate.now().plusMonths(monthValue)
-        println(date)
         return repository.getInvoices(date)
     }
 
