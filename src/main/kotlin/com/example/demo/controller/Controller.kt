@@ -1,16 +1,12 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.ChartData
 import com.example.demo.entity.ShoppingItem
 import com.example.demo.entity.ShoppingList
 import com.example.demo.service.ShoppingListService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.MediaTypes
-import org.springframework.hateoas.Resources
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 
 @CrossOrigin
@@ -29,7 +25,7 @@ class Controller{
 
     @GetMapping("/{id}")
     fun getItemDetails(@PathVariable("id") id: Long):List<ShoppingItem>{
-        return shoppingListService.getShoppingsDetails(id)
+        return shoppingListService.getShoppingDetails(id)
     }
 
     @GetMapping("/info")

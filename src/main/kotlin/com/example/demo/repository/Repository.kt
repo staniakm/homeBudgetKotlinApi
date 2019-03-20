@@ -143,12 +143,13 @@ class Repository {
         return ShoppingItem(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
     }
 
-    fun getMonthSummaryChartData(): List<ChartData>{
+    fun getMonthSummaryChartData(month: Int): List<ChartData>{
         val list = ArrayList<ChartData>()
         val sql = getQuerry(GET_MONTH_SUMMARY_CHART_DATA)
         DriverManager.getConnection(connectionUrl).use { con ->
-            con.createStatement().use { statement ->
-                statement.executeQuery(sql).use { resultSet ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, month)
+                statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
                         list.add(ChartData(
                                 resultSet.getString("nazwa"),

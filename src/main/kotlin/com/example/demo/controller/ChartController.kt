@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 @CrossOrigin
 @RequestMapping("api/chart")
@@ -18,6 +19,12 @@ class ChartController {
 
     @GetMapping("/currentMonth")
     fun getCurrentMonthSummary():List<ChartData>{
-        return shoppingListService.getMontchChardData()
+        return shoppingListService.getMonthChardData(LocalDate.now().monthValue)
+    }
+
+
+    @GetMapping("/previousMonth")
+    fun getPreviousMonthSummary():List<ChartData>{
+        return shoppingListService.getMonthChardData(LocalDate.now().minusMonths(1).monthValue)
     }
 }

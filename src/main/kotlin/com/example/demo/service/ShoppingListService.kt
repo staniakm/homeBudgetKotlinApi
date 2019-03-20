@@ -8,6 +8,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
+import java.time.Month
 import java.util.stream.Collectors
 
 @Service
@@ -25,11 +26,11 @@ class ShoppingListService {
 //        return item
 //    }
 
-    fun getShoppingsDetails(id: Long): List<ShoppingItem> {
+    fun getShoppingDetails(id: Long): List<ShoppingItem> {
         return repository.getInvoiceDetails(id)
     }
 
-    fun getMontchChardData(): List<ChartData> {
-        return repository.getMonthSummaryChartData()
+    fun getMonthChardData(month: Int): List<ChartData> {
+        return repository.getMonthSummaryChartData(month)
     }
 }
