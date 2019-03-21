@@ -2,7 +2,7 @@ package com.example.demo.repository
 
 import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
-import com.example.demo.repository.SqlQueries.getQuerry
+import com.example.demo.repository.SqlQueries.getQuery
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -20,7 +20,7 @@ class Repository {
     fun getInvoices(date: LocalDate): List<ShoppingList> {
         val list = ArrayList<ShoppingList>()
 //        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        val sql = getQuerry(GET_INVOICE)
+        val sql = getQuery(GET_INVOICE)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setInt(1, date.year)
@@ -41,7 +41,7 @@ class Repository {
     }
 
     fun getInvoiceDetails(id: Long): List<ShoppingItem> {
-        val sql = getQuerry(GET_INVOICE_DETAILS)
+        val sql = getQuery(GET_INVOICE_DETAILS)
         return getShoppingItems(sql, id)
     }
 
@@ -58,7 +58,7 @@ class Repository {
 
     fun getCategoryList(): List<Category> {
         val items = ArrayList<Category>()
-        val sql = getQuerry(GET_CATEGORY_LIST)
+        val sql = getQuery(GET_CATEGORY_LIST)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.createStatement().use { statement ->
                 statement.executeQuery(sql).use { resultSet ->
@@ -78,7 +78,7 @@ class Repository {
 
     fun getCategoryDetails(id: Long): List<CategoryDetails> {
         val items = ArrayList<CategoryDetails>()
-        val sql = getQuerry(GET_CATEGORY_DETAILS)
+        val sql = getQuery(GET_CATEGORY_DETAILS)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setLong(1, id)
@@ -97,7 +97,7 @@ class Repository {
 
     fun getAllShops(): List<Shop> {
         val items = ArrayList<Shop>()
-        val sql = getQuerry(GET_SHOP_LIST)
+        val sql = getQuery(GET_SHOP_LIST)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.createStatement().use { statement ->
                 statement.executeQuery(sql).use { resultSet ->
@@ -116,12 +116,12 @@ class Repository {
     }
 
     fun getShopMonthItems(id: Long): List<ShoppingItem> {
-        val sql = getQuerry(GET_SHOP_MONTH_ITEMS)
+        val sql = getQuery(GET_SHOP_MONTH_ITEMS)
         return getShoppingItems(sql, id)
     }
 
     fun getShopYearItems(shopId: Long): List<ShoppingItem> {
-        val sql = getQuerry(GET_SHOP_YEAR_ITEMS)
+        val sql = getQuery(GET_SHOP_YEAR_ITEMS)
         return getShoppingItems(sql, shopId)
     }
 
@@ -148,7 +148,7 @@ class Repository {
 
     fun getMonthSummaryChartData(month: Int): List<ChartData>{
         val list = ArrayList<ChartData>()
-        val sql = getQuerry(GET_MONTH_SUMMARY_CHART_DATA)
+        val sql = getQuery(GET_MONTH_SUMMARY_CHART_DATA)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setInt(1, month)
