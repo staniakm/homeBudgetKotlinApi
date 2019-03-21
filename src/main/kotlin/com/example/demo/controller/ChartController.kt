@@ -1,7 +1,6 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.ChartData
-import com.example.demo.service.ShoppingListService
+import com.example.demo.service.InvoiceService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,16 +14,12 @@ import java.time.LocalDate
 class ChartController {
 
     @Autowired
-    lateinit var shoppingListService : ShoppingListService
+    lateinit var shoppingListService: InvoiceService
 
     @GetMapping("/currentMonth")
-    fun getCurrentMonthSummary():List<ChartData>{
-        return shoppingListService.getMonthChardData(LocalDate.now().monthValue)
-    }
-
+    fun getCurrentMonthSummary() = shoppingListService.getMonthChardData(LocalDate.now().monthValue)
 
     @GetMapping("/previousMonth")
-    fun getPreviousMonthSummary():List<ChartData>{
-        return shoppingListService.getMonthChardData(LocalDate.now().minusMonths(1).monthValue)
-    }
+    fun getPreviousMonthSummary() =
+            shoppingListService.getMonthChardData(LocalDate.now().minusMonths(1).monthValue)
 }

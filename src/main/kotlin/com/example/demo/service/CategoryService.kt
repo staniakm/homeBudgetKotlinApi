@@ -1,7 +1,5 @@
 package com.example.demo.service
 
-import com.example.demo.entity.Category
-import com.example.demo.entity.CategoryDetails
 import com.example.demo.repository.Repository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -12,11 +10,7 @@ class CategoryService {
     @Autowired
     private lateinit var repository: Repository
 
-    fun getCategories(): List<Category> {
-        return repository.getCategoryList()
-    }
+    fun getCategories() = repository.getCategoryList()
 
-    fun getCategoryDetails(id: Long): List<CategoryDetails> {
-        return repository.getCategoryDetails(id)
-    }
+    fun getCategoryDetails(id: Long) = repository.getCategoryDetails(id)
 }

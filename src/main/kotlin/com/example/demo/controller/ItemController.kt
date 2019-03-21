@@ -1,6 +1,5 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.ShoppingItem
 import org.springframework.web.bind.annotation.*
 
 @CrossOrigin
@@ -8,4 +7,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ItemController {
 
+    @GetMapping("/{id}")
+    fun getItemDetails(@PathVariable("id") id: Long) = "Item details"
 }
