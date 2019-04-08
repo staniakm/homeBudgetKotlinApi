@@ -4,7 +4,7 @@ import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 
 object SqlQueries {
 
-    enum class QUERY_TYPE{
+    enum class QUERY_TYPE {
         GET_INVOICE,
         GET_INVOICE_DETAILS,
         GET_CATEGORY_LIST,
@@ -13,11 +13,13 @@ object SqlQueries {
         GET_SHOP_MONTH_ITEMS,
         GET_SHOP_YEAR_ITEMS,
         GET_ITEM,
-        GET_MONTH_SUMMARY_CHART_DATA
+        GET_MONTH_SUMMARY_CHART_DATA,
+        GET_SHOP_ITEMS,
+        GET_MONTH_BUDGET
     }
 
     fun getQuery(type: QUERY_TYPE): String {
-        return when (type){
+        return when (type) {
 
             GET_INVOICE -> getInvoices()
             GET_INVOICE_DETAILS -> getInvoiceDetails()
@@ -28,7 +30,21 @@ object SqlQueries {
             GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
             GET_ITEM -> getItemById()
             GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
+            GET_SHOP_ITEMS -> getShopItems()
+            GET_MONTH_BUDGET -> getMonthBudget()
         }
+    }
+
+    private fun getMonthBudget(): String {
+        return "select b.id, b.miesiac, k.nazwa category, b.planed planned, b.used spent, b.percentUsed percentage from budzet b join kategoria k on k.id = b.category " +
+                "where rok = ? and miesiac = ?"
+    }
+
+    private fun getShopItems(): String {
+        return "select a.id, a.NAZWA from ASORTYMENT_SKLEP aso_s " +
+                "join sklepy s on s.ID = aso_s.id_sklep " +
+                "join ASORTYMENT a on a.id = aso_s.id_aso " +
+                "where aso_s.del = 0 and a.del = 0 and s.ID = ? order by a.nazwa"
     }
 
     private fun getMonthSummary(): String {

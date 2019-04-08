@@ -15,4 +15,6 @@ class ShopService {
     fun getMonthShopDetails(id: Long) = repository.getShopMonthItems(id)
 
     fun getYearShopDetails(id: Long) = repository.getShopYearItems(id)
+
+    fun getShopItems(shopId: Long) = repository.getShopItems(shopId)
 }

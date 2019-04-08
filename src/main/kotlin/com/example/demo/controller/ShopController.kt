@@ -16,6 +16,9 @@ class ShopController {
     @GetMapping
     fun getShops(): List<Shop> = shopService.getAllShops()
 
+    @GetMapping("/{id}")
+    fun getShops(@PathVariable("id") shopId: Long) = shopService.getShopItems(shopId)
+
     @GetMapping("/{id}/month")
     fun getShopMonthDetails(@PathVariable ("id") shopId: Long) = shopService.getMonthShopDetails(shopId)
 

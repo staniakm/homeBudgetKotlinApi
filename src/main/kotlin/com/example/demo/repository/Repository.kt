@@ -4,10 +4,13 @@ import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuery
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Service
+import org.springframework.util.MultiValueMap
 import java.math.BigDecimal
 import java.sql.DriverManager
 import java.sql.ResultSet
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 
@@ -163,5 +166,46 @@ class Repository {
             }
         }
         return list
+    }
+
+    fun getShopItems(shopId: Long): List<ShopItem> {
+        val list = ArrayList<ShopItem>()
+        val sql = getQuery(GET_SHOP_ITEMS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setLong(1, shopId)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        list.add(ShopItem(
+                                resultSet.getLong("id"),
+                                resultSet.getString("nazwa")
+                        ))
+                    }
+                }
+            }
+        }
+        return list
+    }
+
+    fun getBudgetForMonth(date: LocalDate): BudgetItem {
+        val list = ArrayList<MonthBudget>()
+        val sql = getQuery(GET_MONTH_BUDGET)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, date.year)
+                statement.setInt(2, date.monthValue)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        list.add(MonthBudget(
+                                resultSet.getString("category"),
+                                resultSet.getBigDecimal("spent"),
+                                resultSet.getBigDecimal("planned"),
+                                resultSet.getDouble("percentage")
+                        ))
+                    }
+                }
+            }
+        }
+        return BudgetItem(date.toString().substring(0,7), list)
     }
 }
