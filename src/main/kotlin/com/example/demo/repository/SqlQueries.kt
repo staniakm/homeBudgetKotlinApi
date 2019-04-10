@@ -60,19 +60,33 @@ object SqlQueries {
     }
 
     private fun getShopYearShoppings(): String {
-        return "select ps.id, ps.cena, ps.opis, ps.ilosc, ps.cena_za_jednostke, a.NAZWA from paragony p " +
-                "join paragony_szczegoly ps on p.ID = ps.id_paragonu " +
+        return "select a.id, a.NAZWA name, " +
+                "sum(ilosc) quantity, " +
+                "min(cena_za_jednostke) min_price_for_unit, " +
+                "max(cena_za_jednostke) max_price_for_unit, " +
+                "sum(rabat) discount_sum, " +
+                "sum(cena) total_spend " +
+                "from paragony_szczegoly ps " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 " +
-                "where p.ID_sklep = ? " +
-                "and year(p.data) = year(getdate())"
+                "where ps.id_paragonu in (select id from paragony p where p.ID_sklep = ? " +
+                "and p.del = 0" +
+                "and year(p.data) = year(getdate())) " +
+                "group by a.id, a.NAZWA"
     }
 
     private fun getShopMonthShoppings(): String {
-        return "select ps.id, ps.cena, ps.opis, ps.ilosc, ps.cena_za_jednostke, a.NAZWA from paragony p " +
-                "join paragony_szczegoly ps on p.ID = ps.id_paragonu " +
+        return "select a.id, a.NAZWA name, " +
+                "sum(ilosc) quantity, " +
+                "min(cena_za_jednostke) min_price_for_unit, " +
+                "max(cena_za_jednostke) max_price_for_unit, " +
+                "sum(rabat) discount_sum, " +
+                "sum(cena) total_spend " +
+                "from paragony_szczegoly ps " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 " +
-                "where p.ID_sklep = ? " +
-                "and p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate())))"
+                "where ps.id_paragonu in (select id from paragony p where p.ID_sklep = ? " +
+                "and p.del = 0" +
+                "and p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate())))) " +
+                "group by a.id, a.NAZWA"
     }
 
     private fun getShopList(): String {

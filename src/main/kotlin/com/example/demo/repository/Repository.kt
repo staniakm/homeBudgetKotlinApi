@@ -4,13 +4,9 @@ import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuery
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Service
-import org.springframework.util.MultiValueMap
-import java.math.BigDecimal
 import java.sql.DriverManager
 import java.sql.ResultSet
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 
@@ -43,19 +39,20 @@ class Repository {
         return list
     }
 
-    fun getInvoiceDetails(id: Long): List<ShoppingItem> {
+    fun getInvoiceDetails(id: Long): List<ShopItemsSummary> {
         val sql = getQuery(GET_INVOICE_DETAILS)
         return getShoppingItems(sql, id)
     }
 
-    private fun mapToShoppingItem(items: ArrayList<ShoppingItem>, resultSet: ResultSet) {
-        items.add(ShoppingItem(
-                resultSet.getLong("id"),
-                resultSet.getString("nazwa"),
-                resultSet.getBigDecimal("ilosc"),
-                resultSet.getBigDecimal("cena"),
-                resultSet.getBigDecimal("cena_za_jednostke"),
-                resultSet.getString("opis")
+    private fun mapToShoppingItem(items: ArrayList<ShopItemsSummary>, rs: ResultSet) {
+        items.add(ShopItemsSummary(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getBigDecimal("quantity"),
+                rs.getBigDecimal("min_price_for_unit"),
+                rs.getBigDecimal("max_price_for_unit"),
+                rs.getBigDecimal("discount_sum"),
+                rs.getBigDecimal("total_spend")
         ))
     }
 
@@ -118,18 +115,18 @@ class Repository {
         return items
     }
 
-    fun getShopMonthItems(id: Long): List<ShoppingItem> {
+    fun getShopMonthItems(id: Long): List<ShopItemsSummary> {
         val sql = getQuery(GET_SHOP_MONTH_ITEMS)
         return getShoppingItems(sql, id)
     }
 
-    fun getShopYearItems(shopId: Long): List<ShoppingItem> {
+    fun getShopYearItems(shopId: Long): List<ShopItemsSummary> {
         val sql = getQuery(GET_SHOP_YEAR_ITEMS)
         return getShoppingItems(sql, shopId)
     }
 
-    fun getShoppingItems(query: String, id: Long? = null): List<ShoppingItem> {
-        val items = ArrayList<ShoppingItem>()
+    fun getShoppingItems(query: String, id: Long? = null): List<ShopItemsSummary> {
+        val items = ArrayList<ShopItemsSummary>()
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(query).use { statement ->
                 if (id != null) {
@@ -145,9 +142,9 @@ class Repository {
         return items
     }
 
-    fun getItemById(itemId: Long): ShoppingItem {
-        return ShoppingItem(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
-    }
+//    fun getItemById(itemId: Long): ShopItemsSummary {
+//        return ShopItemsSummary(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
+//    }
 
     fun getMonthSummaryChartData(month: Int): List<ChartData>{
         val list = ArrayList<ChartData>()
