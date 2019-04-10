@@ -9,6 +9,7 @@ object SqlQueries {
         GET_INVOICE_DETAILS,
         GET_CATEGORY_LIST,
         GET_CATEGORY_DETAILS,
+        GET_CATEGORY_BY_ID,
         GET_SHOP_LIST,
         GET_SHOP_MONTH_ITEMS,
         GET_SHOP_YEAR_ITEMS,
@@ -32,6 +33,7 @@ object SqlQueries {
             GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
             GET_SHOP_ITEMS -> getShopItems()
             GET_MONTH_BUDGET -> getMonthBudget()
+            GET_CATEGORY_BY_ID -> getCategoryById()
         }
     }
 
@@ -98,6 +100,18 @@ object SqlQueries {
 
     }
 
+    private fun getCategoryById(): String {
+        return "select k.id id, nazwa, isnull(ps.price,0.00) monthSummary, pr.price yearSummary from kategoria k " +
+                "join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
+                "join paragony p on p.ID = ps.id_paragonu where year(p.data) = year(getdate()) " +
+                "group by kategoria) as pr on pr.kategoria = k.id " +
+                "left join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
+                "join paragony p on p.ID = ps.id_paragonu where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE())))) " +
+                "group by kategoria) as ps on ps.kategoria = k.id " +
+                "where k.id = ? " +
+                "order by nazwa"
+    }
+
     private fun getCategoryList(): String {
         return "select k.id id, nazwa, isnull(ps.price,0.00) monthSummary, pr.price yearSummary from kategoria k " +
                 "join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
@@ -124,7 +138,7 @@ object SqlQueries {
     }
 
     private fun getInvoiceDetails(): String {
-        return "select ps.id, cena, opis, ilosc, cena_za_jednostke, a.NAZWA from paragony_szczegoly ps " +
+        return "select ps.id, cena, opis, ilosc, cena_za_jednostke, a.NAZWA, ps.rabat from paragony_szczegoly ps " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO where id_paragonu = ?"
     }
 

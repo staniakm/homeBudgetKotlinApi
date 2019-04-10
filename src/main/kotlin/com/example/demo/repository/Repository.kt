@@ -39,9 +39,28 @@ class Repository {
         return list
     }
 
-    fun getInvoiceDetails(id: Long): List<ShopItemsSummary> {
+    fun getInvoiceDetails(id: Long): List<ShopCartDetails> {
         val sql = getQuery(GET_INVOICE_DETAILS)
-        return getShoppingItems(sql, id)
+        val items = ArrayList<ShopCartDetails>()
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                    statement.setLong(1, id)
+                statement.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        items.add(ShopCartDetails(
+                                rs.getLong("id"),
+                                rs.getString("nazwa"),
+                                rs.getBigDecimal("ilosc"),
+                                rs.getBigDecimal("cena_za_jednostke"),
+                                rs.getBigDecimal("rabat"),
+                                rs.getBigDecimal("cena")
+                        ))
+
+                    }
+                }
+            }
+        }
+        return items
     }
 
     private fun mapToShoppingItem(items: ArrayList<ShopItemsSummary>, rs: ResultSet) {
@@ -67,7 +86,8 @@ class Repository {
                                 resultSet.getLong("id"),
                                 resultSet.getString("nazwa"),
                                 resultSet.getBigDecimal("monthSummary"),
-                                resultSet.getBigDecimal("yearSummary")
+                                resultSet.getBigDecimal("yearSummary"),
+                                emptyList()
                         ))
                     }
                 }
@@ -76,7 +96,8 @@ class Repository {
         return items
     }
 
-    fun getCategoryDetails(id: Long): List<CategoryDetails> {
+    fun getCategoryDetails(id: Long): Category? {
+        val category = getCategory(id)
         val items = ArrayList<CategoryDetails>()
         val sql = getQuery(GET_CATEGORY_DETAILS)
         DriverManager.getConnection(connectionUrl).use { con ->
@@ -92,7 +113,30 @@ class Repository {
                 }
             }
         }
-        return items
+        category?.details =items
+        return category
+    }
+
+    private fun getCategory(id: Long): Category? {
+        var cat: Category? = null
+        val sql = getQuery(GET_CATEGORY_BY_ID)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setLong(1, id)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        cat = Category(
+                                resultSet.getLong("id"),
+                                resultSet.getString("nazwa"),
+                                resultSet.getBigDecimal("monthSummary"),
+                                resultSet.getBigDecimal("yearSummary"),
+                                emptyList()
+                        )
+                    }
+                }
+            }
+        }
+        return cat
     }
 
     fun getAllShops(): List<Shop> {
