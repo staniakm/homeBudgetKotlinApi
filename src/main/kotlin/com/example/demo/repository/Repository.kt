@@ -44,7 +44,7 @@ class Repository {
         val items = ArrayList<ShopCartDetails>()
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
-                    statement.setLong(1, id)
+                statement.setLong(1, id)
                 statement.executeQuery().use { rs ->
                     while (rs.next()) {
                         items.add(ShopCartDetails(
@@ -113,7 +113,7 @@ class Repository {
                 }
             }
         }
-        category?.details =items
+        category?.details = items
         return category
     }
 
@@ -190,7 +190,7 @@ class Repository {
 //        return ShopItemsSummary(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
 //    }
 
-    fun getMonthSummaryChartData(month: Int): List<ChartData>{
+    fun getMonthSummaryChartData(month: Int): List<ChartData> {
         val list = ArrayList<ChartData>()
         val sql = getQuery(GET_MONTH_SUMMARY_CHART_DATA)
         DriverManager.getConnection(connectionUrl).use { con ->
@@ -247,6 +247,25 @@ class Repository {
                 }
             }
         }
-        return BudgetItem(date.toString().substring(0,7), list)
+        return getBudgetCalculations(date, list)
+    }
+
+    fun getBudgetCalculations(date: LocalDate, list: ArrayList<MonthBudget>): BudgetItem {
+        val budget = BudgetItem(date.toString().substring(0, 7), list)
+        val sql = getQuery(GET_MONTH_BUDGE_DETAILS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, date.year)
+                statement.setInt(2, date.monthValue)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        budget.totalSpend = resultSet.getBigDecimal("outcome")
+                        budget.totalPlanned = resultSet.getBigDecimal("planed")
+                        budget.totalEarned = resultSet.getBigDecimal("income")
+                    }
+                }
+            }
+        }
+        return budget
     }
 }

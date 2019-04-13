@@ -16,7 +16,8 @@ object SqlQueries {
         GET_ITEM,
         GET_MONTH_SUMMARY_CHART_DATA,
         GET_SHOP_ITEMS,
-        GET_MONTH_BUDGET
+        GET_MONTH_BUDGET,
+        GET_MONTH_BUDGE_DETAILS
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -34,12 +35,24 @@ object SqlQueries {
             GET_SHOP_ITEMS -> getShopItems()
             GET_MONTH_BUDGET -> getMonthBudget()
             GET_CATEGORY_BY_ID -> getCategoryById()
+            GET_MONTH_BUDGE_DETAILS -> getMonthBudgetDetails()
         }
     }
 
+    private fun getMonthBudgetDetails(): String {
+
+        return "select spend outcome, planed, isnull(przychod,0) income " +
+                "from " +
+                "(select sum(used) spend, sum(planed) planed, rok, miesiac from budzet b group by rok, miesiac) b " +
+                "left join(select sum(kwota) przychod, year(data) rok, month(data) miesiac from przychody group by year(data) , month(data) ) as p on p.rok = b.rok and p.miesiac = b.miesiac " +
+                "where b.rok = ? and b.miesiac = ?"
+    }
+
     private fun getMonthBudget(): String {
-        return "select b.id, b.miesiac, k.nazwa category, b.planed planned, b.used spent, b.percentUsed percentage from budzet b join kategoria k on k.id = b.category " +
-                "where rok = ? and miesiac = ?"
+        return "select b.id, b.miesiac, k.nazwa category, b.planed planned, b.used spent, b.percentUsed percentage from budzet b " +
+                "join kategoria k on k.id = b.category " +
+                "where rok = ? and miesiac = ? and b.used > 0" +
+                "order by k.nazwa"
     }
 
     private fun getShopItems(): String {
