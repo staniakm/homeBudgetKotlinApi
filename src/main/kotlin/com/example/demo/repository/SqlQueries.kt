@@ -67,7 +67,7 @@ object SqlQueries {
                 "join paragony_szczegoly ps on ps.id_paragonu = p.ID " +
                 "join kategoria k on k.id = ps.kategoria " +
                 "where year(p.data) = year(getdate()) and month(p.data) = ? " +
-                "group by k.nazwa"
+                "group by k.nazwa order by suma"
     }
 
     private fun getItemById(): String {

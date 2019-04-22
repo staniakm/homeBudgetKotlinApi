@@ -16,5 +16,5 @@ class CategoryController {
     fun getCategories() = categoryService.getCategories()
 
     @GetMapping("/{id}")
-    fun getCategoryDetails(@PathVariable("id") categoryId: Long) =categoryService.getCategoryDetails(categoryId)
+    fun getCategoryDetails(@PathVariable("id") categoryId: Long) = categoryService.getCategoryDetails(categoryId)
 }
