@@ -10,3 +10,4 @@ class BudgetItem(val date: String, val budgets: List<MonthBudget>){
 }
 
 data class MonthBudget(val category: String, val spent: BigDecimal, val planned: BigDecimal, val percentage: Double)
+data class MonthBudgetDto(var category: String, var planned: BigDecimal)

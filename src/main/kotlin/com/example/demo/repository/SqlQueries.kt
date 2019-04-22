@@ -17,7 +17,8 @@ object SqlQueries {
         GET_MONTH_SUMMARY_CHART_DATA,
         GET_SHOP_ITEMS,
         GET_MONTH_BUDGET,
-        GET_MONTH_BUDGE_DETAILS
+        GET_MONTH_BUDGE_DETAILS,
+        UPDATE_MONTH_BUDGE_DETAILS
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -36,7 +37,17 @@ object SqlQueries {
             GET_MONTH_BUDGET -> getMonthBudget()
             GET_CATEGORY_BY_ID -> getCategoryById()
             GET_MONTH_BUDGE_DETAILS -> getMonthBudgetDetails()
+            UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
         }
+    }
+
+    private fun updatePlanedBudget(): String {
+        return "update b set b.planed = ? " +
+                "from budzet b " +
+                "join kategoria c on c.id = b.category " +
+                "where c.nazwa = ? " +
+                "and b.rok = ? " +
+                "and b.miesiac = ?"
     }
 
     private fun getMonthBudgetDetails(): String {

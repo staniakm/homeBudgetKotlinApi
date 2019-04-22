@@ -5,6 +5,7 @@ import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 import com.example.demo.repository.SqlQueries.getQuery
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.time.LocalDate
@@ -267,5 +268,35 @@ class Repository {
             }
         }
         return budget
+    }
+
+    fun updateBudget(date: LocalDate, monthBudget: MonthBudgetDto) {
+        val cat: String = monthBudget.category;
+        val planned: BigDecimal = monthBudget.planned;
+        val year: Int = date.year;
+        val month: Int = date.monthValue
+
+
+        val sql = getQuery(UPDATE_MONTH_BUDGE_DETAILS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setString(2, cat)
+                statement.setBigDecimal(1, planned)
+                statement.setInt(3, year)
+                statement.setInt(4, month)
+                statement.executeUpdate()
+            }
+        }
+        recalculateBudget(date)
+    }
+
+    fun recalculateBudget(date: LocalDate) {
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareCall("{call dbo.RecalculateBudget (?)}")
+                    .use { stmt ->
+                        stmt.setDate(1, java.sql.Date.valueOf(date))
+                        stmt.execute()
+                    }
+        }
     }
 }
