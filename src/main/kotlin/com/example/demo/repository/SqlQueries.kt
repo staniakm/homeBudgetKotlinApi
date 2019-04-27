@@ -169,7 +169,7 @@ object SqlQueries {
     }
 
     private fun getProductDetails():String{
-        return "select s.sklep,p.data, ps.cena, ps.ilosc, ps.rabat, p.suma, p.ID invoiceId, ps.ID invoiceItemId from paragony_szczegoly ps " +
+        return "select s.sklep,p.data, ps.cena_za_jednostke cena, ps.ilosc, ps.rabat, p.suma, p.ID invoiceId, ps.ID invoiceItemId from paragony_szczegoly ps " +
                 "join paragony p on p.ID = ps.id_paragonu " +
                 "join sklepy s on s.ID = p.ID_sklep " +
                 "where ps.ID_ASO=? " +
