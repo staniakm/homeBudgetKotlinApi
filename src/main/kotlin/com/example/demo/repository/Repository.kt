@@ -54,7 +54,8 @@ class Repository {
                                 rs.getBigDecimal("ilosc"),
                                 rs.getBigDecimal("cena_za_jednostke"),
                                 rs.getBigDecimal("rabat"),
-                                rs.getBigDecimal("cena")
+                                rs.getBigDecimal("cena"),
+                                rs.getLong("itemId")
                         ))
 
                     }
@@ -187,10 +188,6 @@ class Repository {
         return items
     }
 
-//    fun getItemById(itemId: Long): ShopItemsSummary {
-//        return ShopItemsSummary(1,"", BigDecimal.ONE,BigDecimal.ONE,BigDecimal.ONE,"")
-//    }
-
     fun getMonthSummaryChartData(month: Int): List<ChartData> {
         val list = ArrayList<ChartData>()
         val sql = getQuery(GET_MONTH_SUMMARY_CHART_DATA)
@@ -298,5 +295,30 @@ class Repository {
                         stmt.execute()
                     }
         }
+    }
+
+    fun getProductDetails(productId: Long): List<ProductDetails> {
+        val list = ArrayList<ProductDetails>()
+        val sql = getQuery(GET_PRODUCT_DETAILS)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setLong(1, productId)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        list.add(ProductDetails(
+                                resultSet.getString("sklep"),
+                                resultSet.getDate("data"),
+                                resultSet.getBigDecimal("cena"),
+                                resultSet.getDouble("ilosc"),
+                                resultSet.getBigDecimal("rabat"),
+                                resultSet.getBigDecimal("suma"),
+                                resultSet.getLong("invoiceId"),
+                                resultSet.getLong("invoiceItemId")
+                        ))
+                    }
+                }
+            }
+        }
+        return list
     }
 }

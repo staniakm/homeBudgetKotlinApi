@@ -18,7 +18,8 @@ object SqlQueries {
         GET_SHOP_ITEMS,
         GET_MONTH_BUDGET,
         GET_MONTH_BUDGE_DETAILS,
-        UPDATE_MONTH_BUDGE_DETAILS
+        UPDATE_MONTH_BUDGE_DETAILS,
+        GET_PRODUCT_DETAILS
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -38,6 +39,7 @@ object SqlQueries {
             GET_CATEGORY_BY_ID -> getCategoryById()
             GET_MONTH_BUDGE_DETAILS -> getMonthBudgetDetails()
             UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
+            GET_PRODUCT_DETAILS -> getProductDetails()
         }
     }
 
@@ -162,8 +164,16 @@ object SqlQueries {
     }
 
     private fun getInvoiceDetails(): String {
-        return "select ps.id, cena, opis, ilosc, cena_za_jednostke, a.NAZWA, ps.rabat from paragony_szczegoly ps " +
+        return "select ps.id, cena, opis, ilosc, cena_za_jednostke, a.NAZWA, ps.rabat, a.id itemId from paragony_szczegoly ps " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO where id_paragonu = ?"
+    }
+
+    private fun getProductDetails():String{
+        return "select s.sklep,p.data, ps.cena, ps.ilosc, ps.rabat, p.suma, p.ID invoiceId, ps.ID invoiceItemId from paragony_szczegoly ps " +
+                "join paragony p on p.ID = ps.id_paragonu " +
+                "join sklepy s on s.ID = p.ID_sklep " +
+                "where ps.ID_ASO=? " +
+                "order by p.data desc"
     }
 
 }
