@@ -18,8 +18,13 @@ class BudgetService {
         return repository.getBudgetForMonth(date)
     }
 
+    fun getMonthBudgetForCategory(month: Long, category: String): BudgetItem {
+        val date = LocalDate.now().plusMonths(month)
+        return repository.getBudgetForMonthAndCategory(date, category)
+    }
+
     fun updateBudget(month: Long, monthBudget: MonthBudgetDto) {
-        val date = LocalDate.now().plusMonths(month);
+        val date = LocalDate.now().plusMonths(month)
         repository.updateBudget(date, monthBudget)
     }
 

@@ -22,9 +22,9 @@ class BudgetController {
             ResponseEntity(budgetService.getMonthBudget(month), HttpStatus.OK)
 
     //todo improve response method to return only one category
-    @PostMapping
+    @PutMapping(produces = ["application/json"])
     fun updateBudgetForMonth(@RequestParam("month") month: Long, @RequestBody monthBudget: MonthBudgetDto):ResponseEntity<BudgetItem> {
         budgetService.updateBudget(month, monthBudget)
-        return ResponseEntity(budgetService.getMonthBudget(month), HttpStatus.OK)
+        return ResponseEntity(budgetService.getMonthBudgetForCategory(month, monthBudget.category), HttpStatus.OK)
     }
 }

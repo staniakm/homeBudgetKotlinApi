@@ -13,13 +13,13 @@ object SqlQueries {
         GET_SHOP_LIST,
         GET_SHOP_MONTH_ITEMS,
         GET_SHOP_YEAR_ITEMS,
-        GET_ITEM,
         GET_MONTH_SUMMARY_CHART_DATA,
         GET_SHOP_ITEMS,
         GET_MONTH_BUDGET,
         GET_MONTH_BUDGE_DETAILS,
         UPDATE_MONTH_BUDGE_DETAILS,
-        GET_PRODUCT_DETAILS
+        GET_PRODUCT_DETAILS,
+        GET_MONTH_BUDGET_FOR_CATEGORY
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -32,7 +32,6 @@ object SqlQueries {
             GET_SHOP_LIST -> getShopList()
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
             GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
-            GET_ITEM -> getItemById()
             GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
             GET_SHOP_ITEMS -> getShopItems()
             GET_MONTH_BUDGET -> getMonthBudget()
@@ -40,6 +39,7 @@ object SqlQueries {
             GET_MONTH_BUDGE_DETAILS -> getMonthBudgetDetails()
             UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
             GET_PRODUCT_DETAILS -> getProductDetails()
+            GET_MONTH_BUDGET_FOR_CATEGORY -> getMonthBudgetForCategory()
         }
     }
 
@@ -68,6 +68,13 @@ object SqlQueries {
                 "order by k.nazwa"
     }
 
+    private fun getMonthBudgetForCategory(): String {
+        return "select b.id, b.miesiac, k.nazwa category, b.planed planned, b.used spent, b.percentUsed percentage from budzet b " +
+                "join kategoria k on k.id = b.category " +
+                "where rok = ? and miesiac = ? and k.nazwa = ? and b.used > 0" +
+                "order by k.nazwa"
+    }
+
     private fun getShopItems(): String {
         return "select a.id, a.NAZWA from ASORTYMENT_SKLEP aso_s " +
                 "join sklepy s on s.ID = aso_s.id_sklep " +
@@ -81,10 +88,6 @@ object SqlQueries {
                 "join kategoria k on k.id = ps.kategoria " +
                 "where year(p.data) = year(getdate()) and month(p.data) = ? " +
                 "group by k.nazwa order by suma"
-    }
-
-    private fun getItemById(): String {
-        return ""
     }
 
     private fun getShopYearShoppings(): String {

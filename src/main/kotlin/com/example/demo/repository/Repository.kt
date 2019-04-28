@@ -248,6 +248,29 @@ class Repository {
         return getBudgetCalculations(date, list)
     }
 
+    fun getBudgetForMonthAndCategory(date: LocalDate, category: String): BudgetItem {
+        val list = ArrayList<MonthBudget>()
+        val sql = getQuery(GET_MONTH_BUDGET_FOR_CATEGORY)
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, date.year)
+                statement.setInt(2, date.monthValue)
+                statement.setString(3, category)
+                statement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        list.add(MonthBudget(
+                                resultSet.getString("category"),
+                                resultSet.getBigDecimal("spent"),
+                                resultSet.getBigDecimal("planned"),
+                                resultSet.getDouble("percentage")
+                        ))
+                    }
+                }
+            }
+        }
+        return getBudgetCalculations(date, list)
+    }
+
     fun getBudgetCalculations(date: LocalDate, list: ArrayList<MonthBudget>): BudgetItem {
         val budget = BudgetItem(date.toString().substring(0, 7), list)
         val sql = getQuery(GET_MONTH_BUDGE_DETAILS)
@@ -270,7 +293,7 @@ class Repository {
     fun updateBudget(date: LocalDate, monthBudget: MonthBudgetDto) {
         val cat: String = monthBudget.category;
         val planned: BigDecimal = monthBudget.planned;
-        val year: Int = date.year;
+        val year: Int = date.year
         val month: Int = date.monthValue
 
 
