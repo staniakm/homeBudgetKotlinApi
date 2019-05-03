@@ -13,7 +13,8 @@ class CategoryController {
     private lateinit var categoryService: CategoryService
 
     @GetMapping
-    fun getCategories() = categoryService.getCategories()
+    fun getCategories(@RequestParam("month") month: Long) = categoryService.getCategories(month)
+
 
     @GetMapping("/{id}")
     fun getCategoryDetails(@PathVariable("id") categoryId: Long) = categoryService.getCategoryDetails(categoryId)

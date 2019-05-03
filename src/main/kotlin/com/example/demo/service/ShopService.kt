@@ -13,7 +13,7 @@ class ShopService {
     lateinit var repository: Repository
 
     fun getAllShops(month: Long):List<Shop> {
-        val date = LocalDate.now().plusMonths(month);
+        val date = LocalDate.now().plusMonths(month)
         return repository.getAllShops(date)
     }
 

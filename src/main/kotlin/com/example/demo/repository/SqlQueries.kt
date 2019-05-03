@@ -144,13 +144,13 @@ object SqlQueries {
 
     private fun getCategoryList(): String {
         return "select k.id id, nazwa, isnull(ps.price,0.00) monthSummary, pr.price yearSummary from kategoria k " +
-                "join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
-                "join paragony p on p.ID = ps.id_paragonu where year(p.data) = year(getdate()) " +
-                "group by kategoria) as pr on pr.kategoria = k.id " +
-                "left join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
-                "join paragony p on p.ID = ps.id_paragonu where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE())))) " +
-                "group by kategoria) as ps on ps.kategoria = k.id " +
-                "order by nazwa"
+                "                join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
+                "                join paragony p on p.ID = ps.id_paragonu where year(p.data) = ? " +
+                "                group by kategoria) as pr on pr.kategoria = k.id " +
+                "                left join (select sum(cena) price, kategoria from paragony_szczegoly ps " +
+                "                join paragony p on p.ID = ps.id_paragonu where year(p.data) = ? and month(p.data) = ? " +
+                "                group by kategoria) as ps on ps.kategoria = k.id " +
+                "                order by nazwa"
     }
 
     private fun getCategoryDetails(): String {
