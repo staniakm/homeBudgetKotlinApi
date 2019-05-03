@@ -31,7 +31,8 @@ class Repository {
                                 resultSet.getLong("id"),
                                 resultSet.getString("sklep"),
                                 resultSet.getDate("data"),
-                                resultSet.getBigDecimal("suma")
+                                resultSet.getBigDecimal("suma"),
+                                resultSet.getString("account")
                         ))
                     }
                 }
@@ -141,12 +142,15 @@ class Repository {
         return cat
     }
 
-    fun getAllShops(): List<Shop> {
+    fun getAllShops(date: LocalDate): List<Shop> {
         val items = ArrayList<Shop>()
         val sql = getQuery(GET_SHOP_LIST)
         DriverManager.getConnection(connectionUrl).use { con ->
-            con.createStatement().use { statement ->
-                statement.executeQuery(sql).use { resultSet ->
+            con.prepareStatement(sql).use { statement ->
+                statement.setInt(1, date.year)
+                statement.setInt(2, date.year)
+                statement.setInt(3, date.monthValue)
+                statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
                         items.add(Shop(
                                 resultSet.getLong("id"),

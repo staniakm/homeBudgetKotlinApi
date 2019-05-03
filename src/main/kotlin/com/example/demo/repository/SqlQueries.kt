@@ -122,9 +122,10 @@ object SqlQueries {
 
     private fun getShopList(): String {
         return "select s.id, s.sklep nazwa, y.yearSum, isnull(m.monthSummary, 0.00) monthSum from sklepy s " +
-                "join (select id_sklep, sum(suma) yearSum from paragony where year(data)= year(getdate()) group by ID_sklep) as y on y.ID_sklep = s.ID " +
+                "join (select id_sklep, sum(suma) yearSum from paragony where year(data)= ? group by ID_sklep) as y on y.ID_sklep = s.ID " +
                 "left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p " +
-                "where p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate()))) group by ID_sklep) m on m.ID_sklep = s.ID " +
+                "where year(p.data) = ? and month(p.data) = ? " +
+                "group by ID_sklep) m on m.ID_sklep = s.ID  " +
                 "order by s.sklep"
 
     }
@@ -162,7 +163,8 @@ object SqlQueries {
     }
 
     private fun getInvoices(): String {
-        return "select p.ID, DATA, NR_PARAGONU, SUMA, s.sklep FROM dbo.paragony p " +
+        return "select p.ID, DATA, NR_PARAGONU, SUMA, s.sklep, k.nazwa account FROM dbo.paragony p " +
+                "join konto k on k.ID = p.konto " +
                 "join sklepy s on s.ID = p.ID_sklep where year(p.data) = ? and month(p.data) = ? order by data desc"
     }
 
