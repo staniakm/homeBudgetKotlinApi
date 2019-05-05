@@ -9,13 +9,11 @@ import java.time.LocalDate
 class InvoiceService {
 
     @Autowired
-    private lateinit var repository: com.example.demo.repository.Repository
+    private lateinit var invoiceRepository: com.example.demo.repository.InvoiceRepository
 
     fun getInvoiceListForMonth(monthValue: Long): List<ShoppingList> {
-        return repository.getInvoices(LocalDate.now().plusMonths(monthValue))
+        return invoiceRepository.getInvoices(LocalDate.now().plusMonths(monthValue))
     }
 
-    fun getInvoiceDetails(id: Long) = repository.getInvoiceDetails(id)
-
-    fun getMonthChardData(month: Int) = repository.getMonthSummaryChartData(month)
+    fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
 }

@@ -2,7 +2,7 @@ package com.example.demo.service
 
 import com.example.demo.entity.BudgetItem
 import com.example.demo.entity.MonthBudgetDto
-import com.example.demo.repository.Repository
+import com.example.demo.repository.BudgetRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -11,10 +11,10 @@ import java.time.LocalDate
 class BudgetService {
 
     @Autowired
-    lateinit var repository: Repository
+    lateinit var repository: BudgetRepository
 
     fun getMonthBudget(month: Long): BudgetItem {
-        val date = LocalDate.now().plusMonths(month);
+        val date = LocalDate.now().plusMonths(month)
         return repository.getBudgetForMonth(date)
     }
 

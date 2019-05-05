@@ -1,7 +1,7 @@
 package com.example.demo.service
 
 import com.example.demo.entity.Shop
-import com.example.demo.repository.Repository
+import com.example.demo.repository.ShopRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -10,9 +10,9 @@ import java.time.LocalDate
 class ShopService {
 
     @Autowired
-    lateinit var repository: Repository
+    lateinit var repository: ShopRepository
 
-    fun getAllShops(month: Long):List<Shop> {
+    fun getAllShops(month: Long): List<Shop> {
         val date = LocalDate.now().plusMonths(month)
         return repository.getAllShops(date)
     }

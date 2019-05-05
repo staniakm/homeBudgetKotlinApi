@@ -1,6 +1,6 @@
 package com.example.demo.controller
 
-import com.example.demo.service.InvoiceService
+import com.example.demo.service.ChartService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,7 +14,7 @@ import java.time.LocalDate
 class ChartController {
 
     @Autowired
-    lateinit var shoppingListService: InvoiceService
+    lateinit var shoppingListService: ChartService
 
     @GetMapping("/currentMonth")
     fun getCurrentMonthSummary() = shoppingListService.getMonthChardData(LocalDate.now().monthValue)

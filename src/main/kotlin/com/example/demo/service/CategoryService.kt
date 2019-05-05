@@ -1,6 +1,6 @@
 package com.example.demo.service
 
-import com.example.demo.repository.Repository
+import com.example.demo.repository.CategoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -9,9 +9,9 @@ import java.time.LocalDate
 class CategoryService {
 
     @Autowired
-    private lateinit var repository: Repository
+    private lateinit var repository: CategoryRepository
 
-    fun getCategories(month: Long): List<Any>{
+    fun getCategories(month: Long): List<Any> {
         val date = LocalDate.now().plusMonths(month)
         return repository.getCategoryList(date)
     }
