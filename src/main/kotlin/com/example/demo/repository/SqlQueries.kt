@@ -19,7 +19,8 @@ object SqlQueries {
         GET_MONTH_BUDGE_DETAILS,
         UPDATE_MONTH_BUDGE_DETAILS,
         GET_PRODUCT_DETAILS,
-        GET_MONTH_BUDGET_FOR_CATEGORY
+        GET_MONTH_BUDGET_FOR_CATEGORY,
+        GET_ACCOUNT_LIST
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -40,7 +41,16 @@ object SqlQueries {
             UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
             GET_PRODUCT_DETAILS -> getProductDetails()
             GET_MONTH_BUDGET_FOR_CATEGORY -> getMonthBudgetForCategory()
+            GET_ACCOUNT_LIST -> getAccountList();
         }
+    }
+
+    private fun getAccountList(): String {
+        return "select k.id, k.nazwa, isnull(k.kwota,0) kwota, isnull(ex.wydatki,0) wydatki, isnull(i.przychody,0) przychody " +
+                "from konto k " +
+                "left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = ? and month(data) = ? group by konto) ex on ex.konto = k.ID " +
+                "left join (select sum(kwota) przychody, konto from przychody where year(data) = ? and month(data) = ? group by konto) i on i.konto = k.ID " +
+                "where k.del = 0 and id > 1;"
     }
 
     private fun updatePlanedBudget(): String {
