@@ -12,9 +12,9 @@ class AccountService {
     @Autowired
     lateinit var accountRepository: AccountRepository
 
-    fun getAccountList(month: Long): List<Account> {
+    fun getAccountsSummaryForMonth(month: Long): List<Account> {
         val date = LocalDate.now().plusMonths(month)
-        return accountRepository.getAccountList(date)
+        return accountRepository.getAccountsSummaryForMonth(date)
     }
 
 }

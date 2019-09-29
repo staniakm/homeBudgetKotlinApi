@@ -11,9 +11,9 @@ class AccountRepository{
     @Value("\${sql.server.url}")
     private val connectionUrl: String? = null
 
-    fun getAccountList(date: LocalDate): List<Account> {
+    fun getAccountsSummaryForMonth(date: LocalDate): List<Account> {
         val accounts = ArrayList<Account>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_LIST)
+        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNTS_SUMMARY_FOR_MONTH)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setInt(1, date.year)

@@ -22,7 +22,4 @@ class InvoiceController {
     @GetMapping("/{id}")
     fun getInvoiceDetails(@PathVariable("id") invoiceId: Long) =
             ResponseEntity(shoppingListService.getInvoiceDetails(invoiceId), HttpStatus.OK)
-
-    @GetMapping("/info")
-    fun getInfo() = "Info endpoint"
 }

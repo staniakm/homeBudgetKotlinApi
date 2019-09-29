@@ -14,10 +14,10 @@ class ShopController {
     lateinit var shopService: ShopService
 
     @GetMapping
-    fun getShops(@RequestParam("month") month: Long): List<Shop> = shopService.getAllShops(month)
+    fun getShopsForMonth(@RequestParam("month") month: Long): List<Shop> = shopService.getAllShopsForMonth(month)
 
     @GetMapping("/{id}")
-    fun getShop(@PathVariable("id") shopId: Long) = shopService.getShopItems(shopId)
+    fun getShopItems(@PathVariable("id") shopId: Long) = shopService.getShopItems(shopId)
 
     @GetMapping("/{id}/month")
     fun getShopMonthDetails(@PathVariable ("id") shopId: Long) = shopService.getMonthShopDetails(shopId)

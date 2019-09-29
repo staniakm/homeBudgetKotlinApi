@@ -12,7 +12,7 @@ class ShopService {
     @Autowired
     lateinit var repository: ShopRepository
 
-    fun getAllShops(month: Long): List<Shop> {
+    fun getAllShopsForMonth(month: Long): List<Shop> {
         val date = LocalDate.now().plusMonths(month)
         return repository.getAllShops(date)
     }

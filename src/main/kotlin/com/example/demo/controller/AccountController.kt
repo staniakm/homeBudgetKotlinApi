@@ -4,7 +4,6 @@ import com.example.demo.entity.Account
 import com.example.demo.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 
 @CrossOrigin
 @RequestMapping("/api/account")
@@ -15,7 +14,7 @@ class AccountController {
     lateinit var accountService: AccountService
 
     @GetMapping
-    fun getAccountsList(@RequestParam("month") month: Long): List<Account> {
-        return accountService.getAccountList(month)
+    fun getAccountsSummaryForMonth(@RequestParam("month") month: Long): List<Account> {
+        return accountService.getAccountsSummaryForMonth(month)
     }
 }

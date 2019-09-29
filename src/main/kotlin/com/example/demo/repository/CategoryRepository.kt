@@ -2,6 +2,8 @@ package com.example.demo.repository
 
 import com.example.demo.entity.Category
 import com.example.demo.entity.CategoryDetails
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_CATEGORY_DETAILS
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_CATEGORY_SUMMARY_LIST
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import java.sql.DriverManager
@@ -12,9 +14,9 @@ class CategoryRepository {
     @Value("\${sql.server.url}")
     private val connectionUrl: String? = null
 
-    fun getCategoryList(date: LocalDate): List<Category> {
+    fun getCategoriesSummary(date: LocalDate): List<Category> {
         val items = ArrayList<Category>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_CATEGORY_LIST)
+        val sql = SqlQueries.getQuery(GET_CATEGORY_SUMMARY_LIST)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setInt(1, date.year)
@@ -39,7 +41,7 @@ class CategoryRepository {
     fun getCategoryDetails(id: Long): Category? {
         val category = getCategory(id)
         val items = ArrayList<CategoryDetails>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_CATEGORY_DETAILS)
+        val sql = SqlQueries.getQuery(GET_CATEGORY_DETAILS)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setLong(1, id)

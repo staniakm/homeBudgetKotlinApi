@@ -17,5 +17,4 @@ class ItemController {
     @GetMapping("/{id}")
     fun getItemDetails(@PathVariable("id") id: Long) =
             ResponseEntity(itemService.getItemDetails(id), HttpStatus.OK)
-
 }

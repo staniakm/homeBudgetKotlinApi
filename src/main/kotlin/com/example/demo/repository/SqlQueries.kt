@@ -7,7 +7,7 @@ object SqlQueries {
     enum class QUERY_TYPE {
         GET_INVOICE,
         GET_INVOICE_DETAILS,
-        GET_CATEGORY_LIST,
+        GET_CATEGORY_SUMMARY_LIST,
         GET_CATEGORY_DETAILS,
         GET_CATEGORY_BY_ID,
         GET_SHOP_LIST,
@@ -20,7 +20,7 @@ object SqlQueries {
         UPDATE_MONTH_BUDGE_DETAILS,
         GET_PRODUCT_DETAILS,
         GET_MONTH_BUDGET_FOR_CATEGORY,
-        GET_ACCOUNT_LIST
+        GET_ACCOUNTS_SUMMARY_FOR_MONTH
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -28,7 +28,7 @@ object SqlQueries {
 
             GET_INVOICE -> getInvoices()
             GET_INVOICE_DETAILS -> getInvoiceDetails()
-            GET_CATEGORY_LIST -> getCategoryList()
+            GET_CATEGORY_SUMMARY_LIST -> getCategoryList()
             GET_CATEGORY_DETAILS -> getCategoryDetails()
             GET_SHOP_LIST -> getShopList()
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
@@ -41,11 +41,11 @@ object SqlQueries {
             UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
             GET_PRODUCT_DETAILS -> getProductDetails()
             GET_MONTH_BUDGET_FOR_CATEGORY -> getMonthBudgetForCategory()
-            GET_ACCOUNT_LIST -> getAccountList();
+            GET_ACCOUNTS_SUMMARY_FOR_MONTH -> getAccountsSummaryForMonth();
         }
     }
 
-    private fun getAccountList(): String {
+    private fun getAccountsSummaryForMonth(): String {
         return "select k.id, k.nazwa, isnull(k.kwota,0) kwota, isnull(ex.wydatki,0) wydatki, isnull(i.przychody,0) przychody " +
                 "from konto k " +
                 "left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = ? and month(data) = ? group by konto) ex on ex.konto = k.ID " +
