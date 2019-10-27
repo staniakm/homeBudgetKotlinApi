@@ -12,7 +12,10 @@ class InvoiceService {
     private lateinit var invoiceRepository: com.example.demo.repository.InvoiceRepository
 
     fun getInvoiceListForMonth(monthValue: Long): List<ShoppingList> {
-        return invoiceRepository.getInvoices(LocalDate.now().plusMonths(monthValue))
+        return LocalDate.now().plusMonths(monthValue)
+                .let {
+                    invoiceRepository.getInvoices(it)
+                }
     }
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)

@@ -13,8 +13,10 @@ class CategoryService {
     private lateinit var repository: CategoryRepository
 
     fun getCategoriesSummary(month: Long): List<Category> {
-        val date = LocalDate.now().plusMonths(month)
-        return repository.getCategoriesSummary(date)
+        return LocalDate.now().plusMonths(month)
+                .let {
+                    repository.getCategoriesSummary(it)
+                }
     }
 
     fun getCategoryDetails(id: Long) = repository.getCategoryDetails(id)

@@ -22,7 +22,6 @@ class BudgetController {
 
     @PutMapping(produces = ["application/json"])
     fun updateBudgetForMonth(@RequestParam("month") month: Long, @RequestBody monthBudget: MonthBudgetDto): ResponseEntity<BudgetItem> {
-        budgetService.updateBudget(month, monthBudget)
-        return ResponseEntity(budgetService.getMonthBudgetForCategory(month, monthBudget.category), HttpStatus.OK)
+        return ResponseEntity(budgetService.updateBudget(month, monthBudget), HttpStatus.OK)
     }
 }

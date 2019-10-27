@@ -3,6 +3,7 @@ package com.example.demo.repository
 import com.example.demo.entity.BudgetItem
 import com.example.demo.entity.MonthBudget
 import com.example.demo.entity.MonthBudgetDto
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
@@ -79,33 +80,30 @@ class BudgetRepository {
     }
 
     fun updateBudget(date: LocalDate, monthBudget: MonthBudgetDto) {
-        val cat: String = monthBudget.category
-        val planned: BigDecimal = monthBudget.planned
-        val year: Int = date.year
-        val month: Int = date.monthValue
 
-
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.UPDATE_MONTH_BUDGE_DETAILS)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setString(2, cat)
-                statement.setBigDecimal(1, planned)
-                statement.setInt(3, year)
-                statement.setInt(4, month)
-                statement.executeUpdate()
-            }
-        }
-        recalculateBudget(date)
+        val sql = SqlQueries.getQuery(UPDATE_MONTH_BUDGE_DETAILS)
+        DriverManager.getConnection(connectionUrl)
+                .use { con ->
+                    con.prepareStatement(sql)
+                            .use { statement ->
+                                statement.setBigDecimal(1, monthBudget.planned)
+                                statement.setString(2, monthBudget.category)
+                                statement.setInt(3, date.year)
+                                statement.setInt(4, date.monthValue)
+                                statement.executeUpdate()
+                            }
+                }
     }
 
     @Suppress("SqlResolve", "SqlNoDataSourceInspection") //procedure call warnings
     fun recalculateBudget(date: LocalDate) {
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareCall("{call dbo.RecalculateBudget (?)}")
-                    .use { stmt ->
-                        stmt.setDate(1, java.sql.Date.valueOf(date))
-                        stmt.execute()
-                    }
-        }
+        DriverManager.getConnection(connectionUrl)
+                .use { con ->
+                    con.prepareCall("{call dbo.RecalculateBudget (?)}")
+                            .use { stmt ->
+                                stmt.setDate(1, java.sql.Date.valueOf(date))
+                                stmt.execute()
+                            }
+                }
     }
 }

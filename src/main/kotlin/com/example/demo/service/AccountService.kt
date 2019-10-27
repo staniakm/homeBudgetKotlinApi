@@ -13,8 +13,10 @@ class AccountService {
     lateinit var accountRepository: AccountRepository
 
     fun getAccountsSummaryForMonth(month: Long): List<Account> {
-        val date = LocalDate.now().plusMonths(month)
-        return accountRepository.getAccountsSummaryForMonth(date)
+        return LocalDate.now().plusMonths(month)
+                .let {
+                    accountRepository.getAccountsSummaryForMonth(it)
+                }
     }
 
 }

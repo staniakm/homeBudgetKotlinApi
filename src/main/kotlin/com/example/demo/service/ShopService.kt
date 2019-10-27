@@ -13,8 +13,9 @@ class ShopService {
     lateinit var repository: ShopRepository
 
     fun getAllShopsForMonth(month: Long): List<Shop> {
-        val date = LocalDate.now().plusMonths(month)
-        return repository.getAllShops(date)
+        return LocalDate.now().plusMonths(month).let {
+            repository.getAllShops(it)
+        }
     }
 
     fun getMonthShopDetails(id: Long) = repository.getShopMonthItems(id)
