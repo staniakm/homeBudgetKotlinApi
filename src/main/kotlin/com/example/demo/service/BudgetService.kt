@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class BudgetService {
-
-    @Autowired
-    lateinit var repository: BudgetRepository
+class BudgetService(private val repository: BudgetRepository) {
 
     fun getMonthBudget(month: Long): BudgetItem {
         return LocalDate.now().plusMonths(month)

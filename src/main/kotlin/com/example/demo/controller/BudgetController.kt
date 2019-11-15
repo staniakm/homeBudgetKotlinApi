@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @CrossOrigin
 @RequestMapping("/api/budget")
-class BudgetController {
-
-    @Autowired
-    lateinit var budgetService: BudgetService
+class BudgetController(private val budgetService: BudgetService) {
 
     @GetMapping
-    fun getBudgetForMonth(@RequestParam("month") month: Long) =
+    fun getBudgetForMonth(@RequestParam("month") month: Long) : ResponseEntity<BudgetItem> =
             ResponseEntity(budgetService.getMonthBudget(month), HttpStatus.OK)
 
     @PutMapping(produces = ["application/json"])

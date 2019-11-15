@@ -167,7 +167,7 @@ object SqlQueries {
         return "select sum(cena) cena,  a.NAZWA from paragony_szczegoly ps " +
                 "join paragony p on p.ID = ps.id_paragonu " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO " +
-                "where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE())))) " +
+                "where month(p.data) = ? and year(p.data) = ? " +
                 "and ps.kategoria = ? " +
                 "group by a.NAZWA"
     }

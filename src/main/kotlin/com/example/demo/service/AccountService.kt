@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class AccountService {
-
-    @Autowired
-    lateinit var accountRepository: AccountRepository
+class AccountService(private val accountRepository: AccountRepository) {
 
     fun getAccountsSummaryForMonth(month: Long): List<Account> {
         return LocalDate.now().plusMonths(month)

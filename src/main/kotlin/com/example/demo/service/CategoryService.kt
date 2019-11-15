@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class CategoryService {
-
-    @Autowired
-    private lateinit var repository: CategoryRepository
+class CategoryService(private val repository: CategoryRepository) {
 
     fun getCategoriesSummary(month: Long): List<Category> {
         return LocalDate.now().plusMonths(month)
@@ -19,5 +16,10 @@ class CategoryService {
                 }
     }
 
-    fun getCategoryDetails(id: Long) = repository.getCategoryDetails(id)
+    fun getCategoryDetails(id: Long, month:Long):Category? {
+        return LocalDate.now().plusMonths(month)
+                .let {
+                    repository.getCategoryDetails(id, it)
+                }
+    }
 }

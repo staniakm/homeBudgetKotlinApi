@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class ShopService {
-
-    @Autowired
-    lateinit var repository: ShopRepository
+class ShopService(private val repository: ShopRepository) {
 
     fun getAllShopsForMonth(month: Long): List<Shop> {
         return LocalDate.now().plusMonths(month).let {

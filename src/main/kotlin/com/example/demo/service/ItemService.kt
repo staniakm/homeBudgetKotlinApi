@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class ItemService {
-
-    @Autowired
-    lateinit var repository: ProductRepository
+class ItemService(private val repository: ProductRepository) {
 
     fun getItemDetails(itemId: Long) = repository.getProductDetails(itemId)
 
