@@ -2,11 +2,9 @@ package com.example.demo.controller
 
 import com.example.demo.entity.Category
 import com.example.demo.service.CategoryService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.Objects.isNull
 
 @RestController
 @CrossOrigin
@@ -14,7 +12,9 @@ import java.util.Objects.isNull
 class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping
-    fun getCategoriesSummary(@RequestParam("month") month: Long): ResponseEntity<List<Category>> = ResponseEntity(categoryService.getCategoriesSummary(month), HttpStatus.OK)
+    fun getCategoriesSummary(@RequestParam("month") month: Long): ResponseEntity<List<Category>> {
+        return ResponseEntity(categoryService.getCategoriesSummary(month), HttpStatus.OK)
+    }
 
 
     @GetMapping("/{id}")

@@ -18,7 +18,7 @@ class AccountController(private val accountService: AccountService) {
     }
 
     @GetMapping("/all")
-    fun getAllAccounts(): List<Account> {
-        return accountService.findAll();
+    fun getAllAccounts(): ResponseEntity<List<Account>> {
+        return ResponseEntity.ok(accountService.findAll())
     }
 }
