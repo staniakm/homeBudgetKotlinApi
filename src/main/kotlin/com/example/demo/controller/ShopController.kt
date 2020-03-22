@@ -3,6 +3,7 @@ package com.example.demo.controller
 import com.example.demo.entity.Shop
 import com.example.demo.entity.ShopItem
 import com.example.demo.entity.ShopItemsSummary
+import com.example.demo.entity.ShopSummary
 import com.example.demo.service.ShopService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 class ShopController(private val shopService: ShopService) {
 
     @GetMapping
-    fun getShopsForMonth(@RequestParam("month") month: Long): ResponseEntity<List<Shop>>
+    fun getShopsForMonth(@RequestParam("month") month: Long): ResponseEntity<List<ShopSummary>>
             = ResponseEntity(shopService.getAllShopsForMonth(month), HttpStatus.OK)
 
     @GetMapping("/{id}")
@@ -29,4 +30,6 @@ class ShopController(private val shopService: ShopService) {
     @GetMapping("/{id}/year")
     fun getShopYearDetails(@PathVariable("id") shopId: Long):ResponseEntity<List<ShopItemsSummary>>
             = ResponseEntity(shopService.getYearShopDetails(shopId), HttpStatus.OK)
+    @GetMapping("/all")
+    fun getAllShops() = shopService.findAll()
 }

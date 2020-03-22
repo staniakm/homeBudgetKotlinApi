@@ -1,8 +1,10 @@
 package com.example.demo.repository
 
 import com.example.demo.entity.Shop
+import com.example.demo.entity.ShopSummary
 import com.example.demo.entity.ShopItem
 import com.example.demo.entity.ShopItemsSummary
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_SHOP_LIST
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import java.sql.DriverManager
@@ -14,9 +16,9 @@ class ShopRepository {
     @Value("\${sql.server.url}")
     private val connectionUrl: String? = null
 
-    fun getAllShops(date: LocalDate): List<Shop> {
-        val items = ArrayList<Shop>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_SHOP_LIST)
+    fun getAllShopsSummary(date: LocalDate): List<ShopSummary> {
+        val items = ArrayList<ShopSummary>()
+        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_SHOP_LIST_SUMMARY)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
                 statement.setInt(1, date.year)
@@ -24,7 +26,7 @@ class ShopRepository {
                 statement.setInt(3, date.monthValue)
                 statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
-                        items.add(Shop(
+                        items.add(ShopSummary(
                                 resultSet.getLong("id"),
                                 resultSet.getString("nazwa"),
                                 resultSet.getBigDecimal("monthSum"),
@@ -81,6 +83,25 @@ class ShopRepository {
             }
         }
         return items
+    }
+
+    fun getAllShops(): List<Shop> {
+        val shopList = arrayListOf<Shop>()
+        DriverManager.getConnection(connectionUrl).use { con ->
+            con.prepareStatement(SqlQueries.getQuery(GET_SHOP_LIST)).use { ps ->
+                ps.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        shopList.add(
+                                Shop(
+                                        rs.getLong("id"),
+                                        rs.getString("name")
+                                )
+                        )
+                    }
+                }
+            }
+        }
+        return shopList
     }
 
     private fun mapToShoppingItem(items: ArrayList<ShopItemsSummary>, rs: ResultSet) {

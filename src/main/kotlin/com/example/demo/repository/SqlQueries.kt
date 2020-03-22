@@ -10,7 +10,7 @@ object SqlQueries {
         GET_CATEGORY_SUMMARY_LIST,
         GET_CATEGORY_DETAILS,
         GET_CATEGORY_BY_ID,
-        GET_SHOP_LIST,
+        GET_SHOP_LIST_SUMMARY,
         GET_SHOP_MONTH_ITEMS,
         GET_SHOP_YEAR_ITEMS,
         GET_MONTH_SUMMARY_CHART_DATA,
@@ -20,7 +20,9 @@ object SqlQueries {
         UPDATE_MONTH_BUDGE_DETAILS,
         GET_PRODUCT_DETAILS,
         GET_MONTH_BUDGET_FOR_CATEGORY,
-        GET_ACCOUNTS_SUMMARY_FOR_MONTH
+        GET_ACCOUNTS_SUMMARY_FOR_MONTH,
+        GET_SHOP_LIST,
+        GET_ACCOUNT_DATA
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -30,7 +32,7 @@ object SqlQueries {
             GET_INVOICE_DETAILS -> getInvoiceDetails()
             GET_CATEGORY_SUMMARY_LIST -> getCategoryList()
             GET_CATEGORY_DETAILS -> getCategoryDetails()
-            GET_SHOP_LIST -> getShopList()
+            GET_SHOP_LIST_SUMMARY -> getShopListSummary()
             GET_SHOP_MONTH_ITEMS -> getShopMonthShoppings()
             GET_SHOP_YEAR_ITEMS -> getShopYearShoppings()
             GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
@@ -41,8 +43,18 @@ object SqlQueries {
             UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
             GET_PRODUCT_DETAILS -> getProductDetails()
             GET_MONTH_BUDGET_FOR_CATEGORY -> getMonthBudgetForCategory()
-            GET_ACCOUNTS_SUMMARY_FOR_MONTH -> getAccountsSummaryForMonth();
+            GET_ACCOUNTS_SUMMARY_FOR_MONTH -> getAccountsSummaryForMonth()
+            GET_SHOP_LIST -> getShopList()
+            GET_ACCOUNT_DATA -> getAccountData()
         }
+    }
+
+    private fun getAccountData(): String {
+        return "select id, nazwa name, kwota amount, wlasciciel owner from konto where del = 0;"
+    }
+
+    private fun getShopList(): String {
+        return "select id, sklep as name from sklepy order by sklep;"
     }
 
     private fun getAccountsSummaryForMonth(): String {
@@ -130,7 +142,7 @@ object SqlQueries {
                 "group by a.id, a.NAZWA"
     }
 
-    private fun getShopList(): String {
+    private fun getShopListSummary(): String {
         return "select s.id, s.sklep nazwa, y.yearSum, isnull(m.monthSummary, 0.00) monthSum from sklepy s " +
                 "join (select id_sklep, sum(suma) yearSum from paragony where year(data)= ? group by ID_sklep) as y on y.ID_sklep = s.ID " +
                 "left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p " +
@@ -167,7 +179,7 @@ object SqlQueries {
         return "select sum(cena) cena,  a.NAZWA from paragony_szczegoly ps " +
                 "join paragony p on p.ID = ps.id_paragonu " +
                 "join ASORTYMENT a on a.id = ps.ID_ASO " +
-                "where month(p.data) = ? and year(p.data) = ? " +
+                "where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(GETDATE())))) " +
                 "and ps.kategoria = ? " +
                 "group by a.NAZWA"
     }

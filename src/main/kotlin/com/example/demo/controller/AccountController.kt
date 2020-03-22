@@ -1,8 +1,8 @@
 package com.example.demo.controller
 
 import com.example.demo.entity.Account
+import com.example.demo.entity.MonthAccountSummary
 import com.example.demo.service.AccountService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.*
 class AccountController(private val accountService: AccountService) {
 
     @GetMapping
-    fun getAccountsSummaryForMonth(@RequestParam("month") month: Long): ResponseEntity<List<Account>> {
+    fun getAccountsSummaryForMonth(@RequestParam("month") month: Long): ResponseEntity<List<MonthAccountSummary>> {
         return ResponseEntity(accountService.getAccountsSummaryForMonth(month), HttpStatus.OK)
+    }
+
+    @GetMapping("/all")
+    fun getAllAccounts(): List<Account> {
+        return accountService.findAll();
     }
 }
