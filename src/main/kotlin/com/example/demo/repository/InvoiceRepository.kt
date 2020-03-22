@@ -19,7 +19,6 @@ class InvoiceRepository {
 
     fun getInvoices(date: LocalDate): List<ShoppingList> {
         val list = ArrayList<ShoppingList>()
-//        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         val sql = getQuery(GET_INVOICE)
         DriverManager.getConnection(connectionUrl).use { con ->
             con.prepareStatement(sql).use { statement ->
