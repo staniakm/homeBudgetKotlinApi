@@ -2,89 +2,46 @@ package com.example.demo.repository
 
 import com.example.demo.entity.Category
 import com.example.demo.entity.CategoryDetails
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_CATEGORY_DETAILS
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_CATEGORY_SUMMARY_LIST
-import org.springframework.beans.factory.annotation.Value
+import com.example.demo.entity.CategoryDetailsRowMapper
+import com.example.demo.entity.CategoryRowMapper
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
+import com.example.demo.repository.SqlQueries.getQuery
+import org.jdbi.v3.core.Jdbi
 import org.springframework.stereotype.Repository
-import java.math.BigDecimal
-import java.sql.DriverManager
+import java.sql.SQLException
 import java.time.LocalDate
 
 @Repository
-class CategoryRepository {
-    @Value("\${sql.server.url}")
-    private val connectionUrl: String? = null
+class CategoryRepository(private val jdbi: Jdbi) {
 
     fun getCategoriesSummary(date: LocalDate): List<Category> {
-        val items = ArrayList<Category>()
-        val sql = SqlQueries.getQuery(GET_CATEGORY_SUMMARY_LIST)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setInt(1, date.year)
-                statement.setInt(2, date.year)
-                statement.setInt(3, date.monthValue)
-                statement.executeQuery().use { resultSet ->
-                    while (resultSet.next()) {
-                        items.add(Category(
-                                resultSet.getLong("id"),
-                                resultSet.getString("nazwa"),
-                                resultSet.getBigDecimal("monthSummary"),
-                                resultSet.getBigDecimal("yearSummary"),
-                                emptyList()
-                        ))
-                    }
-                }
-            }
+        return jdbi.withHandle<List<Category>, SQLException> { handle ->
+            handle.createQuery(getQuery(GET_CATEGORY_SUMMARY_LIST))
+                    .bind(0, date.year)
+                    .bind(1, date.year)
+                    .bind(2, date.monthValue)
+                    .map(CategoryRowMapper())
+                    .list()
         }
-        return items
     }
 
     fun getCategoryDetails(id: Long, date: LocalDate): Category? {
-        val category = getCategory(id)
-        val items = ArrayList<CategoryDetails>()
-        val sql = SqlQueries.getQuery(GET_CATEGORY_DETAILS)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql)
-                    .use { statement ->
-                        statement.setInt(1, date.monthValue)
-                        statement.setInt(2, date.year)
-                        statement.setLong(3, id)
-                        statement.executeQuery().use { resultSet ->
-                            while (resultSet.next()) {
-                                items.add(CategoryDetails(
-                                        resultSet.getString("nazwa"),
-                                        resultSet.getBigDecimal("cena")
-                                ))
-                            }
-                        }
-                    }
+        return getCategoryById(id).apply {
+            this?.details = jdbi.withHandle<List<CategoryDetails>, SQLException> { handle ->
+                handle.createQuery(getQuery(GET_CATEGORY_DETAILS))
+                        .bind(0, id)
+                        .map(CategoryDetailsRowMapper())
+                        .list()
+            }
         }
-        category?.details = items
-        category?.monthSummary = items.map { it.price }.fold( BigDecimal.ZERO, BigDecimal::add )
-        return category
     }
 
-    private fun getCategory(id: Long): Category? {
-        var cat: Category? = null
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_CATEGORY_BY_ID)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql)
-                    .use { statement ->
-                        statement.setLong(1, id)
-                        statement.executeQuery()
-                                .use { resultSet ->
-                                    while (resultSet.next()) {
-                                        cat = Category(
-                                                resultSet.getLong("id"),
-                                                resultSet.getString("nazwa"),
-                                                resultSet.getBigDecimal("monthSummary"),
-                                                resultSet.getBigDecimal("yearSummary"),
-                                                emptyList()
-                                        )
-                                    }
-                                }
-                    }
+    private fun getCategoryById(id: Long): Category? {
+        return jdbi.withHandle<Category, SQLException> { handle ->
+            handle.createQuery(getQuery(GET_CATEGORY_BY_ID))
+                    .bind(0, id)
+                    .map(CategoryRowMapper())
+                    .one()
         }
-        return cat
     }
 }

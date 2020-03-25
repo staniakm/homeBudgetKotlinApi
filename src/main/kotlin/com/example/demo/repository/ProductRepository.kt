@@ -1,37 +1,23 @@
 package com.example.demo.repository
 
 import com.example.demo.entity.ProductDetails
-import org.springframework.beans.factory.annotation.Value
+import com.example.demo.entity.ProductDetailsRowMapper
+import com.example.demo.repository.SqlQueries.QUERY_TYPE.GET_PRODUCT_DETAILS
+import com.example.demo.repository.SqlQueries.getQuery
+import org.jdbi.v3.core.Jdbi
 import org.springframework.stereotype.Repository
-import java.sql.DriverManager
+import java.sql.SQLException
 
 @Repository
-class ProductRepository {
-    @Value("\${sql.server.url}")
-    private val connectionUrl: String? = null
+class ProductRepository(private val jdbi: Jdbi) {
 
     fun getProductDetails(productId: Long): List<ProductDetails> {
-        val list = ArrayList<ProductDetails>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_PRODUCT_DETAILS)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setLong(1, productId)
-                statement.executeQuery().use { resultSet ->
-                    while (resultSet.next()) {
-                        list.add(ProductDetails(
-                                resultSet.getString("sklep"),
-                                resultSet.getDate("data"),
-                                resultSet.getBigDecimal("cena"),
-                                resultSet.getDouble("ilosc"),
-                                resultSet.getBigDecimal("rabat"),
-                                resultSet.getBigDecimal("suma"),
-                                resultSet.getLong("invoiceId"),
-                                resultSet.getLong("invoiceItemId")
-                        ))
-                    }
-                }
-            }
+
+        return jdbi.withHandle<List<ProductDetails>, SQLException> { handle ->
+            handle.createQuery(getQuery(GET_PRODUCT_DETAILS))
+                    .bind(0, productId)
+                    .map(ProductDetailsRowMapper())
+                    .list()
         }
-        return list
     }
 }

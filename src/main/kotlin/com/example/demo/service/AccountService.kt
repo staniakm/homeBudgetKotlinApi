@@ -20,4 +20,11 @@ class AccountService(private val accountRepository: AccountRepository) {
         return accountRepository.findAllAccounts();
     }
 
+    fun getAccountDetails(accountId: Long) {
+        //account basic data
+
+        //account details data
+        //invoices for current month
+    }
+
 }

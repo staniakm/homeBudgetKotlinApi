@@ -21,4 +21,10 @@ class AccountController(private val accountService: AccountService) {
     fun getAllAccounts(): ResponseEntity<List<Account>> {
         return ResponseEntity.ok(accountService.findAll())
     }
+
+    @GetMapping("/{id}")
+    fun getAccountDetails(@PathVariable id: Long): ResponseEntity<Any> {
+        accountService.getAccountDetails(id)
+        return ResponseEntity.ok().build()
+    }
 }
