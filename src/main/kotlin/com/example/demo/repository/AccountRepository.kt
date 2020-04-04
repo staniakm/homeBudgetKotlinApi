@@ -1,59 +1,34 @@
 package com.example.demo.repository
 
 import com.example.demo.entity.Account
+import com.example.demo.entity.AccountRowMapper
+import com.example.demo.entity.MonthAccountRowMapper
 import com.example.demo.entity.MonthAccountSummary
+import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
-import java.sql.DriverManager
+import java.sql.SQLException
 import java.time.LocalDate
 
 @Repository
-class AccountRepository {
-    @Value("\${sql.server.url}")
-    private val connectionUrl: String? = null
-
+class AccountRepository(private val jdbi: Jdbi) {
     fun getAccountsSummaryForMonth(date: LocalDate): List<MonthAccountSummary> {
-        val accounts = ArrayList<MonthAccountSummary>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNTS_SUMMARY_FOR_MONTH)
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).use { statement ->
-                statement.setInt(1, date.year)
-                statement.setInt(2, date.monthValue)
-                statement.setInt(3, date.year)
-                statement.setInt(4, date.monthValue)
-                statement.executeQuery().use { resultSet ->
-                    while (resultSet.next()) {
-                        accounts.add(MonthAccountSummary(
-                                resultSet.getLong("id"),
-                                resultSet.getString("nazwa"),
-                                resultSet.getBigDecimal("kwota"),
-                                resultSet.getBigDecimal("wydatki"),
-                                resultSet.getBigDecimal("przychody")
-                        ))
-                    }
-                }
-            }
+        return jdbi.withHandle<List<MonthAccountSummary>, SQLException> { handle ->
+            handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNTS_SUMMARY_FOR_MONTH))
+                    .bind(0, date.year)
+                    .bind(1, date.monthValue)
+                    .bind(2, date.year)
+                    .bind(3, date.monthValue)
+                    .map(MonthAccountRowMapper())
+                    .list()
         }
-        return accounts
     }
 
     fun findAllAccounts(): List<Account> {
-        val accounts = arrayListOf<Account>()
-        val sql = SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_DATA)
-
-        DriverManager.getConnection(connectionUrl).use { con ->
-            con.prepareStatement(sql).executeQuery().use { rs ->
-                while (rs.next()) {
-                    accounts.add(
-                            Account(rs.getLong("id"),
-                                    rs.getString("name"),
-                                    rs.getBigDecimal("amount"),
-                                    rs.getString("owner")
-                            )
-                    )
-                }
-            }
+        return jdbi.withHandle<List<Account>, SQLException> { handle ->
+            handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_DATA))
+                    .map(AccountRowMapper())
+                    .list()
         }
-        return accounts
     }
 }

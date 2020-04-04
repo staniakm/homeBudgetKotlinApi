@@ -50,7 +50,7 @@ object SqlQueries {
     }
 
     private fun getAccountData(): String {
-        return "select id, nazwa name, kwota amount, wlasciciel owner from konto where del = 0;"
+        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0;"
     }
 
     private fun getShopList(): String {
