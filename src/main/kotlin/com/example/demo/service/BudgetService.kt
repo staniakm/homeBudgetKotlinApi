@@ -10,7 +10,7 @@ import java.time.LocalDate
 @Service
 class BudgetService(private val repository: BudgetRepository) {
 
-    fun getMonthBudget(month: Long): BudgetItem {
+    fun getMonthBudget(month: Long): BudgetItem? {
         return LocalDate.now().plusMonths(month)
                 .let {
                     repository.getBudgetForMonth(it)

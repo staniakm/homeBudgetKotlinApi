@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 class AccountController(private val accountService: AccountService) {
 
     @GetMapping
-    fun getAccountsSummaryForMonth(@RequestParam("month") month: Long): ResponseEntity<List<MonthAccountSummary>> {
+    fun getAccountsSummaryForMonth(@RequestParam("month", required = false, defaultValue = "0") month: Long): ResponseEntity<List<MonthAccountSummary>> {
         return ResponseEntity(accountService.getAccountsSummaryForMonth(month), HttpStatus.OK)
     }
 

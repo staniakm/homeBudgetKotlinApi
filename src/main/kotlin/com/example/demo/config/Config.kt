@@ -12,12 +12,17 @@ import javax.sql.DataSource
 
 @Configuration
 class Config {
+
+    @Value("\${sql.server.url}")
+    private lateinit var sqlUrl: String
+
     @Bean
     fun dataSource(): DataSource {
-        val dataSource = DriverManagerDataSource()
-        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver ")
-        dataSource.url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=finanse;user=apiUser;password=apiUserPass;integratedSecurity=false"
-        return dataSource
+        return DriverManagerDataSource()
+            .apply {
+                setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                url = sqlUrl
+            }
     }
 
     @Bean

@@ -17,31 +17,34 @@ class CategoryRepository(private val jdbi: Jdbi) {
     fun getCategoriesSummary(date: LocalDate): List<Category> {
         return jdbi.withHandle<List<Category>, SQLException> { handle ->
             handle.createQuery(getQuery(GET_CATEGORY_SUMMARY_LIST))
-                    .bind(0, date.year)
-                    .bind(1, date.year)
-                    .bind(2, date.monthValue)
-                    .map(CategoryRowMapper())
-                    .list()
+                .bind(0, date.year)
+                .bind(1, date.year)
+                .bind(2, date.monthValue)
+                .map(CategoryRowMapper())
+                .list()
         }
     }
 
     fun getCategoryDetails(id: Long, date: LocalDate): Category? {
-        return getCategoryById(id).apply {
+        return getCategoryById(id, date).apply {
             this?.details = jdbi.withHandle<List<CategoryDetails>, SQLException> { handle ->
                 handle.createQuery(getQuery(GET_CATEGORY_DETAILS))
-                        .bind(0, id)
-                        .map(CategoryDetailsRowMapper())
-                        .list()
+                    .bind(1, id)
+                    .bind(0, date)
+                    .map(CategoryDetailsRowMapper())
+                    .list()
             }
         }
     }
 
-    private fun getCategoryById(id: Long): Category? {
+    private fun getCategoryById(id: Long, date:LocalDate): Category? {
         return jdbi.withHandle<Category, SQLException> { handle ->
             handle.createQuery(getQuery(GET_CATEGORY_BY_ID))
-                    .bind(0, id)
-                    .map(CategoryRowMapper())
-                    .one()
+                .bind(0, date)
+                .bind(1, date)
+                .bind(2, id)
+                .map(CategoryRowMapper())
+                .one()
         }
     }
 }
