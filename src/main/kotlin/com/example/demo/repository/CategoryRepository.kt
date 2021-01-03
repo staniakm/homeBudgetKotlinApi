@@ -29,8 +29,9 @@ class CategoryRepository(private val jdbi: Jdbi) {
         return getCategoryById(id, date).apply {
             this?.details = jdbi.withHandle<List<CategoryDetails>, SQLException> { handle ->
                 handle.createQuery(getQuery(GET_CATEGORY_DETAILS))
-                    .bind(1, id)
                     .bind(0, date)
+                    .bind(1, date)
+                    .bind(2, id)
                     .map(CategoryDetailsRowMapper())
                     .list()
             }
@@ -42,7 +43,8 @@ class CategoryRepository(private val jdbi: Jdbi) {
             handle.createQuery(getQuery(GET_CATEGORY_BY_ID))
                 .bind(0, date)
                 .bind(1, date)
-                .bind(2, id)
+                .bind(2, date)
+                .bind(3, id)
                 .map(CategoryRowMapper())
                 .one()
         }

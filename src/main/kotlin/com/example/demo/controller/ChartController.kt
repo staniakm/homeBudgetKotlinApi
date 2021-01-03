@@ -2,7 +2,6 @@ package com.example.demo.controller
 
 import com.example.demo.entity.ChartData
 import com.example.demo.service.ChartService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -18,13 +17,13 @@ class ChartController(private val shoppingListService: ChartService) {
 
     @GetMapping("/currentMonth")
     fun getCurrentMonthSummary(): ResponseEntity<List<ChartData>> {
-        val monthValue = LocalDate.now().monthValue;
+        val monthValue = LocalDate.now();
         return ResponseEntity(shoppingListService.getMonthChardData(monthValue), HttpStatus.OK)
     }
 
     @GetMapping("/previousMonth")
     fun getPreviousMonthSummary(): ResponseEntity<List<ChartData>> {
-        val monthValue = LocalDate.now().minusMonths(1).monthValue
+        val monthValue = LocalDate.now().minusMonths(1)
         return ResponseEntity(shoppingListService.getMonthChardData(monthValue), HttpStatus.OK)
     }
 }

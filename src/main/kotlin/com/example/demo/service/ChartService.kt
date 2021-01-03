@@ -1,11 +1,11 @@
 package com.example.demo.service
 
 import com.example.demo.repository.ChartRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class ChartService(private val invoiceRepository: ChartRepository) {
 
-    fun getMonthChardData(month: Int) = invoiceRepository.getMonthSummaryChartData(month)
+    fun getMonthChardData(date: LocalDate) = invoiceRepository.getMonthSummaryChartData(date)
 }

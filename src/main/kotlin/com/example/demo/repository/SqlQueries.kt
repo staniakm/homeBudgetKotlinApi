@@ -102,9 +102,8 @@ object SqlQueries {
                 from budzet b 
                    join kategoria k on k.id = b.category 
                 where rok = ? 
-                   and miesiac = ? 
-                   and b.used > 0
-                order by k.nazwa""".trimIndent()
+                   and miesiac = ?
+                order by b.used desc""".trimIndent()
     }
 
     private fun getMonthBudgetForCategory(): String {
@@ -119,9 +118,8 @@ object SqlQueries {
                       join kategoria k on k.id = b.category 
                   where rok = ? 
                        and miesiac = ? 
-                       and k.nazwa = ? 
-                       and b.used > 0
-                   order by k.nazwa""".trimIndent()
+                       and k.nazwa = ?
+                   order by spent desc""".trimIndent()
     }
 
     private fun getShopItems(): String {
@@ -144,8 +142,8 @@ object SqlQueries {
                  from paragony p 
                    join paragony_szczegoly ps on ps.id_paragonu = p.ID 
                    join kategoria k on k.id = ps.kategoria 
-                 where year(p.data) = year(getdate()) 
-                   and month(p.data) = ? 
+                 where year(p.data) = year(?) 
+                   and month(p.data) = month(?) 
                  group by k.nazwa 
                  order by suma""".trimIndent()
     }
@@ -224,7 +222,7 @@ object SqlQueries {
                                        kategoria 
                                   from paragony_szczegoly ps 
                                        join paragony p on p.ID = ps.id_paragonu 
-                                  where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(?)))) 
+                                  where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)
                                   group by kategoria) as ps on ps.kategoria = k.id where k.id = ? 
                   order by nazwa""".trimIndent()
     }
@@ -253,9 +251,9 @@ object SqlQueries {
                        on p.ID = ps.id_paragonu 
                    join ASORTYMENT a 
                        on a.id = ps.ID_ASO 
-                 where p.data>= DATEADD(d,1,(DATEADD(m, -1, EOMONTH(?)))) 
+                 where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)
                    and ps.kategoria = ? 
-                 group by a.NAZWA""".trimIndent()
+                 group by a.NAZWA;""".trimIndent()
     }
 
     private fun getInvoices(): String {
