@@ -164,7 +164,7 @@ object SqlQueries {
                                        from paragony p 
                                        where p.ID_sklep = ? 
                                            and p.del = 0
-                                           and year(p.data) = year(getdate())) 
+                                           and year(p.data) = year(?)) 
                                         group by a.id, 
                                            a.NAZWA""".trimIndent()
     }
@@ -185,7 +185,7 @@ object SqlQueries {
                                    from paragony p 
                                    where p.ID_sklep = ? 
                                        and p.del = 0
-                                       and p.data >= DATEADD(m, -1, DATEADD(d, 1, EOMONTH(getdate())))) 
+                                       and p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)) 
                                    group by a.id, 
                                    a.NAZWA""".trimIndent()
     }

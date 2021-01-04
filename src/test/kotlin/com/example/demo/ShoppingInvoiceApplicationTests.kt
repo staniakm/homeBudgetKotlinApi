@@ -4,16 +4,14 @@ import com.example.demo.entity.Account
 import com.example.demo.entity.AccountRowMapper
 import com.example.demo.repository.SqlQueries
 import org.jdbi.v3.core.Jdbi
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import java.sql.SQLException
 
-@RunWith(SpringRunner::class)
 @SpringBootTest
-class ShoppingListApplicationTests() {
+class ShoppingInvoiceApplicationTests() {
 
     @Autowired
     private lateinit var jdbiTemplate: Jdbi

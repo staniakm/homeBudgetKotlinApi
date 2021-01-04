@@ -15,48 +15,51 @@ class ShopRepository(private val jdbi: Jdbi) {
 
         return jdbi.withHandle<List<ShopSummary>, SQLException> { handle ->
             handle.createQuery(getQuery(GET_SHOP_LIST_SUMMARY))
-                    .bind(0, date.year)
-                    .bind(1, date.year)
-                    .bind(2, date.monthValue)
-                    .map(ShopSummaryRowMapper())
-                    .list()
+                .bind(0, date.year)
+                .bind(1, date.year)
+                .bind(2, date.monthValue)
+                .map(ShopSummaryRowMapper())
+                .list()
         }
     }
 
-    fun getShopMonthItems(id: Long): List<ShopItemsSummary> {
+    fun getShopMonthItems(id: Long, date: LocalDate): List<ShopItemsSummary> {
         val sql = getQuery(GET_SHOP_MONTH_ITEMS)
-        return getShoppingItems(sql, id)
+        return jdbi.withHandle<List<ShopItemsSummary>, SQLException> { handle ->
+            handle.createQuery(sql)
+                .bind(0, id)
+                .bind(1, date)
+                .bind(2, date)
+                .map(ShopItemSummaryRowMapper())
+                .list()
+        }
     }
 
-    fun getShopYearItems(shopId: Long): List<ShopItemsSummary> {
+    fun getShopYearItems(shopId: Long, date: LocalDate): List<ShopItemsSummary> {
         val sql = getQuery(GET_SHOP_YEAR_ITEMS)
-        return getShoppingItems(sql, shopId)
+        return jdbi.withHandle<List<ShopItemsSummary>, SQLException> { handle ->
+            handle.createQuery(sql)
+                .bind(0, shopId)
+                .bind(1, date)
+                .map(ShopItemSummaryRowMapper())
+                .list()
+        }
     }
 
     fun getShopItems(shopId: Long): List<ShopItem> {
         return jdbi.withHandle<List<ShopItem>, SQLException> { handle ->
             handle.createQuery(getQuery(GET_SHOP_ITEMS))
-                    .bind(0, shopId)
-                    .map(ShopItemRowMapper())
-                    .list()
-        }
-    }
-
-    fun getShoppingItems(query: String, id: Long): List<ShopItemsSummary> {
-
-        return jdbi.withHandle<List<ShopItemsSummary>, SQLException> { handle ->
-            handle.createQuery(query)
-                    .bind(0, id)
-                    .map(ShopItemSummaryRowMapper())
-                    .list()
+                .bind(0, shopId)
+                .map(ShopItemRowMapper())
+                .list()
         }
     }
 
     fun getAllShops(): List<Shop> {
         return jdbi.withHandle<List<Shop>, SQLException> { handle ->
             handle.createQuery(getQuery(GET_SHOP_LIST))
-                    .map(ShopRowMapper())
-                    .list()
+                .map(ShopRowMapper())
+                .list()
         }
     }
 }

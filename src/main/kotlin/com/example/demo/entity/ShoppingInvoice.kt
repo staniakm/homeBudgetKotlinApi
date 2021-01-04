@@ -6,11 +6,11 @@ import java.math.BigDecimal
 import java.sql.Date
 import java.sql.ResultSet
 
-data class ShoppingList(val listId: Long, val name: String, val date: Date, val price: BigDecimal, val account: String)
+data class ShoppingInvoice(val listId: Long, val name: String, val date: Date, val price: BigDecimal, val account: String)
 
-class ShoppingListRowMapper : RowMapper<ShoppingList> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): ShoppingList {
-        return ShoppingList(
+class ShoppingListRowMapper : RowMapper<ShoppingInvoice> {
+    override fun map(rs: ResultSet, ctx: StatementContext?): ShoppingInvoice {
+        return ShoppingInvoice(
                 rs.getLong("id"),
                 rs.getString("sklep"),
                 rs.getDate("data"),

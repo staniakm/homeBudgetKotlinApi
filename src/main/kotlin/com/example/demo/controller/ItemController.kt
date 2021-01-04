@@ -2,7 +2,6 @@ package com.example.demo.controller
 
 import com.example.demo.entity.ProductDetails
 import com.example.demo.service.ItemService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,5 +13,5 @@ class ItemController(private val itemService: ItemService) {
 
     @GetMapping("/{id}")
     fun getItemDetails(@PathVariable("id") id: Long): ResponseEntity<List<ProductDetails>> =
-            ResponseEntity(itemService.getItemDetails(id), HttpStatus.OK)
+            ResponseEntity(itemService.getProductDetails(id), HttpStatus.OK)
 }
