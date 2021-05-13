@@ -36,4 +36,15 @@ class InvoiceRepository(private val jdbi: Jdbi) {
                     .list()
         }
     }
+
+    fun getAccountInvoices(accountId: Long, date: LocalDate): List<ShoppingInvoice> {
+        return jdbi.withHandle<List<ShoppingInvoice>, SQLException> { handle ->
+            handle.createQuery(getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_INVOICES))
+                .bind(0, date.year)
+                .bind(1, date.monthValue)
+                .bind(2, accountId)
+                .map(ShoppingListRowMapper())
+                .list()
+        }
+    }
 }

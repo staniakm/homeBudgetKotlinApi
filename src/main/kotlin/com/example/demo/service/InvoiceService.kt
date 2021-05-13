@@ -16,4 +16,8 @@ class InvoiceService(private val invoiceRepository: InvoiceRepository) {
     }
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
+
+    fun getAccountInvoices(accountId: Long, date: LocalDate): List<ShoppingInvoice> {
+        return invoiceRepository.getAccountInvoices(accountId, date)
+    }
 }

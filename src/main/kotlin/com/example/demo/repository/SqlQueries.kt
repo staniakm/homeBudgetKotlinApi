@@ -6,6 +6,7 @@ object SqlQueries {
 
     enum class QUERY_TYPE {
         GET_INVOICE,
+        GET_ACCOUNT_INVOICES,
         GET_INVOICE_DETAILS,
         GET_CATEGORY_SUMMARY_LIST,
         GET_CATEGORY_DETAILS,
@@ -29,6 +30,7 @@ object SqlQueries {
         return when (type) {
 
             GET_INVOICE -> getInvoices()
+            GET_ACCOUNT_INVOICES -> getAccountInvoices()
             GET_INVOICE_DETAILS -> getInvoiceDetails()
             GET_CATEGORY_SUMMARY_LIST -> getCategoryList()
             GET_CATEGORY_DETAILS -> getCategoryDetails()
@@ -267,6 +269,23 @@ object SqlQueries {
                 FROM dbo.paragony p
                    join konto k on k.ID = p.konto
                    join sklepy s on s.ID = p.ID_sklep where year(p.data) = ? and month(p.data) = ? order by data desc
+                """.trimIndent()
+    }
+
+    private fun getAccountInvoices(): String {
+        return """
+                select p.ID,
+                   DATA,
+                   NR_PARAGONU,
+                   SUMA,
+                   s.sklep,
+                   k.nazwa account
+                FROM dbo.paragony p
+                   join konto k on k.ID = p.konto
+                   join sklepy s on s.ID = p.ID_sklep 
+                where year(p.data) = ? and month(p.data) = ?
+                    and k.id = ?
+                   order by data desc
                 """.trimIndent()
     }
 
