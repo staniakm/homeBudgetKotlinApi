@@ -6,22 +6,21 @@ import java.math.BigDecimal
 import java.sql.Date
 import java.sql.ResultSet
 
-data class ProductDetails(val shopName: String, val invoiceDate: Date, val itemPrice: BigDecimal,
-                          val quantity: Double, val discount: BigDecimal, val totalSum: BigDecimal, val invoiceId: Long,
-                          val invoiceItemId: Long)
+data class ProductDetails(
+    val shopName: String, val invoiceDate: Date, val itemPrice: BigDecimal,
+    val quantity: Double, val discount: BigDecimal, val totalSum: BigDecimal, val invoiceId: Long,
+    val invoiceItemId: Long
+)
 
 class ProductDetailsRowMapper : RowMapper<ProductDetails> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): ProductDetails {
-        return ProductDetails(
-                rs.getString("sklep"),
-                rs.getDate("data"),
-                rs.getBigDecimal("cena"),
-                rs.getDouble("ilosc"),
-                rs.getBigDecimal("rabat"),
-                rs.getBigDecimal("suma"),
-                rs.getLong("invoiceId"),
-                rs.getLong("invoiceItemId")
-        )
-    }
-
+    override fun map(rs: ResultSet, ctx: StatementContext?) = ProductDetails(
+        rs.getString("sklep"),
+        rs.getDate("data"),
+        rs.getBigDecimal("cena"),
+        rs.getDouble("ilosc"),
+        rs.getBigDecimal("rabat"),
+        rs.getBigDecimal("suma"),
+        rs.getLong("invoiceId"),
+        rs.getLong("invoiceItemId")
+    )
 }

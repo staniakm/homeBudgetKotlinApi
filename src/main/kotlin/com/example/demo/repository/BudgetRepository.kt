@@ -54,12 +54,12 @@ class BudgetRepository(private val jdbi: Jdbi) {
         }
     }
 
-    fun updateBudget(date: LocalDate, monthBudget: MonthBudgetDto) {
+    fun updateBudget(date: LocalDate, updateBudget: UpdateBudgetDto) {
 
         jdbi.withHandle<Any, SQLException> { handle ->
             handle.createUpdate(getQuery(UPDATE_MONTH_BUDGE_DETAILS))
-                .bind(0, monthBudget.planned)
-                .bind(1, monthBudget.category)
+                .bind(0, updateBudget.planned)
+                .bind(1, updateBudget.category)
                 .bind(2, date.year)
                 .bind(3, date.monthValue).execute()
         }

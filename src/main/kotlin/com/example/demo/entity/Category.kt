@@ -5,7 +5,7 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.math.BigDecimal
 import java.sql.ResultSet
 
-class Category(val id: Long, val name: String, var monthSummary: BigDecimal,
+data class Category(val id: Long, val name: String, var monthSummary: BigDecimal,
                val yearSummary: BigDecimal, var details: List<CategoryDetails>)
 
 class CategoryRowMapper : RowMapper<Category> {

@@ -1,9 +1,8 @@
 package com.example.demo.service
 
 import com.example.demo.entity.BudgetItem
-import com.example.demo.entity.MonthBudgetDto
+import com.example.demo.entity.UpdateBudgetDto
 import com.example.demo.repository.BudgetRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -22,14 +21,14 @@ class BudgetService(private val repository: BudgetRepository) {
         return repository.getBudgetForMonthAndCategory(date, category)
     }
 
-    fun updateBudget(month: Long, monthBudget: MonthBudgetDto): BudgetItem {
+    fun updateBudget(month: Long, updateBudget: UpdateBudgetDto): BudgetItem {
         return LocalDate.now().plusMonths(month)
                 .also {
-                    repository.updateBudget(it, monthBudget)
+                    repository.updateBudget(it, updateBudget)
                 }.apply {
                     repository.recalculateBudget(this)
                 }.let {
-                    getMonthBudgetForCategory(month, monthBudget.category)
+                    getMonthBudgetForCategory(month, updateBudget.category)
                 }
     }
 

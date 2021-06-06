@@ -6,41 +6,38 @@ import java.math.BigDecimal
 import java.sql.ResultSet
 
 data class MonthAccountSummary(
-        val id: Long,
-        val name: String,
-        val moneyAmount: BigDecimal,
-        val expense: BigDecimal,
-        val income: BigDecimal
+    val id: Long,
+    val name: String,
+    val moneyAmount: BigDecimal,
+    val expense: BigDecimal,
+    val income: BigDecimal
 )
 
 
-class MonthAccountRowMapper() : RowMapper<MonthAccountSummary> {
+class MonthAccountRowMapper : RowMapper<MonthAccountSummary> {
 
-    override fun map(rs: ResultSet, ctx: StatementContext): MonthAccountSummary {
-        return MonthAccountSummary(
-                rs.getLong("id"),
-                rs.getString("nazwa"),
-                rs.getBigDecimal("kwota"),
-                rs.getBigDecimal("wydatki"),
-                rs.getBigDecimal("przychody")
-        )
-    }
+    override fun map(rs: ResultSet, ctx: StatementContext) = MonthAccountSummary(
+        rs.getLong("id"),
+        rs.getString("nazwa"),
+        rs.getBigDecimal("kwota"),
+        rs.getBigDecimal("wydatki"),
+        rs.getBigDecimal("przychody")
+    )
 }
 
 data class Account(
-        val id: Long,
-        val name: String,
-        val amount: BigDecimal,
-        val owner: String
+    val id: Long,
+    val name: String,
+    val amount: BigDecimal,
+    val owner: String
 )
 
-class AccountRowMapper() : RowMapper<Account> {
+class AccountRowMapper : RowMapper<Account> {
 
-    override fun map(rs: ResultSet, ctx: StatementContext): Account {
-        return Account(rs.getLong("id"),
-                rs.getString("name"),
-                rs.getBigDecimal("amount"),
-                rs.getString("owner")
-        )
-    }
+    override fun map(rs: ResultSet, ctx: StatementContext) = Account(
+        rs.getLong("id"),
+        rs.getString("name"),
+        rs.getBigDecimal("amount"),
+        rs.getString("owner")
+    )
 }

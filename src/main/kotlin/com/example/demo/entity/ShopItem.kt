@@ -5,14 +5,12 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 
 
-class ShopItem(val itemId: Long, val name: String)
+data class ShopItem(val itemId: Long, val name: String)
 
 class ShopItemRowMapper : RowMapper<ShopItem> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): ShopItem {
-        return ShopItem(
-                rs.getLong("id"),
-                rs.getString("nazwa")
-        )
-    }
+    override fun map(rs: ResultSet, ctx: StatementContext?) = ShopItem(
+        rs.getLong("id"),
+        rs.getString("nazwa")
+    )
 
 }

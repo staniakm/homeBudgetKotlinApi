@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import java.sql.ResultSet
 
 
-class BudgetItem(val totalSpend: BigDecimal, val totalPlanned: BigDecimal, val totalEarned: BigDecimal) {
+data class BudgetItem(val totalSpend: BigDecimal, val totalPlanned: BigDecimal, val totalEarned: BigDecimal) {
     var date: String = ""
     var budgets: List<MonthBudget> = listOf()
 }
@@ -24,7 +24,7 @@ class BudgetItemMapper : RowMapper<BudgetItem> {
 
 
 data class MonthBudget(val category: String, val spent: BigDecimal, val planned: BigDecimal, val percentage: Double)
-data class MonthBudgetDto(var category: String, var planned: BigDecimal)
+data class UpdateBudgetDto(var category: String, var planned: BigDecimal)
 
 class MonthBudgetMapper : RowMapper<MonthBudget> {
     override fun map(rs: ResultSet, ctx: StatementContext): MonthBudget {

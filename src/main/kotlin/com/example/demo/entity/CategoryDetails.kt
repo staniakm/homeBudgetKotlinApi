@@ -5,7 +5,7 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.math.BigDecimal
 import java.sql.ResultSet
 
-class CategoryDetails (val name: String, val price: BigDecimal)
+data class CategoryDetails (val name: String, val price: BigDecimal)
 
 class CategoryDetailsRowMapper: RowMapper<CategoryDetails> {
     override fun map(rs: ResultSet, ctx: StatementContext?): CategoryDetails {
