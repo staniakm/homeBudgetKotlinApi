@@ -6,14 +6,10 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class InvoiceService(private val invoiceRepository: InvoiceRepository) {
+class InvoiceService(private val invoiceRepository: InvoiceRepository, private val clock: ClockProvider) {
 
-    fun getInvoiceListForMonth(monthValue: Long): List<ShoppingInvoice> {
-        return LocalDate.now().plusMonths(monthValue)
-                .let {
-                    invoiceRepository.getInvoices(it)
-                }
-    }
+    fun getInvoiceListForMonth(monthValue: Long): List<ShoppingInvoice> =
+        invoiceRepository.getInvoices(clock.getDateFromMonth(monthValue))
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
 

@@ -9,5 +9,4 @@ import org.springframework.stereotype.Service
 class ItemService(private val repository: ProductRepository) {
 
     fun getProductDetails(itemId: Long): List<ProductDetails> = repository.getProductDetails(itemId)
-
 }

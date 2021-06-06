@@ -4,32 +4,22 @@ import com.example.demo.entity.BudgetItem
 import com.example.demo.entity.UpdateBudgetDto
 import com.example.demo.repository.BudgetRepository
 import org.springframework.stereotype.Service
-import java.time.LocalDate
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class BudgetService(private val repository: BudgetRepository) {
+class BudgetService(private val repository: BudgetRepository, private val clock: ClockProvider) {
 
-    fun getMonthBudget(month: Long): BudgetItem? {
-        return LocalDate.now().plusMonths(month)
-                .let {
-                    repository.getBudgetForMonth(it)
-                }
-    }
+    fun getMonthBudget(month: Long) = repository.getBudgetForMonth(clock.getDateFromMonth(month))
 
-    fun getMonthBudgetForCategory(month: Long, category: String): BudgetItem {
-        val date = LocalDate.now().plusMonths(month)
-        return repository.getBudgetForMonthAndCategory(date, category)
-    }
-
+    @Transactional
     fun updateBudget(month: Long, updateBudget: UpdateBudgetDto): BudgetItem {
-        return LocalDate.now().plusMonths(month)
-                .also {
-                    repository.updateBudget(it, updateBudget)
-                }.apply {
-                    repository.recalculateBudget(this)
-                }.let {
-                    getMonthBudgetForCategory(month, updateBudget.category)
-                }
+        return clock.getDateFromMonth(month)
+            .also {
+                repository.updateBudget(it, updateBudget)
+            }.apply {
+                repository.recalculateBudget(this)
+            }.let {
+                repository.getBudgetForMonthAndCategory(it, updateBudget.category)
+            }
     }
-
 }

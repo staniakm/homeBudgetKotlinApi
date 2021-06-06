@@ -7,19 +7,9 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class CategoryService(private val repository: CategoryRepository) {
+class CategoryService(private val repository: CategoryRepository, private val clock: ClockProvider) {
 
-    fun getCategoriesSummary(month: Long): List<Category> {
-        return LocalDate.now().plusMonths(month)
-                .let {
-                    repository.getCategoriesSummary(it)
-                }
-    }
+    fun getCategoriesSummary(month: Long) = repository.getCategoriesSummary(clock.getDateFromMonth(month))
 
-    fun getCategoryDetails(id: Long, month:Long):Category? {
-        return LocalDate.now().plusMonths(month)
-                .let {
-                    repository.getCategoryDetails(id, it)
-                }
-    }
+    fun getCategoryDetails(id: Long, month: Long) = repository.getCategoryDetails(id, clock.getDateFromMonth(month))
 }

@@ -8,18 +8,16 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class AccountService(private val accountRepository: AccountRepository, private val invoiceService: InvoiceService) {
+class AccountService(
+    private val accountRepository: AccountRepository,
+    private val invoiceService: InvoiceService,
+    private val clock: ClockProvider
+) {
 
-    fun getAccountsSummaryForMonth(month: Long): List<MonthAccountSummary> {
-        return LocalDate.now().plusMonths(month)
-                .let {
-                    accountRepository.getAccountsSummaryForMonth(it)
-                }
-    }
+    fun getAccountsSummaryForMonth(month: Long) =
+        accountRepository.getAccountsSummaryForMonth(clock.getDateFromMonth(month))
 
-    fun findAll(): List<Account> {
-        return accountRepository.findAllAccounts();
-    }
+    fun findAll() = accountRepository.findAllAccounts()
 
     fun getAccountDetails(accountId: Long) {
         //account basic data
@@ -28,11 +26,7 @@ class AccountService(private val accountRepository: AccountRepository, private v
         //invoices for current month
     }
 
-    fun getAccountOperations(accountId: Long, month: Long): List<ShoppingInvoice> {
-        return LocalDate.now().plusMonths(month)
-            .let {
-                invoiceService.getAccountInvoices(accountId, it)
-            }
-    }
+    fun getAccountOperations(accountId: Long, month: Long) =
+        invoiceService.getAccountInvoices(accountId, clock.getDateFromMonth(month))
 
 }

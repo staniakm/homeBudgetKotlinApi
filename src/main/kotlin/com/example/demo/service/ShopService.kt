@@ -5,24 +5,18 @@ import com.example.demo.entity.ShopItemsSummary
 import com.example.demo.entity.ShopSummary
 import com.example.demo.repository.ShopRepository
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class ShopService(private val repository: ShopRepository, private val clock: ClockProvider) {
 
-    private val getDateFromMonth: (Long) -> LocalDate = { month ->
-        clock.getDate()
-            .plusMonths(month)
-    }
-
     fun getShopsSummaryForMonth(month: Long): List<ShopSummary> =
-        repository.getAllShopsSummary(getDateFromMonth(month))
+        repository.getAllShopsSummary(clock.getDateFromMonth(month))
 
     fun getMonthShopItemsSummary(id: Long, month: Long): List<ShopItemsSummary> =
-        repository.getShopMonthItems(id, getDateFromMonth(month))
+        repository.getShopMonthItems(id, clock.getDateFromMonth(month))
 
     fun getYearShopItemsSummary(id: Long, month: Long): List<ShopItemsSummary> =
-        repository.getShopYearItems(id, getDateFromMonth(month))
+        repository.getShopYearItems(id, clock.getDateFromMonth(month))
 
     fun getShopItems(shopId: Long): List<ShopItem> = repository.getShopItems(shopId)
     fun findAllShops() = repository.getAllShops()
