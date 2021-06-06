@@ -13,8 +13,7 @@ data class MonthAccountSummary(
     val income: BigDecimal
 )
 
-
-class MonthAccountRowMapper : RowMapper<MonthAccountSummary> {
+object MonthAccountRowMapper : RowMapper<MonthAccountSummary> {
 
     override fun map(rs: ResultSet, ctx: StatementContext) = MonthAccountSummary(
         rs.getLong("id"),
@@ -32,7 +31,7 @@ data class Account(
     val owner: String
 )
 
-class AccountRowMapper : RowMapper<Account> {
+object AccountRowMapper : RowMapper<Account> {
 
     override fun map(rs: ResultSet, ctx: StatementContext) = Account(
         rs.getLong("id"),

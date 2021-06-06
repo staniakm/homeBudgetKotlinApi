@@ -19,7 +19,7 @@ class AccountRepository(private val jdbi: Jdbi) {
                     .bind(1, date.monthValue)
                     .bind(2, date.year)
                     .bind(3, date.monthValue)
-                    .map(MonthAccountRowMapper())
+                    .map(MonthAccountRowMapper)
                     .list()
         }
     }
@@ -27,7 +27,7 @@ class AccountRepository(private val jdbi: Jdbi) {
     fun findAllAccounts(): List<Account> {
         return jdbi.withHandle<List<Account>, SQLException> { handle ->
             handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_DATA))
-                    .map(AccountRowMapper())
+                    .map(AccountRowMapper)
                     .list()
         }
     }
