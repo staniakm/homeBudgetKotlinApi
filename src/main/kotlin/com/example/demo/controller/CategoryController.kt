@@ -19,7 +19,6 @@ class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping("/{id}")
     fun getCategoryDetails(@PathVariable("id") categoryId: Long, @RequestParam("month") month: Long? = 0): ResponseEntity<Category> {
-        val monthVal = month ?: 0
-        return ResponseEntity(categoryService.getCategoryDetails(categoryId, monthVal), HttpStatus.OK)
+        return ResponseEntity(categoryService.getCategoryDetails(categoryId, month ?: 0), HttpStatus.OK)
     }
 }

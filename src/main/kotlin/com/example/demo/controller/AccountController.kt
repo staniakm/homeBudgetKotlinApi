@@ -1,8 +1,6 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.Account
-import com.example.demo.entity.MonthAccountSummary
-import com.example.demo.entity.ShoppingInvoice
+import com.example.demo.entity.*
 import com.example.demo.service.AccountService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,4 +26,10 @@ class AccountController(private val accountService: AccountService) {
         @PathVariable accountId: Long,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
     ): ResponseEntity<List<ShoppingInvoice>> = ResponseEntity.ok(accountService.getAccountOperations(accountId, month))
+
+    @PutMapping("/{accountId}")
+    fun updateAccountMoneyAmount(
+        @PathVariable accountId: Long,
+        @RequestBody updateAccount: UpdateAccountDto
+    ) = ResponseEntity.ok(accountService.updateAccount(accountId, updateAccount))
 }

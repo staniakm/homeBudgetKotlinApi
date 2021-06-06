@@ -15,20 +15,37 @@ class AccountRepository(private val jdbi: Jdbi) {
     fun getAccountsSummaryForMonth(date: LocalDate): List<MonthAccountSummary> {
         return jdbi.withHandle<List<MonthAccountSummary>, SQLException> { handle ->
             handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNTS_SUMMARY_FOR_MONTH))
-                    .bind(0, date.year)
-                    .bind(1, date.monthValue)
-                    .bind(2, date.year)
-                    .bind(3, date.monthValue)
-                    .map(MonthAccountRowMapper)
-                    .list()
+                .bind(0, date.year)
+                .bind(1, date.monthValue)
+                .bind(2, date.year)
+                .bind(3, date.monthValue)
+                .map(MonthAccountRowMapper)
+                .list()
         }
     }
 
     fun findAllAccounts(): List<Account> {
         return jdbi.withHandle<List<Account>, SQLException> { handle ->
             handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_ACCOUNT_DATA))
-                    .map(AccountRowMapper)
-                    .list()
+                .map(AccountRowMapper)
+                .list()
+        }
+    }
+
+    fun findById(id: Long): Account? {
+        return jdbi.withHandle<Account, SQLException> { handle ->
+            handle.createQuery(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.GET_SINGLE_ACCOUNT_DATA))
+                .bind(0, id)
+                .map(AccountRowMapper)
+                .firstOrNull()
+        }
+    }
+
+    fun update(account: Account) {
+        jdbi.withHandle<Any, SQLException> { handle ->
+            handle.createUpdate(SqlQueries.getQuery(SqlQueries.QUERY_TYPE.UPDATE_SINGLE_ACCOUNT_DATA))
+                .bind(0, account.amount)
+                .bind(1, account.id).execute()
         }
     }
 }

@@ -23,7 +23,9 @@ object SqlQueries {
         GET_MONTH_BUDGET_FOR_CATEGORY,
         GET_ACCOUNTS_SUMMARY_FOR_MONTH,
         GET_SHOP_LIST,
-        GET_ACCOUNT_DATA
+        GET_ACCOUNT_DATA,
+        GET_SINGLE_ACCOUNT_DATA,
+        UPDATE_SINGLE_ACCOUNT_DATA
     }
 
     fun getQuery(type: QUERY_TYPE): String {
@@ -48,11 +50,21 @@ object SqlQueries {
             GET_ACCOUNTS_SUMMARY_FOR_MONTH -> getAccountsSummaryForMonth()
             GET_SHOP_LIST -> getShopList()
             GET_ACCOUNT_DATA -> getAccountData()
+            GET_SINGLE_ACCOUNT_DATA -> getSingleAccountData()
+            UPDATE_SINGLE_ACCOUNT_DATA -> updateSingleAccount()
         }
+    }
+
+    private fun updateSingleAccount(): String {
+        return "update konto set kwota = ? from konto where del = 0 and id = ?;"
     }
 
     private fun getAccountData(): String {
         return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0;"
+    }
+
+    private fun getSingleAccountData(): String {
+        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0 and id = ?;"
     }
 
     private fun getShopList(): String {

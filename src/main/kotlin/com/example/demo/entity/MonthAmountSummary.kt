@@ -31,6 +31,8 @@ data class Account(
     val owner: String
 )
 
+data class UpdateAccountDto(val id:Long, val name: String, val newMoneyAmount: BigDecimal)
+
 object AccountRowMapper : RowMapper<Account> {
 
     override fun map(rs: ResultSet, ctx: StatementContext) = Account(
