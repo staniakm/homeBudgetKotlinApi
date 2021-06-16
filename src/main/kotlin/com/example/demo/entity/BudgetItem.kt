@@ -6,17 +6,23 @@ import java.math.BigDecimal
 import java.sql.ResultSet
 
 
-data class BudgetItem(val totalSpend: BigDecimal, val totalPlanned: BigDecimal, val totalEarned: BigDecimal) {
-    var date: String = ""
-    var budgets: List<MonthBudget> = listOf()
+data class BudgetItem(
+    val totalSpend: BigDecimal, val totalPlanned: BigDecimal,
+    val totalEarned: BigDecimal, val date: String = "", val budgets: List<MonthBudget> = listOf()
+){
+    companion object {
+        fun emptyBudget():BudgetItem {
+            return BudgetItem(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
+        }
+    }
 }
 
 class BudgetItemMapper : RowMapper<BudgetItem> {
     override fun map(rs: ResultSet, ctx: StatementContext): BudgetItem {
         return BudgetItem(
-                rs.getBigDecimal("outcome"),
-                rs.getBigDecimal("planed"),
-                rs.getBigDecimal("income")
+            rs.getBigDecimal("outcome"),
+            rs.getBigDecimal("planed"),
+            rs.getBigDecimal("income")
         )
     }
 
@@ -29,9 +35,10 @@ data class UpdateBudgetDto(var category: String, var planned: BigDecimal)
 class MonthBudgetMapper : RowMapper<MonthBudget> {
     override fun map(rs: ResultSet, ctx: StatementContext): MonthBudget {
         return MonthBudget(
-                rs.getString("category"),
-                rs.getBigDecimal("spent"),
-                rs.getBigDecimal("planned"),
-                rs.getDouble("percentage"))
+            rs.getString("category"),
+            rs.getBigDecimal("spent"),
+            rs.getBigDecimal("planned"),
+            rs.getDouble("percentage")
+        )
     }
 }

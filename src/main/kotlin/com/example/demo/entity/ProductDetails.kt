@@ -12,7 +12,7 @@ data class ProductDetails(
     val invoiceItemId: Long
 )
 
-class ProductDetailsRowMapper : RowMapper<ProductDetails> {
+object ProductDetailsRowMapper : RowMapper<ProductDetails> {
     override fun map(rs: ResultSet, ctx: StatementContext?) = ProductDetails(
         rs.getString("sklep"),
         rs.getDate("data"),

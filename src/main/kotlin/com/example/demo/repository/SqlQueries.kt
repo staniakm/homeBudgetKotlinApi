@@ -1,59 +1,29 @@
 package com.example.demo.repository
 
-import com.example.demo.repository.SqlQueries.QUERY_TYPE.*
 
 object SqlQueries {
 
-    enum class QUERY_TYPE {
-        GET_INVOICE,
-        GET_ACCOUNT_INVOICES,
-        GET_INVOICE_DETAILS,
-        GET_CATEGORY_SUMMARY_LIST,
-        GET_CATEGORY_DETAILS,
-        GET_CATEGORY_BY_ID,
-        GET_SHOP_LIST_SUMMARY,
-        GET_SHOP_MONTH_ITEMS,
-        GET_SHOP_YEAR_ITEMS,
-        GET_MONTH_SUMMARY_CHART_DATA,
-        GET_SHOP_ITEMS,
-        GET_MONTH_BUDGET,
-        GET_MONTH_BUDGE_DETAILS,
-        UPDATE_MONTH_BUDGE_DETAILS,
-        GET_PRODUCT_DETAILS,
-        GET_MONTH_BUDGET_FOR_CATEGORY,
-        GET_ACCOUNTS_SUMMARY_FOR_MONTH,
-        GET_SHOP_LIST,
-        GET_ACCOUNT_DATA,
-        GET_SINGLE_ACCOUNT_DATA,
-        UPDATE_SINGLE_ACCOUNT_DATA
-    }
-
-    fun getQuery(type: QUERY_TYPE): String {
-        return when (type) {
-
-            GET_INVOICE -> getInvoices()
-            GET_ACCOUNT_INVOICES -> getAccountInvoices()
-            GET_INVOICE_DETAILS -> getInvoiceDetails()
-            GET_CATEGORY_SUMMARY_LIST -> getCategoryList()
-            GET_CATEGORY_DETAILS -> getCategoryDetails()
-            GET_SHOP_LIST_SUMMARY -> getShopListSummary()
-            GET_SHOP_MONTH_ITEMS -> getShopMonthShopping()
-            GET_SHOP_YEAR_ITEMS -> getShopYearShopping()
-            GET_MONTH_SUMMARY_CHART_DATA -> getMonthSummary()
-            GET_SHOP_ITEMS -> getShopItems()
-            GET_MONTH_BUDGET -> getMonthBudget()
-            GET_CATEGORY_BY_ID -> getCategoryById()
-            GET_MONTH_BUDGE_DETAILS -> getMonthBudgetDetails()
-            UPDATE_MONTH_BUDGE_DETAILS -> updatePlanedBudget()
-            GET_PRODUCT_DETAILS -> getProductDetails()
-            GET_MONTH_BUDGET_FOR_CATEGORY -> getMonthBudgetForCategory()
-            GET_ACCOUNTS_SUMMARY_FOR_MONTH -> getAccountsSummaryForMonth()
-            GET_SHOP_LIST -> getShopList()
-            GET_ACCOUNT_DATA -> getAccountData()
-            GET_SINGLE_ACCOUNT_DATA -> getSingleAccountData()
-            UPDATE_SINGLE_ACCOUNT_DATA -> updateSingleAccount()
-        }
-    }
+    val GET_INVOICE: () -> String = { getInvoices() }
+    val GET_ACCOUNT_INVOICES: () -> String = { getAccountInvoices() }
+    val GET_INVOICE_DETAILS: () -> String = { getInvoiceDetails() }
+    val GET_CATEGORY_SUMMARY_LIST: () -> String = { getCategoryList() }
+    val GET_CATEGORY_DETAILS: () -> String = { getCategoryDetails() }
+    val GET_SHOP_LIST_SUMMARY: () -> String = { getShopListSummary() }
+    val GET_SHOP_MONTH_ITEMS: () -> String = { getShopMonthShopping() }
+    val GET_SHOP_YEAR_ITEMS: () -> String = { getShopYearShopping() }
+    val GET_MONTH_SUMMARY_CHART_DATA: () -> String = { getMonthSummary() }
+    val GET_SHOP_ITEMS: () -> String = { getShopItems() }
+    val GET_MONTH_BUDGET: () -> String = { getMonthBudget() }
+    val GET_CATEGORY_BY_ID: () -> String = { getCategoryById() }
+    val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
+    val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
+    val GET_PRODUCT_DETAILS: () -> String = { getProductDetails() }
+    val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
+    val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
+    val GET_SHOP_LIST: () -> String = { getShopList() }
+    val GET_ACCOUNT_DATA: () -> String = { getAccountData() }
+    val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
+    val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
 
     private fun updateSingleAccount(): String {
         return "update konto set kwota = ? from konto where del = 0 and id = ?;"

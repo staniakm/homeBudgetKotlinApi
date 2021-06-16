@@ -8,5 +8,5 @@ class CategoryService(private val repository: CategoryRepository, private val cl
 
     fun getCategoriesSummary(month: Long) = repository.getCategoriesSummary(clock.getDateFromMonth(month))
 
-    fun getCategoryDetails(id: Long, month: Long) = repository.getCategoryDetails(id, clock.getDateFromMonth(month))
+    fun getCategoryDetails(id: Long, month: Long) = repository.getCategoryWithDetails(id, clock.getDateFromMonth(month))
 }

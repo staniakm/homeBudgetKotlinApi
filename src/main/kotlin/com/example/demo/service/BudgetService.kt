@@ -16,8 +16,7 @@ class BudgetService(private val repository: BudgetRepository, private val clock:
         return clock.getDateFromMonth(month)
             .also {
                 repository.updateBudget(it, updateBudget)
-            }.apply {
-                repository.recalculateBudget(this)
+                repository.recalculateBudget(it)
             }.let {
                 repository.getBudgetForMonthAndCategory(it, updateBudget.category)
             }

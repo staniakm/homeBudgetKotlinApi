@@ -16,7 +16,7 @@ class ShopRowMapper : RowMapper<Shop> {
     )
 }
 
-class ShopSummaryRowMapper : RowMapper<ShopSummary> {
+object ShopSummaryRowMapper : RowMapper<ShopSummary> {
     override fun map(rs: ResultSet, ctx: StatementContext?) = ShopSummary(
         rs.getLong("id"),
         rs.getString("nazwa"),
