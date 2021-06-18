@@ -5,6 +5,7 @@ import com.example.demo.entity.UpdateBudgetDto
 import com.example.demo.repository.BudgetRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class BudgetService(private val repository: BudgetRepository, private val clock: ClockProvider) {
@@ -12,13 +13,12 @@ class BudgetService(private val repository: BudgetRepository, private val clock:
     fun getMonthBudget(month: Long) = repository.getBudgetForMonth(clock.getDateFromMonth(month))
 
     @Transactional
-    fun updateBudget(month: Long, updateBudget: UpdateBudgetDto): BudgetItem {
+    fun updateBudget(month: Long, updateBudget: UpdateBudgetDto):Mono<BudgetItem> {
         return clock.getDateFromMonth(month)
-            .also {
+            .let {
                 repository.updateBudget(it, updateBudget)
-                repository.recalculateBudget(it)
-            }.let {
                 repository.getBudgetForMonthAndCategory(it, updateBudget.category)
+//                repository.recalculateBudget(it)
             }
     }
 }

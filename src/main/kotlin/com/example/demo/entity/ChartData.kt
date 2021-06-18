@@ -1,17 +1,15 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
 import java.math.BigDecimal
-import java.sql.ResultSet
 
 data class ChartData(val name: String, val value: BigDecimal)
 
-object ChartDataRowMapper : RowMapper<ChartData> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): ChartData {
-        return ChartData(
-            rs.getString("nazwa"),
-            rs.getBigDecimal("suma")
+object ChartDataRowMapper {
+    val map: (row: Row) -> ChartData = { row ->
+        ChartData(
+            row.get("nazwa", String::class.java)!!,
+            row.get("suma", BigDecimal::class.java)!!
         )
     }
 

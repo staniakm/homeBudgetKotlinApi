@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
 import java.time.LocalDate
 
 @CrossOrigin
@@ -16,13 +17,13 @@ import java.time.LocalDate
 class ChartController(private val shoppingListService: ChartService) {
 
     @GetMapping("/currentMonth")
-    fun getCurrentMonthSummary(): ResponseEntity<List<ChartData>> {
+    fun getCurrentMonthSummary(): ResponseEntity<Flux<ChartData>> {
         val monthValue = LocalDate.now();
         return ResponseEntity(shoppingListService.getMonthChardData(monthValue), HttpStatus.OK)
     }
 
     @GetMapping("/previousMonth")
-    fun getPreviousMonthSummary(): ResponseEntity<List<ChartData>> {
+    fun getPreviousMonthSummary(): ResponseEntity<Flux<ChartData>> {
         val monthValue = LocalDate.now().minusMonths(1)
         return ResponseEntity(shoppingListService.getMonthChardData(monthValue), HttpStatus.OK)
     }

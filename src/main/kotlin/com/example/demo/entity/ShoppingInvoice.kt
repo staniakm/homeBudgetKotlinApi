@@ -1,28 +1,25 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
 import java.math.BigDecimal
-import java.sql.Date
-import java.sql.ResultSet
+import java.time.LocalDate
 
 data class ShoppingInvoice(
-    val listId: Long,
+    val listId: Int,
     val name: String,
-    val date: Date,
+    val date: LocalDate,
     val price: BigDecimal,
     val account: String
 )
 
-class ShoppingListRowMapper : RowMapper<ShoppingInvoice> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): ShoppingInvoice {
-        return ShoppingInvoice(
-            rs.getLong("id"),
-            rs.getString("sklep"),
-            rs.getDate("data"),
-            rs.getBigDecimal("suma"),
-            rs.getString("account")
+object ShoppingListRowMapper {
+    val map: (row: Row) -> ShoppingInvoice = { row ->
+        ShoppingInvoice(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("sklep", String::class.java)!!,
+            row.get("data", LocalDate::class.java)!!,
+            row.get("suma", BigDecimal::class.java)!!,
+            row.get("account", String::class.java)!!
         )
     }
-
 }

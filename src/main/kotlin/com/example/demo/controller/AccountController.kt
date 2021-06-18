@@ -5,6 +5,7 @@ import com.example.demo.service.AccountService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
 
 @CrossOrigin
 @RequestMapping("/api/account")
@@ -14,22 +15,19 @@ class AccountController(private val accountService: AccountService) {
     @GetMapping
     fun getAccountsSummaryForMonth(
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): ResponseEntity<List<MonthAccountSummary>> =
-        ResponseEntity(accountService.getAccountsSummaryForMonth(month), HttpStatus.OK)
+    ) = accountService.getAccountsSummaryForMonth(month)
 
 
     @GetMapping("/all")
-    fun getAllAccounts(): ResponseEntity<List<Account>> = ResponseEntity.ok(accountService.findAll())
+    fun getAllAccounts(): Flux<Account> = accountService.findAll()
 
     @GetMapping("/{accountId}")
     fun getAccountOperations(
         @PathVariable accountId: Long,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): ResponseEntity<List<ShoppingInvoice>> = ResponseEntity.ok(accountService.getAccountOperations(accountId, month))
+    ): Flux<ShoppingInvoice> = accountService.getAccountOperations(accountId, month)
 
     @PutMapping("/{accountId}")
-    fun updateAccountMoneyAmount(
-        @PathVariable accountId: Long,
-        @RequestBody updateAccount: UpdateAccountDto
-    ) = ResponseEntity.ok(accountService.updateAccount(accountId, updateAccount))
+    fun updateAccountMoneyAmount(@PathVariable accountId: Long, @RequestBody updateAccount: UpdateAccountDto) =
+        accountService.updateAccount(accountId, updateAccount)
 }

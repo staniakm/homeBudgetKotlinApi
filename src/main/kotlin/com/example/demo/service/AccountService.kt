@@ -33,9 +33,9 @@ class AccountService(
             throw IllegalArgumentException("Invalid requested id")
         }
 
-        return getAccount(accountId).copy(amount = updateAccount.newMoneyAmount)
+        return getAccount(accountId).block()?.copy(amount = updateAccount.newMoneyAmount)
             .let {
-                accountRepository.update(it)
+                accountRepository.update(it!!)
                 it
             }
     }
