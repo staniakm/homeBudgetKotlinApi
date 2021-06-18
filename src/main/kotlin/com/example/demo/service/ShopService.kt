@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service
 @Service
 class ShopService(private val repository: ShopRepository, private val clock: ClockProvider) {
 
-    fun getShopsSummaryForMonth(month: Long): List<ShopSummary> =
+    fun getShopsSummaryForMonth(month: Long) =
         repository.getAllShopsSummary(clock.getDateFromMonth(month))
 
-    fun getMonthShopItemsSummary(id: Long, month: Long): List<ShopItemsSummary> =
+    fun getMonthShopItemsSummary(id: Long, month: Long)=
         repository.getShopMonthItems(id, clock.getDateFromMonth(month))
 
-    fun getYearShopItemsSummary(id: Long, month: Long): List<ShopItemsSummary> =
+    fun getYearShopItemsSummary(id: Long, month: Long)=
         repository.getShopYearItems(id, clock.getDateFromMonth(month))
 
-    fun getShopItems(shopId: Long): List<ShopItem> = repository.getShopItems(shopId)
+    fun getShopItems(shopId: Long)= repository.getShopItems(shopId)
     fun findAllShops() = repository.getAllShops()
 }

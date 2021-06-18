@@ -1,61 +1,81 @@
 package com.example.demo.repository
 
-import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.result.ResultIterable
-import org.jdbi.v3.core.statement.Call
-import org.jdbi.v3.core.statement.Query
-import org.jdbi.v3.core.statement.Update
+import io.r2dbc.spi.Row
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
-import java.sql.SQLException
-import java.util.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
-class RepositoryHelper(private val jdbi: Jdbi) {
-    fun <T> getList(query: () -> String, mapper: RowMapper<T>, params: Query.() -> Unit = {}): List<T> {
-        return jdbi.withHandle<List<T>, SQLException> { handle ->
-            handle.createQuery(query())
-                .apply {
-                    params()
-                }.map(mapper)
-                .list()
-        }
+class RepositoryHelper(private val client: DatabaseClient) {
+    fun <T> getList(
+        query: () -> String,
+        mapper: (Row) -> T,
+        params: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Flux<T> {
+        return client.sql(query)
+            .let {
+                it.params()
+            }.map(mapper)
+            .all()
+
+
     }
 
-    fun executeUpdate(query: () -> String, params: Update.() -> Unit = {}) {
-        jdbi.withHandle<Any, SQLException> { handle ->
-            handle.createUpdate(query()).apply {
-                params()
-            }.execute()
-        }
+    fun <T> getList(
+        query: () -> String,
+        mapper: (Row) -> T
+    ): Flux<T> {
+        return client.sql(query)
+            .map(mapper)
+            .all()
     }
 
-    fun <T> findFirstOrNull(query: () -> String, mapper: RowMapper<T>, function: Query.() -> Unit): T? {
-        return jdbi.withHandle<T, SQLException> { handle ->
-            handle.createQuery(query())
-                .apply {
-                    function()
-                }.map(mapper)
-                .firstOrNull()
-        }
+    fun executeUpdate(query: () -> String, params: DatabaseClient.GenericExecuteSpec.() -> Unit = {}) {
+        client.sql(query)
+            .also {
+                it.params()
+            }.fetch().one()
     }
 
-    fun <T> findOne(query: () -> String, mapper: RowMapper<T>, function: Query.() -> Unit): Optional<T> {
-        return jdbi.withHandle<Optional<T>, SQLException> { handle ->
-            handle.createQuery(query())
-                .apply {
-                    function()
-                }.map(mapper)
-                .findOne()
-        }
+    fun <T> findFirstOrNull(
+        query: () -> String,
+        mapper: (Row) -> T,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Mono<T> {
+        return client.sql(query)
+            .let {
+                it.function()
+            }.map(mapper)
+            .one()
     }
 
-    fun callProcedure(query: String, function: Call.() -> Unit) {
-        jdbi.withHandle<Any, SQLException> { handle ->
-            handle.createCall("{call dbo.RecalculateBudget (?)}")
-                .apply {
-                    function()
-                }.invoke()
-        }
+    fun <T> findOne(
+        query: () -> String,
+        mapper: (Row) -> T,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Mono<T> {
+        return client.sql(query)
+            .let {
+                it.function()
+            }.map(mapper)
+            .one()
     }
+
+    fun callProcedure(query: String, function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec) {
+         client.sql(query)
+            .let {
+                it.function()
+            }.fetch()
+            .one()
+    }
+
+//    fun callProcedure(query: String, function: Call.() -> Unit) {
+//        client.jdbi.withHandle<Any, SQLException> { handle ->
+//            handle.createCall("{call dbo.RecalculateBudget (?)}")
+//                .apply {
+//                    function()
+//                }.invoke()
+//        }
+//    }
 }

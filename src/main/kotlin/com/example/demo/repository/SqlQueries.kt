@@ -26,7 +26,7 @@ object SqlQueries {
     val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
 
     private fun updateSingleAccount(): String {
-        return "update konto set kwota = ? from konto where del = 0 and id = ?;"
+        return "update konto set kwota = :amount from konto where del = 0 and id = :id;"
     }
 
     private fun getAccountData(): String {
@@ -48,18 +48,18 @@ object SqlQueries {
                     isnull(ex.wydatki,0) wydatki,  
                     isnull(i.przychody,0) przychody 
                 from konto k 
-                    left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = ? and month(data) = ? group by konto) ex on ex.konto = k.ID 
-                    left join (select sum(kwota) przychody, konto from przychody where year(data) = ? and month(data) = ? group by konto) i on i.konto = k.ID 
+                    left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = :year and month(data) = :month group by konto) ex on ex.konto = k.ID 
+                    left join (select sum(kwota) przychody, konto from przychody where year(data) = :year and month(data) = :month group by konto) i on i.konto = k.ID 
                 where k.del = 0 and id > 1;""".trimIndent()
     }
 
     private fun updatePlanedBudget(): String {
-        return """update b set b.planed = ? 
+        return """update b set b.planed = :planed 
                     from budzet b 
                 join kategoria c on c.id = b.category 
-                    where c.nazwa = ? 
-                    and b.rok = ? 
-                    and b.miesiac = ?
+                    where c.nazwa = :category 
+                    and b.rok = :year 
+                    and b.miesiac = :month
                 """.trimIndent()
     }
 
@@ -72,7 +72,7 @@ object SqlQueries {
                     (select sum(used) spend, sum(planed) planed, rok, miesiac from budzet b group by rok, miesiac) b
                     left join(select sum(kwota) przychod, year(data) rok, month(data) miesiac from przychody 
                         group by year(data) , month(data) ) as p on p.rok = b.rok and p.miesiac = b.miesiac
-                where b.rok = ? and b.miesiac = ?""".trimIndent()
+                where b.rok = :year and b.miesiac = :month""".trimIndent()
     }
 
     private fun getMonthBudget(): String {
@@ -85,8 +85,8 @@ object SqlQueries {
                    b.percentUsed percentage 
                 from budzet b 
                    join kategoria k on k.id = b.category 
-                where rok = ? 
-                   and miesiac = ?
+                where rok = :year 
+                   and miesiac = :month
                 order by b.used desc""".trimIndent()
     }
 
@@ -100,9 +100,9 @@ object SqlQueries {
                       b.percentUsed percentage 
                   from budzet b 
                       join kategoria k on k.id = b.category 
-                  where rok = ? 
-                       and miesiac = ? 
-                       and k.nazwa = ?
+                  where rok = :year 
+                       and miesiac = :month 
+                       and k.nazwa = :category
                    order by spent desc""".trimIndent()
     }
 
@@ -115,7 +115,7 @@ object SqlQueries {
                        join ASORTYMENT a on a.id = aso_s.id_aso 
                  where aso_s.del = 0 
                        and a.del = 0 
-                       and s.ID = ? 
+                       and s.ID = :id 
                  order by a.nazwa""".trimIndent()
     }
 
@@ -126,8 +126,8 @@ object SqlQueries {
                  from paragony p 
                    join paragony_szczegoly ps on ps.id_paragonu = p.ID 
                    join kategoria k on k.id = ps.kategoria 
-                 where year(p.data) = year(?) 
-                   and month(p.data) = month(?) 
+                 where year(p.data) = year(:date) 
+                   and month(p.data) = month(:date) 
                  group by k.nazwa 
                  order by suma""".trimIndent()
     }
@@ -146,9 +146,9 @@ object SqlQueries {
                  where ps.del=0 and ps.id_paragonu in 
                                    (select id 
                                        from paragony p 
-                                       where p.ID_sklep = ? 
+                                       where p.ID_sklep = :id 
                                            and p.del = 0
-                                           and year(p.data) = year(?)) 
+                                           and year(p.data) = year(:date)) 
                                         group by a.id, 
                                            a.NAZWA""".trimIndent()
     }
@@ -167,9 +167,9 @@ object SqlQueries {
                  where ps.del = 0 and ps.id_paragonu in 
                                (select id 
                                    from paragony p 
-                                   where p.ID_sklep = ? 
+                                   where p.ID_sklep = :id 
                                        and p.del = 0
-                                       and p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)) 
+                                       and p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)) 
                                    group by a.id, 
                                    a.NAZWA""".trimIndent()
     }
@@ -181,9 +181,9 @@ object SqlQueries {
                    y.yearSum, 
                    isnull(m.monthSummary, 0.00) monthSum 
                  from sklepy s 
-                   join (select id_sklep, sum(suma) yearSum from paragony where year(data)= ? group by ID_sklep) as y 
+                   join (select id_sklep, sum(suma) yearSum from paragony where year(data)= :year group by ID_sklep) as y 
                        on y.ID_sklep = s.ID 
-                   left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p where year(p.data) = ? and month(p.data) = ? group by ID_sklep) m 
+                   left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p where year(p.data) = :year and month(p.data) = :month group by ID_sklep) m 
                        on m.ID_sklep = s.ID 
                   order by s.sklep""".trimIndent()
 
@@ -199,15 +199,15 @@ object SqlQueries {
                        join (select sum(cena) price, kategoria 
                                from paragony_szczegoly ps 
                                    join paragony p on p.ID = ps.id_paragonu 
-                               where year(p.data) = year(?) 
+                               where year(p.data) = year(:date) 
                                group by kategoria) as pr on pr.kategoria = k.id 
                        left join (select 
                                        sum(cena) price, 
                                        kategoria 
                                   from paragony_szczegoly ps 
                                        join paragony p on p.ID = ps.id_paragonu 
-                                  where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)
-                                  group by kategoria) as ps on ps.kategoria = k.id where k.id = ? 
+                                  where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)
+                                  group by kategoria) as ps on ps.kategoria = k.id where k.id = :id 
                   order by nazwa""".trimIndent()
     }
 
@@ -218,10 +218,10 @@ object SqlQueries {
                     pr.price yearSummary 
                 from kategoria k 
                 join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                            join paragony p on p.ID = ps.id_paragonu where year(p.data) = ? 
+                            join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year 
                             group by kategoria) as pr on pr.kategoria = k.id 
                 left join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                join paragony p on p.ID = ps.id_paragonu where year(p.data) = ? and month(p.data) = ? 
+                join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year2 and month(p.data) = :month 
                 group by kategoria) as ps on ps.kategoria = k.id 
                 order by nazwa""".trimIndent()
     }
@@ -235,8 +235,8 @@ object SqlQueries {
                        on p.ID = ps.id_paragonu 
                    join ASORTYMENT a 
                        on a.id = ps.ID_ASO 
-                 where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, ?)))) and EOMONTH(?)
-                   and ps.kategoria = ? 
+                 where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)
+                   and ps.kategoria = :id
                  group by a.NAZWA;""".trimIndent()
     }
 
@@ -250,7 +250,7 @@ object SqlQueries {
                    k.nazwa account
                 FROM dbo.paragony p
                    join konto k on k.ID = p.konto
-                   join sklepy s on s.ID = p.ID_sklep where year(p.data) = ? and month(p.data) = ? order by data desc
+                   join sklepy s on s.ID = p.ID_sklep where year(p.data) = :year and month(p.data) = :month  order by data desc
                 """.trimIndent()
     }
 
@@ -282,7 +282,7 @@ object SqlQueries {
                         a.id itemId
                     from paragony_szczegoly ps
                         join ASORTYMENT a on a.id = ps.ID_ASO 
-                        where ps.del = 0 and id_paragonu = ?
+                        where ps.del = 0 and id_paragonu = :invoiceId
                 """.trimIndent()
     }
 
@@ -292,11 +292,13 @@ object SqlQueries {
                         ps.cena_za_jednostke cena, 
                         ps.ilosc, ps.rabat, p.suma, 
                         p.ID invoiceId, 
-                        ps.ID invoiceItemId 
+                        ps.ID invoiceItemId ,
+						a.NAZWA
                     from paragony_szczegoly ps
                         join paragony p on p.ID = ps.id_paragonu 
                         join sklepy s on s.ID = p.ID_sklep
-                    where ps.ID_ASO=?
+						join ASORTYMENT a on a.id = ps.ID_ASO
+                    where ps.ID_ASO=:id
                         order by p.data desc
                 """.trimIndent()
     }

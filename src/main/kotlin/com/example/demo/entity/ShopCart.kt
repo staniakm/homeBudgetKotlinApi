@@ -1,23 +1,23 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
 import java.math.BigDecimal
-import java.sql.ResultSet
 
 data class ShopCartDetails(
-    val invoiceItemId: Long, val productName: String, val quantity: BigDecimal,
-    val price: BigDecimal, val discount: BigDecimal, val totalPrice: BigDecimal, val itemId: Long
+    val invoiceItemId: Int, val productName: String, val quantity: BigDecimal,
+    val price: BigDecimal, val discount: BigDecimal, val totalPrice: BigDecimal, val itemId: Int
 )
 
-class ShopCartDetailsRowMapper : RowMapper<ShopCartDetails> {
-    override fun map(rs: ResultSet, ctx: StatementContext?) = ShopCartDetails(
-        rs.getLong("id"),
-        rs.getString("nazwa"),
-        rs.getBigDecimal("ilosc"),
-        rs.getBigDecimal("cena_za_jednostke"),
-        rs.getBigDecimal("rabat"),
-        rs.getBigDecimal("cena"),
-        rs.getLong("itemId")
-    )
+object ShopCartDetailsRowMapper {
+    val map: (row: Row) -> ShopCartDetails = { row ->
+        ShopCartDetails(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("nazwa", String::class.java)!!,
+            row.get("ilosc", BigDecimal::class.java)!!,
+            row.get("cena_za_jednostke", BigDecimal::class.java)!!,
+            row.get("rabat", BigDecimal::class.java)!!,
+            row.get("cena", BigDecimal::class.java)!!,
+            row.get("itemId", Number::class.java)!! as Int
+        )
+    }
 }

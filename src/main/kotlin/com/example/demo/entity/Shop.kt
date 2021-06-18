@@ -1,26 +1,28 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
 import java.math.BigDecimal
-import java.sql.ResultSet
 
-data class ShopSummary(val shopId: Long, val name: String, val monthSum: BigDecimal, val yearSum: BigDecimal)
+data class ShopSummary(val shopId: Int, val name: String, val monthSum: BigDecimal, val yearSum: BigDecimal)
 
 data class Shop(val shopId: Long, val name: String)
 
-class ShopRowMapper : RowMapper<Shop> {
-    override fun map(rs: ResultSet, ctx: StatementContext?) = Shop(
-        rs.getLong("id"),
-        rs.getString("name")
-    )
+object ShopRowMapper {
+    val map: (row: Row) -> Shop = { row ->
+        Shop(
+            row.get("id", Long::class.java)!!,
+            row.get("name", String::class.java)!!
+        )
+    }
 }
 
-object ShopSummaryRowMapper : RowMapper<ShopSummary> {
-    override fun map(rs: ResultSet, ctx: StatementContext?) = ShopSummary(
-        rs.getLong("id"),
-        rs.getString("nazwa"),
-        rs.getBigDecimal("monthSum"),
-        rs.getBigDecimal("yearSum")
-    )
+object ShopSummaryRowMapper {
+    val map: (row: Row) -> ShopSummary = { row ->
+        ShopSummary(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("nazwa", String::class.java)!!,
+            row.get("monthSum", BigDecimal::class.java)!!,
+            row.get("yearSum", BigDecimal::class.java)!!
+        )
+    }
 }

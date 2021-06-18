@@ -8,12 +8,10 @@ import java.time.LocalDate
 @Service
 class InvoiceService(private val invoiceRepository: InvoiceRepository, private val clock: ClockProvider) {
 
-    fun getInvoiceListForMonth(monthValue: Long): List<ShoppingInvoice> =
+    fun getInvoiceListForMonth(monthValue: Long)=
         invoiceRepository.getInvoices(clock.getDateFromMonth(monthValue))
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
 
-    fun getAccountInvoices(accountId: Long, date: LocalDate): List<ShoppingInvoice> {
-        return invoiceRepository.getAccountInvoices(accountId, date)
-    }
+    fun getAccountInvoices(accountId: Long, date: LocalDate) = invoiceRepository.getAccountInvoices(accountId, date)
 }

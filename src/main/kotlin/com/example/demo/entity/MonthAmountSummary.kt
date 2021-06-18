@@ -1,44 +1,45 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
 import java.math.BigDecimal
-import java.sql.ResultSet
 
 data class MonthAccountSummary(
-    val id: Long,
+    val id: Int,
     val name: String,
     val moneyAmount: BigDecimal,
     val expense: BigDecimal,
     val income: BigDecimal
 )
 
-object MonthAccountRowMapper : RowMapper<MonthAccountSummary> {
-
-    override fun map(rs: ResultSet, ctx: StatementContext) = MonthAccountSummary(
-        rs.getLong("id"),
-        rs.getString("nazwa"),
-        rs.getBigDecimal("kwota"),
-        rs.getBigDecimal("wydatki"),
-        rs.getBigDecimal("przychody")
-    )
+object MonthAccountRowMapper {
+    val map: (row: Row) -> MonthAccountSummary = { row ->
+        MonthAccountSummary(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("nazwa", String::class.java)!!,
+            row.get("kwota", BigDecimal::class.java)!!,
+            row.get("wydatki", BigDecimal::class.java)!!,
+            row.get("przychody", BigDecimal::class.java)!!
+        )
+    }
 }
 
 data class Account(
-    val id: Long,
+    val id: Int,
     val name: String,
     val amount: BigDecimal,
     val owner: String
 )
 
-data class UpdateAccountDto(val id:Long, val name: String, val newMoneyAmount: BigDecimal)
+data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: BigDecimal)
 
-object AccountRowMapper : RowMapper<Account> {
+object AccountRowMapper {
 
-    override fun map(rs: ResultSet, ctx: StatementContext) = Account(
-        rs.getLong("id"),
-        rs.getString("name"),
-        rs.getBigDecimal("amount"),
-        rs.getString("owner")
-    )
+    val map: (row: Row) -> Account = { row ->
+        Account(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("name", String::class.java)!!,
+            row.get("amount", BigDecimal::class.java)!!,
+            row.get("owner", String::class.java)!!
+        )
+    }
 }

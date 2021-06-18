@@ -1,30 +1,33 @@
 package com.example.demo.entity
 
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.Query
-import org.jdbi.v3.core.statement.StatementContext
+import io.r2dbc.spi.Row
+import org.springframework.r2dbc.core.DatabaseClient
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.math.BigDecimal
-import java.sql.ResultSet
 import java.time.LocalDate
 
-data class Category(val id: Long, val name: String, val monthSummary: BigDecimal,
-               val yearSummary: BigDecimal, var details: List<CategoryDetails>) {
+data class Category(
+    val id: Int, val name: String, val monthSummary: BigDecimal,
+    val yearSummary: BigDecimal
+) {
     companion object {
-        val bindByDate: (date:LocalDate, Query)-> Unit = { date, query->
-            query.bind(0, date.year)
-            query.bind(1, date.year)
-            query.bind(2, date.monthValue)
-        }
+        val bindByDate: (LocalDate, DatabaseClient.GenericExecuteSpec) -> DatabaseClient.GenericExecuteSpec =
+            { date, query ->
+                query.bind("year", date.year)
+                    .bind("year2", date.year)
+                    .bind("month", date.monthValue)
+            }
     }
 }
 
-object CategoryRowMapper : RowMapper<Category> {
-    override fun map(rs: ResultSet, ctx: StatementContext?): Category {
-        return Category(
-                rs.getLong("id"),
-                rs.getString("nazwa"),
-                rs.getBigDecimal("monthSummary"),
-                rs.getBigDecimal("yearSummary"),
-                emptyList())
+object CategoryRowMapper {
+    val map: (row: Row) -> Category = { row ->
+        Category(
+            row.get("id", Number::class.java)!! as Int,
+            row.get("nazwa", String::class.java)!!,
+            row.get("monthSummary", BigDecimal::class.java)!!,
+            row.get("yearSummary", BigDecimal::class.java)!!,
+        )
     }
 }
