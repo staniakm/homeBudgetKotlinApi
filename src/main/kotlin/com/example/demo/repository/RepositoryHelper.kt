@@ -3,6 +3,7 @@ package com.example.demo.repository
 import io.r2dbc.spi.Row
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
+import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -31,11 +32,12 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .all()
     }
 
-    fun executeUpdate(query: () -> String, params: DatabaseClient.GenericExecuteSpec.() -> Unit = {}) {
-        client.sql(query)
-            .also {
+    fun executeUpdate(query: () -> String, params: DatabaseClient.GenericExecuteSpec.() -> Unit = {}): Mono<Void> {
+        return client.sql(query)
+            .let {
                 it.params()
-            }.fetch().one()
+                it
+            }.then()
     }
 
     fun <T> findFirstOrNull(

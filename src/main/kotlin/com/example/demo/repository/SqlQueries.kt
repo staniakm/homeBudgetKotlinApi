@@ -34,7 +34,7 @@ object SqlQueries {
     }
 
     private fun getSingleAccountData(): String {
-        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0 and id = ?;"
+        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0 and id = :id;"
     }
 
     private fun getShopList(): String {

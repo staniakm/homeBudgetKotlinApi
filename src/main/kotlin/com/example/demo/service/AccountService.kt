@@ -4,7 +4,7 @@ import com.example.demo.entity.Account
 import com.example.demo.entity.UpdateAccountDto
 import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 
 @Service
 class AccountService(
@@ -28,18 +28,17 @@ class AccountService(
     fun getAccountOperations(accountId: Long, month: Long) =
         invoiceService.getAccountInvoices(accountId, clock.getDateFromMonth(month))
 
-    fun updateAccount(accountId: Long, updateAccount: UpdateAccountDto): Account {
+    fun updateAccount(accountId: Long, updateAccount: UpdateAccountDto): Mono<Account> {
         if (accountId != updateAccount.id) {
             throw IllegalArgumentException("Invalid requested id")
         }
 
-        return getAccount(accountId).block()?.copy(amount = updateAccount.newMoneyAmount)
-            .let {
-                accountRepository.update(it!!)
-                it
-            }
+        val account: Mono<Account> = getAccount(accountId).map { it.copy(amount = updateAccount.newMoneyAmount) }
+        return account
+            .flatMap { accountRepository.update(it) }
+            .then(account)
     }
 
     private fun getAccount(id: Long) =
-        accountRepository.findById(id) ?: throw java.lang.IllegalArgumentException("Missing account")
+        accountRepository.findById(id)
 }

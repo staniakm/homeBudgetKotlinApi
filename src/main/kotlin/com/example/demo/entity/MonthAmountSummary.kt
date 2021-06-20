@@ -27,7 +27,7 @@ data class Account(
     val id: Int,
     val name: String,
     val amount: BigDecimal,
-    val owner: String
+    val owner: Int
 )
 
 data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: BigDecimal)
@@ -39,7 +39,7 @@ object AccountRowMapper {
             row.get("id", Number::class.java)!! as Int,
             row.get("name", String::class.java)!!,
             row.get("amount", BigDecimal::class.java)!!,
-            row.get("owner", String::class.java)!!
+            row.get("owner", Number::class.java)!! as Int
         )
     }
 }
