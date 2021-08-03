@@ -14,30 +14,30 @@ import java.time.LocalDate
 class ShopRepository(private val helper: RepositoryHelper) {
 
     fun getAllShopsSummary(date: LocalDate): Flux<ShopSummary> {
-        return helper.getList(GET_SHOP_LIST_SUMMARY, ShopSummaryRowMapper.map) {
+        return helper.getList(GET_SHOP_LIST_SUMMARY, shopSummaryRowMapper) {
             bind("year", date.year).bind("month", date.monthValue)
         }
     }
 
     fun getShopMonthItems(id: Long, date: LocalDate): Flux<ShopItemsSummary> {
-        return helper.getList(GET_SHOP_MONTH_ITEMS, ShopItemSummaryRowMapper.map) {
+        return helper.getList(GET_SHOP_MONTH_ITEMS, shopItemSummaryRowMapper) {
             bind("id", id)
                 .bind("date", date)
         }
     }
 
     fun getShopYearItems(shopId: Long, date: LocalDate): Flux<ShopItemsSummary> {
-        return helper.getList(GET_SHOP_YEAR_ITEMS, ShopItemSummaryRowMapper.map) {
+        return helper.getList(GET_SHOP_YEAR_ITEMS, shopItemSummaryRowMapper) {
             bind("id", shopId)
                 .bind("date", date)
         }
     }
 
     fun getShopItems(shopId: Long): Flux<ShopItem> {
-        return helper.getList(GET_SHOP_ITEMS, ShopItemRowMapper.map) {
+        return helper.getList(GET_SHOP_ITEMS, shopItemRowMapper) {
             bind("id", shopId)
         }
     }
 
-    fun getAllShops(): Flux<Shop> = helper.getList(GET_SHOP_LIST, ShopRowMapper.map)
+    fun getAllShops(): Flux<Shop> = helper.getList(GET_SHOP_LIST, shopRowMapper)
 }

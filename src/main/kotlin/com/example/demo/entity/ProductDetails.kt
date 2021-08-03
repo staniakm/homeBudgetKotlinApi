@@ -10,18 +10,17 @@ data class ProductDetails(
     val invoiceItemId: Int, val productName: String
 )
 
-object ProductDetailsRowMapper {
-    val map: (row: Row) -> ProductDetails = { row ->
-        ProductDetails(
-            row.get("sklep", String::class.java)!!,
-            row.get("data", LocalDate::class.java)!!,
-            row.get("cena", BigDecimal::class.java)!!,
-            row.get("ilosc", BigDecimal::class.java)!!,
-            row.get("rabat", BigDecimal::class.java)!!,
-            row.get("suma", BigDecimal::class.java)!!,
-            row.get("invoiceId", Number::class.java)!! as Int,
-            row.get("invoiceItemId", Number::class.java)!! as Int,
-            row.get("nazwa", String::class.java)!!
-        )
-    }
+
+val productDetailsRowMapper: (row: Row) -> ProductDetails = { row ->
+    ProductDetails(
+        row.get("sklep", String::class.java)!!,
+        row.get("data", LocalDate::class.java)!!,
+        row.get("cena", BigDecimal::class.java)!!,
+        row.get("ilosc", BigDecimal::class.java)!!,
+        row.get("rabat", BigDecimal::class.java)!!,
+        row.get("suma", BigDecimal::class.java)!!,
+        row.get("invoiceId", Number::class.java)!! as Int,
+        row.get("invoiceItemId", Number::class.java)!! as Int,
+        row.get("nazwa", String::class.java)!!
+    )
 }

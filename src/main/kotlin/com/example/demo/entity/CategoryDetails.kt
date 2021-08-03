@@ -5,11 +5,9 @@ import java.math.BigDecimal
 
 data class CategoryDetails(val name: String, val price: BigDecimal)
 
-object CategoryDetailsRowMapper {
-    val map: (row: Row) -> CategoryDetails = { row ->
-        CategoryDetails(
-            row.get("nazwa", String::class.java)!!,
-            row.get("cena", BigDecimal::class.java)!!
-        )
-    }
+val categoryDetailsRowMapper: (row: Row) -> CategoryDetails = { row ->
+    CategoryDetails(
+        row.get("nazwa", String::class.java)!!,
+        row.get("cena", BigDecimal::class.java)!!
+    )
 }

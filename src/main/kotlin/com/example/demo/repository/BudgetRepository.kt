@@ -48,14 +48,14 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
     }
 
     private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {
-        return helper.findOne(GET_MONTH_BUDGE_DETAILS, BudgetItemMapper.map) {
+        return helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
             bind("year", date.year)
                 .bind("month", date.monthValue)
         }
     }
 
     private fun getMonthBudgetForCategory(date: LocalDate, category: String): Flux<MonthBudget> {
-        return helper.getList(GET_MONTH_BUDGET_FOR_CATEGORY, MonthBudgetMapper.map) {
+        return helper.getList(GET_MONTH_BUDGET_FOR_CATEGORY, monthBudgetMapper) {
             bind("year", date.year)
                 .bind("month", date.monthValue)
                 .bind("category", category)
@@ -63,7 +63,7 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
     }
 
     private fun getMonthBudgets(date: LocalDate): Flux<MonthBudget> {
-        return helper.getList(GET_MONTH_BUDGET, MonthBudgetMapper.map) {
+        return helper.getList(GET_MONTH_BUDGET, monthBudgetMapper) {
             bind("year", date.year)
                 .bind("month", date.monthValue)
         }

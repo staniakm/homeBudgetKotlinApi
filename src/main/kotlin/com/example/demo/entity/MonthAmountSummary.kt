@@ -11,16 +11,14 @@ data class MonthAccountSummary(
     val income: BigDecimal
 )
 
-object MonthAccountRowMapper {
-    val map: (row: Row) -> MonthAccountSummary = { row ->
-        MonthAccountSummary(
-            row.get("id", Number::class.java)!! as Int,
-            row.get("nazwa", String::class.java)!!,
-            row.get("kwota", BigDecimal::class.java)!!,
-            row.get("wydatki", BigDecimal::class.java)!!,
-            row.get("przychody", BigDecimal::class.java)!!
-        )
-    }
+val monthAccountRowMapper: (row: Row) -> MonthAccountSummary = { row ->
+    MonthAccountSummary(
+        row.get("id", Number::class.java)!! as Int,
+        row.get("nazwa", String::class.java)!!,
+        row.get("kwota", BigDecimal::class.java)!!,
+        row.get("wydatki", BigDecimal::class.java)!!,
+        row.get("przychody", BigDecimal::class.java)!!
+    )
 }
 
 data class Account(
@@ -32,14 +30,11 @@ data class Account(
 
 data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: BigDecimal)
 
-object AccountRowMapper {
-
-    val map: (row: Row) -> Account = { row ->
-        Account(
-            row.get("id", Number::class.java)!! as Int,
-            row.get("name", String::class.java)!!,
-            row.get("amount", BigDecimal::class.java)!!,
-            row.get("owner", Number::class.java)!! as Int
-        )
-    }
+val accountRowMapper: (row: Row) -> Account = { row ->
+    Account(
+        row.get("id", Number::class.java)!! as Int,
+        row.get("name", String::class.java)!!,
+        row.get("amount", BigDecimal::class.java)!!,
+        row.get("owner", Number::class.java)!! as Int
+    )
 }

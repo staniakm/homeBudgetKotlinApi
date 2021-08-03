@@ -3,7 +3,6 @@ package com.example.demo.repository
 import io.r2dbc.spi.Row
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
-import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -64,8 +63,11 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .one()
     }
 
-    fun callProcedure(query: String, function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec) {
-         client.sql(query)
+    fun callProcedure(
+        query: String,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ) {
+        client.sql(query)
             .let {
                 it.function()
             }.fetch()

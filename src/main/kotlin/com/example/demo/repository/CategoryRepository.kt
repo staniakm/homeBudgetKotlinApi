@@ -2,8 +2,8 @@ package com.example.demo.repository
 
 import com.example.demo.entity.Category
 import com.example.demo.entity.CategoryDetails
-import com.example.demo.entity.CategoryDetailsRowMapper
-import com.example.demo.entity.CategoryRowMapper
+import com.example.demo.entity.categoryDetailsRowMapper
+import com.example.demo.entity.categoryRowMapper
 import com.example.demo.repository.SqlQueries.GET_CATEGORY_BY_ID
 import com.example.demo.repository.SqlQueries.GET_CATEGORY_DETAILS
 import com.example.demo.repository.SqlQueries.GET_CATEGORY_SUMMARY_LIST
@@ -16,7 +16,7 @@ import java.time.LocalDate
 class CategoryRepository(private val helper: RepositoryHelper) {
 
     fun getCategoriesSummary(date: LocalDate): Flux<Category> {
-        return helper.getList(GET_CATEGORY_SUMMARY_LIST, CategoryRowMapper.map) {
+        return helper.getList(GET_CATEGORY_SUMMARY_LIST, categoryRowMapper) {
             Category.bindByDate(date, this)
         }
     }
@@ -27,7 +27,7 @@ class CategoryRepository(private val helper: RepositoryHelper) {
     }
 
     fun getCategoryDetails(id: Long, date: LocalDate): Flux<CategoryDetails> {
-        return helper.getList(GET_CATEGORY_DETAILS, CategoryDetailsRowMapper.map) {
+        return helper.getList(GET_CATEGORY_DETAILS, categoryDetailsRowMapper) {
             bind(0, date)
                 .bind("date", date)
                 .bind("id", id)
@@ -35,7 +35,7 @@ class CategoryRepository(private val helper: RepositoryHelper) {
     }
 
     private fun getCategoryById(id: Long, date: LocalDate): Mono<Category> {
-        return helper.findFirstOrNull(GET_CATEGORY_BY_ID, CategoryRowMapper.map) {
+        return helper.findFirstOrNull(GET_CATEGORY_BY_ID, categoryRowMapper) {
             bind("date", date)
                 .bind("id", id)
         }

@@ -1,9 +1,9 @@
 package com.example.demo.repository
 
 import com.example.demo.entity.Account
-import com.example.demo.entity.AccountRowMapper
-import com.example.demo.entity.MonthAccountRowMapper
 import com.example.demo.entity.MonthAccountSummary
+import com.example.demo.entity.accountRowMapper
+import com.example.demo.entity.monthAccountRowMapper
 import com.example.demo.repository.SqlQueries.GET_ACCOUNTS_SUMMARY_FOR_MONTH
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.GET_SINGLE_ACCOUNT_DATA
@@ -17,15 +17,15 @@ import java.time.LocalDate
 @Repository
 class AccountRepository(private val helper: RepositoryHelper, private val client: DatabaseClient) {
     fun getAccountsSummaryForMonth(date: LocalDate): Flux<MonthAccountSummary> {
-        return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, MonthAccountRowMapper.map) {
+        return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
             bind("year", date.year)
                 .bind("month", date.monthValue)
         }
     }
 
-    fun findAllAccounts() = helper.getList(GET_ACCOUNT_DATA, AccountRowMapper.map)
+    fun findAllAccounts() = helper.getList(GET_ACCOUNT_DATA, accountRowMapper)
 
-    fun findById(id: Long) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, AccountRowMapper.map) {
+    fun findById(id: Long) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
         bind("id", id)
     }
 

@@ -9,16 +9,14 @@ data class ShopItemsSummary(
     val totalDiscount: BigDecimal, val totalSpend: BigDecimal
 )
 
-object ShopItemSummaryRowMapper {
-    val map:(row: Row)-> ShopItemsSummary = { row ->
-        ShopItemsSummary(
-            row.get("id", Number::class.java)!! as Int,
-            row.get("name", String::class.java)!!,
-            row.get("quantity", BigDecimal::class.java)!!,
-            row.get("min_price_for_unit", BigDecimal::class.java)!!,
-            row.get("max_price_for_unit", BigDecimal::class.java)!!,
-            row.get("discount_sum", BigDecimal::class.java)!!,
-            row.get("total_spend", BigDecimal::class.java)!!
-        )
-    }
+val shopItemSummaryRowMapper: (row: Row) -> ShopItemsSummary = { row ->
+    ShopItemsSummary(
+        row.get("id", Number::class.java)!! as Int,
+        row.get("name", String::class.java)!!,
+        row.get("quantity", BigDecimal::class.java)!!,
+        row.get("min_price_for_unit", BigDecimal::class.java)!!,
+        row.get("max_price_for_unit", BigDecimal::class.java)!!,
+        row.get("discount_sum", BigDecimal::class.java)!!,
+        row.get("total_spend", BigDecimal::class.java)!!
+    )
 }

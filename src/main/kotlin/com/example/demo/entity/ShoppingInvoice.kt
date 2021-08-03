@@ -12,14 +12,13 @@ data class ShoppingInvoice(
     val account: String
 )
 
-object ShoppingListRowMapper {
-    val map: (row: Row) -> ShoppingInvoice = { row ->
-        ShoppingInvoice(
-            row.get("id", Number::class.java)!! as Int,
-            row.get("sklep", String::class.java)!!,
-            row.get("data", LocalDate::class.java)!!,
-            row.get("suma", BigDecimal::class.java)!!,
-            row.get("account", String::class.java)!!
-        )
-    }
+
+val shoppingListRowMapper: (row: Row) -> ShoppingInvoice = { row ->
+    ShoppingInvoice(
+        row.get("id", Number::class.java)!! as Int,
+        row.get("sklep", String::class.java)!!,
+        row.get("data", LocalDate::class.java)!!,
+        row.get("suma", BigDecimal::class.java)!!,
+        row.get("account", String::class.java)!!
+    )
 }
