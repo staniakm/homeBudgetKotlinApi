@@ -1,0 +1,7 @@
+spring:
+  r2dbc:
+    url: r2dbc:pool:mssql://localhost:1433/finanse
+    username: apiUser
+    password: apuUserPass
+  profiles:
+    default: local

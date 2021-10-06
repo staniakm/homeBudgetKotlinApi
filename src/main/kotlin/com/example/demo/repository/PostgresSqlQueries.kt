@@ -1,29 +1,33 @@
 package com.example.demo.repository
 
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 
-object SqlQueries {
+@Component
+@Profile("docker")
+class PostgresSqlQueries : QueryProvider {
 
-    val GET_INVOICE: () -> String = { getInvoices() }
-    val GET_ACCOUNT_INVOICES: () -> String = { getAccountInvoices() }
-    val GET_INVOICE_DETAILS: () -> String = { getInvoiceDetails() }
-    val GET_CATEGORY_SUMMARY_LIST: () -> String = { getCategoryList() }
-    val GET_CATEGORY_DETAILS: () -> String = { getCategoryDetails() }
-    val GET_SHOP_LIST_SUMMARY: () -> String = { getShopListSummary() }
-    val GET_SHOP_MONTH_ITEMS: () -> String = { getShopMonthShopping() }
-    val GET_SHOP_YEAR_ITEMS: () -> String = { getShopYearShopping() }
-    val GET_MONTH_SUMMARY_CHART_DATA: () -> String = { getMonthSummary() }
-    val GET_SHOP_ITEMS: () -> String = { getShopItems() }
-    val GET_MONTH_BUDGET: () -> String = { getMonthBudget() }
-    val GET_CATEGORY_BY_ID: () -> String = { getCategoryById() }
-    val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
-    val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
-    val GET_PRODUCT_DETAILS: () -> String = { getProductDetails() }
-    val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
-    val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
-    val GET_SHOP_LIST: () -> String = { getShopList() }
-    val GET_ACCOUNT_DATA: () -> String = { getAccountData() }
-    val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
-    val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
+    override val GET_INVOICE: () -> String = { getInvoices() }
+    override val GET_ACCOUNT_INVOICES: () -> String = { getAccountInvoices() }
+    override val GET_INVOICE_DETAILS: () -> String = { getInvoiceDetails() }
+    override val GET_CATEGORY_SUMMARY_LIST: () -> String = { getCategoryList() }
+    override val GET_CATEGORY_DETAILS: () -> String = { getCategoryDetails() }
+    override val GET_SHOP_LIST_SUMMARY: () -> String = { getShopListSummary() }
+    override val GET_SHOP_MONTH_ITEMS: () -> String = { getShopMonthShopping() }
+    override val GET_SHOP_YEAR_ITEMS: () -> String = { getShopYearShopping() }
+    override val GET_MONTH_SUMMARY_CHART_DATA: () -> String = { getMonthSummary() }
+    override val GET_SHOP_ITEMS: () -> String = { getShopItems() }
+    override val GET_MONTH_BUDGET: () -> String = { getMonthBudget() }
+    override val GET_CATEGORY_BY_ID: () -> String = { getCategoryById() }
+    override val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
+    override val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
+    override val GET_PRODUCT_DETAILS: () -> String = { getProductDetails() }
+    override val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
+    override val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
+    override val GET_SHOP_LIST: () -> String = { getShopList() }
+    override val GET_ACCOUNT_DATA: () -> String = { getAccountData() }
+    override val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
+    override val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
 
     private fun updateSingleAccount(): String {
         return "update konto set kwota = :amount from konto where del = 0 and id = :id;"
@@ -214,14 +218,14 @@ object SqlQueries {
     private fun getCategoryList(): String {
         return """select k.id id, 
                     nazwa, 
-                    isnull(ps.price,0.00) monthSummary, 
+                    COALESCE(ps.price,0.00) monthSummary, 
                     pr.price yearSummary 
                 from kategoria k 
                 join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                            join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year 
+                            join paragony p on p.ID = ps.id_paragonu where EXTRACT(YEAR FROM p.data) = :year 
                             group by kategoria) as pr on pr.kategoria = k.id 
                 left join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year2 and month(p.data) = :month 
+                join paragony p on p.ID = ps.id_paragonu where EXTRACT(YEAR FROM p.data) = :year2 and EXTRACT(MONTH FROM p.data) = :month 
                 group by kategoria) as ps on ps.kategoria = k.id 
                 order by nazwa""".trimIndent()
     }
