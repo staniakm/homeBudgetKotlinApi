@@ -18,8 +18,6 @@ class RepositoryHelper(private val client: DatabaseClient) {
                 it.params()
             }.map(mapper)
             .all()
-
-
     }
 
     fun <T> getList(
@@ -74,6 +72,17 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .one()
     }
 
+    fun update(
+        query: () -> String,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Mono<Void> {
+        return client.sql(query)
+            .let {
+                it.function()
+            }
+            .then()
+    }
+
 //    fun callProcedure(query: String, function: Call.() -> Unit) {
 //        client.jdbi.withHandle<Any, SQLException> { handle ->
 //            handle.createCall("{call dbo.RecalculateBudget (?)}")
@@ -82,4 +91,6 @@ class RepositoryHelper(private val client: DatabaseClient) {
 //                }.invoke()
 //        }
 //    }
+
+
 }

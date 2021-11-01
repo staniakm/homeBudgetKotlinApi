@@ -11,26 +11,28 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @Repository
-class AccountRepository(private val helper: RepositoryHelper,
-                        private val client: DatabaseClient,
-                        private val queryProvider: QueryProvider) {
+class AccountRepository(
+    private val helper: RepositoryHelper,
+    private val queryProvider: QueryProvider
+) {
     fun getAccountsSummaryForMonth(date: LocalDate): Flux<MonthAccountSummary> {
         return helper.getList(queryProvider.GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
             bind("year", date.year)
-                    .bind("month", date.monthValue)
+                .bind("month", date.monthValue)
         }
     }
 
     fun findAllAccounts() = helper.getList(queryProvider.GET_ACCOUNT_DATA, accountRowMapper)
 
-    fun findById(id: Long) = helper.findFirstOrNull(queryProvider.GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
-        bind("id", id)
-    }
+    fun findById(id: Long) = helper
+        .findFirstOrNull(queryProvider.GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
+            bind("id", id)
+        }
 
     fun update(account: Account): Mono<Void> {
-        return client.sql(queryProvider.UPDATE_SINGLE_ACCOUNT_DATA)
-                .bind("amount", account.amount)
+        return helper.update(queryProvider.UPDATE_SINGLE_ACCOUNT_DATA) {
+            bind("amount", account.amount)
                 .bind("id", account.id)
-                .then()
+        }
     }
 }

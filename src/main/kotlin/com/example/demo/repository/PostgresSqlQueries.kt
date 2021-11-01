@@ -48,12 +48,14 @@ class PostgresSqlQueries : QueryProvider {
     private fun getAccountsSummaryForMonth(): String {
         return """select k.id, 
                     k.nazwa, 
-                    isnull(k.kwota,0) kwota, 
-                    isnull(ex.wydatki,0) wydatki,  
-                    isnull(i.przychody,0) przychody 
+                    COALESCE (k.kwota :: decimal,0.00) kwota, 
+                    COALESCE (ex.wydatki :: decimal ,0.00) wydatki,  
+                    COALESCE (i.przychody :: decimal ,0.00) przychody 
                 from konto k 
-                    left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = :year and month(data) = :month group by konto) ex on ex.konto = k.ID 
-                    left join (select sum(kwota) przychody, konto from przychody where year(data) = :year and month(data) = :month group by konto) i on i.konto = k.ID 
+                    left join (select sum(suma) wydatki, konto from paragony where del = 0 and EXTRACT(YEAR FROM data) = :year
+                        and EXTRACT(MONTH FROM data) = :month group by konto) ex on ex.konto = k.ID 
+                    left join (select sum(kwota) przychody, konto from przychody where EXTRACT(YEAR FROM data) = :year 
+                        and EXTRACT(MONTH FROM data) = :month group by konto) i on i.konto = k.ID 
                 where k.del = 0 and id > 1;""".trimIndent()
     }
 

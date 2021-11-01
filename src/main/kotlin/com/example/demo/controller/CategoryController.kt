@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono
 class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping
-    fun getCategoriesSummary(@RequestParam("month") month: Long): ResponseEntity<Flux<Category>> {
+    fun getCategoriesSummary(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<Flux<Category>> {
         return ResponseEntity(categoryService.getCategoriesSummary(month), HttpStatus.OK)
     }
 

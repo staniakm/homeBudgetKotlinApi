@@ -6,7 +6,7 @@ services:
     container_name: backend
     build:
       dockerfile: Dockerfile
-    image: backend-budget-app:latest
+    image: backend-budget-app:1.0
     ports:
       - "8081:8080"
     networks:

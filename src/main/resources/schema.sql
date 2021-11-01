@@ -21,7 +21,7 @@ CREATE TABLE if not exists  KATEGORIA
 
 CREATE TABLE if not exists  ASORTYMENT
 (
-    id     int primary key,
+    id     serial primary key,
     nazwa  varchar(100) NOT NULL,
     del    int          NOT NULL default 0,
     id_kat int          NOT NULL,
@@ -248,3 +248,98 @@ ALTER TABLE przychody
 ALTER TABLE przychody
     alter column data set default CURRENT_TIMESTAMP;
 
+create or replace function wydatki_miesieczne (
+    miesiac int,
+    rok int = null
+)
+    returns table (
+                      sklep int,
+                      kwota decimal,
+                      procent decimal
+                  )
+
+as
+    'begin
+    return query
+        select
+            pg.id_sklep,
+            sum(pg.suma)::decimal,
+            round((100 * (sum(pg.suma)::decimal /
+                          (select sum(p.suma)::decimal
+                           from paragony as p
+                           where extract( month from p.data) = miesiac
+                             and extract(year from p.data ) = COALESCE(rok, extract(year from current_date ))
+                          )
+                )
+                      ),2)
+        from
+            paragony pg
+        where
+                extract(MONTH from data) = miesiac
+          and extract(year from data )= COALESCE(rok, extract(year from current_date ))
+        group by pg.id_sklep, extract(month from pg.data);
+end;
+'
+    language plpgsql;
+
+
+CREATE OR REPLACE PROCEDURE public.addasotostore(
+    IN product character varying,
+    IN shop integer)
+AS
+'
+declare
+    aso_id int;
+begin
+    if exists (select 1 from ASORTYMENT where nazwa = UPPER(product))
+    then
+        select id into aso_id from ASORTYMENT where nazwa = UPPER(product);
+
+        --sparawdzamy czy nie jest usunięty, jeśli jest nalezy aktywować
+        if exists (select 1 from ASORTYMENT where id = aso_id and del=1)
+        then
+            update asortyment set del = 0 where id = aso_id;
+        end if;
+
+        -- sprawdzamy czy asortyment jest już w sklepie
+        if exists (select 1 from asortyment_sklep where id_aso = aso_id and id_sklep=shop)
+        then
+            update asortyment_sklep set del = 0 where id_aso = aso_id and id_sklep=shop;
+        else
+            insert into asortyment_sklep(id_aso, id_sklep) values (aso_id, shop);
+        end if;
+    else
+        insert into asortyment (nazwa) values (UPPER(product));
+        select id into aso_id from ASORTYMENT where nazwa = UPPER(product);
+        insert into asortyment_sklep(id_aso, id_sklep) values (aso_id, shop);
+    end if;
+
+    commit;
+end;
+'    language plpgsql;
+
+CREATE OR REPLACE FUNCTION public.showInvoiceList(session_id int)
+    RETURNS TABLE(id integer, data Date, nr_paragonu VARCHAR, suma decimal, konto VARCHAR, sklep VARCHAR)
+AS
+'
+begin
+    return query
+        select p.id,
+               p.data as Data,
+               p.nr_paragonu                  as Nr_paragonu,
+               round(p.suma::decimal,2)::decimal as Suma,
+               rtrim(ao.name)::"varchar"               as Konto,
+               s.sklep::"varchar"                      as Sklep
+        from paragony p
+                 join konto k on k.ID = p.konto
+                 join account_owner ao on ao.owner_id = k.wlasciciel
+                 join sklepy s on s.ID = p.ID_sklep
+                 left join raporg rDat on rDat.parametr = 1 and rDat.sesja = session_id
+                 left join rapOrg rShop on rShop.parametr = 3 and rShop.sesja = session_id
+        where p.del = 0
+          and (rDat.sesja is null or p.data between rDat.minVal::date and rDat.maxVal::date)
+          and (rShop.sesja is null or p.ID_sklep = rShop.minVal::int)
+        order by data;
+end;
+'
+    language plpgsql;

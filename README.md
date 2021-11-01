@@ -7,4 +7,8 @@ Database is filled with help of [desktop application](https://github.com/staniak
 2. Run command `docker build -t backend-budget-app .` to build docker image
 3. Run command `docker-compose up -d` to run application with postgres database
 
+### Alternative
+Run with ./reload to execute `reload.cmd` script that will run all commands and also clean 
+all untagged docker images
+
 Docker app is run with `docker` profile so properties are load from `application-docker.properties` file
