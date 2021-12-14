@@ -15,18 +15,24 @@ import reactor.core.publisher.Mono
 class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping
-    fun getCategoriesSummary(@RequestParam("month") month: Long): ResponseEntity<Flux<Category>> {
+    fun getCategoriesSummary(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<Flux<Category>> {
         return ResponseEntity(categoryService.getCategoriesSummary(month), HttpStatus.OK)
     }
 
 
     @GetMapping("/{id}")
-    fun getCategory(@PathVariable("id") categoryId: Long, @RequestParam("month") month: Long? = 0): ResponseEntity<Mono<Category>> {
-        return ResponseEntity(categoryService.getCategory(categoryId, month ?: 0), HttpStatus.OK)
+    fun getCategory(
+        @PathVariable("id") categoryId: Long,
+        @RequestParam("month", defaultValue = "0") month: Long
+    ): ResponseEntity<Mono<Category>> {
+        return ResponseEntity(categoryService.getCategory(categoryId, month), HttpStatus.OK)
     }
 
     @GetMapping("/{id}/details")
-    fun getCategoryDetails(@PathVariable("id") categoryId: Long, @RequestParam("month") month: Long? = 0): ResponseEntity<Flux<CategoryDetails>> {
-        return ResponseEntity(categoryService.getCategoryDetails(categoryId, month ?: 0), HttpStatus.OK)
+    fun getCategoryDetails(
+        @PathVariable("id") categoryId: Long,
+        @RequestParam("month", defaultValue = "0") month: Long = 0
+    ): ResponseEntity<Flux<CategoryDetails>> {
+        return ResponseEntity(categoryService.getCategoryDetails(categoryId, month), HttpStatus.OK)
     }
 }

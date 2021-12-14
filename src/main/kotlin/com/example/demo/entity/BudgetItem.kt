@@ -11,9 +11,9 @@ data class BudgetItem(
 
 val budgetItemMapper: (row: Row) -> BudgetItem = { row ->
     BudgetItem(
-        row.get("outcome", BigDecimal::class.java)!!,
-        row.get("planed", BigDecimal::class.java)!!,
-        row.get("income", BigDecimal::class.java)!!
+        row["outcome"] as BigDecimal,
+        row["planned"] as BigDecimal,
+        row["income"] as BigDecimal,
     )
 }
 
@@ -22,9 +22,9 @@ data class UpdateBudgetDto(var category: String, var planned: BigDecimal)
 
 val monthBudgetMapper: (row: Row) -> MonthBudget = { row ->
     MonthBudget(
-        row.get("category", String::class.java)!!,
-        row.get("spent", BigDecimal::class.java)!!,
-        row.get("planned", BigDecimal::class.java)!!,
-        row.get("percentage", Number::class.java)!! as Int,
+        row["category"] as String,
+        row["spent"] as BigDecimal,
+        row["planned"] as BigDecimal,
+        row["percentage"] as Int,
     )
 }

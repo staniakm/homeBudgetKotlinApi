@@ -16,7 +16,7 @@ import reactor.core.publisher.Flux
 class ShopController(private val shopService: ShopService) {
 
     @GetMapping
-    fun getShopsForMonth(@RequestParam("month") month: Long): ResponseEntity<Flux<ShopSummary>> =
+    fun getShopsForMonth(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<Flux<ShopSummary>> =
         ResponseEntity(shopService.getShopsSummaryForMonth(month), HttpStatus.OK)
 
     @GetMapping("/{id}")
@@ -26,14 +26,14 @@ class ShopController(private val shopService: ShopService) {
     @GetMapping("/{id}/month")
     fun getShopMonthDetails(
         @PathVariable("id") shopId: Long,
-        @RequestParam("month") month: Long
+        @RequestParam("month", defaultValue = "0") month: Long
     ): ResponseEntity<Flux<ShopItemsSummary>> =
         ResponseEntity(shopService.getMonthShopItemsSummary(shopId, month), HttpStatus.OK)
 
     @GetMapping("/{id}/year")
     fun getShopYearDetails(
         @PathVariable("id") shopId: Long,
-        @RequestParam("month") month: Long = 0L
+        @RequestParam("month", defaultValue = "0") month: Long = 0L
     ): ResponseEntity<Flux<ShopItemsSummary>> =
         ResponseEntity(shopService.getYearShopItemsSummary(shopId, month), HttpStatus.OK)
 

@@ -18,21 +18,21 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     fun getInvoices(date: LocalDate): Flux<ShoppingInvoice> {
         println("fetch data $date")
         return helper.getList(GET_INVOICE, shoppingListRowMapper) {
-            bind("year", date.year).bind("month", date.monthValue)
+            bind("$1", date.year).bind("$2", date.monthValue)
         }
     }
 
     fun getInvoiceDetails(id: Long): Flux<ShopCartDetails> {
         return helper.getList(GET_INVOICE_DETAILS, shopCartDetailsRowMapper) {
-            bind("invoiceId", id)
+            bind("$1", id)
         }
     }
 
     fun getAccountInvoices(accountId: Long, date: LocalDate): Flux<ShoppingInvoice> {
         return helper.getList(GET_ACCOUNT_INVOICES, shoppingListRowMapper) {
-            bind(0, date.year)
-            bind(1, date.monthValue)
-            bind(2, accountId)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
+                .bind("$3", accountId)
         }
     }
 }

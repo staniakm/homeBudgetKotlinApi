@@ -2,6 +2,7 @@ package com.example.demo.entity
 
 import io.r2dbc.spi.Row
 import java.math.BigDecimal
+import java.time.LocalDate
 
 data class MonthAccountSummary(
     val id: Int,
@@ -13,11 +14,11 @@ data class MonthAccountSummary(
 
 val monthAccountRowMapper: (row: Row) -> MonthAccountSummary = { row ->
     MonthAccountSummary(
-        row.get("id", Number::class.java)!! as Int,
-        row.get("nazwa", String::class.java)!!,
-        row.get("kwota", BigDecimal::class.java)!!,
-        row.get("wydatki", BigDecimal::class.java)!!,
-        row.get("przychody", BigDecimal::class.java)!!
+        row["id"] as Int,
+        row["account_name"] as String,
+        row["money"] as BigDecimal,
+        row["expense"] as BigDecimal,
+        row["income"] as BigDecimal
     )
 }
 
@@ -32,9 +33,27 @@ data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: 
 
 val accountRowMapper: (row: Row) -> Account = { row ->
     Account(
-        row.get("id", Number::class.java)!! as Int,
-        row.get("name", String::class.java)!!,
-        row.get("amount", BigDecimal::class.java)!!,
-        row.get("owner", Number::class.java)!! as Int
+        row["id"] as Int,
+        row["account_name"] as String,
+        row["amount"] as BigDecimal,
+        row["owner"] as Int
+    )
+}
+
+data class AccountIncome(
+    val id: Int,
+    val accountName: String,
+    val income: BigDecimal,
+    val date: LocalDate,
+    val description: String
+)
+
+val accountIncomeRowMapper: (row: Row) -> AccountIncome = { row ->
+    AccountIncome(
+        row["id"] as Int,
+        row["name"] as String,
+        row["income"] as BigDecimal,
+        row["date"] as LocalDate,
+        row["description"] as String,
     )
 }

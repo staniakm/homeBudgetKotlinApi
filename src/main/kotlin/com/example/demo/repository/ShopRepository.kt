@@ -15,27 +15,28 @@ class ShopRepository(private val helper: RepositoryHelper) {
 
     fun getAllShopsSummary(date: LocalDate): Flux<ShopSummary> {
         return helper.getList(GET_SHOP_LIST_SUMMARY, shopSummaryRowMapper) {
-            bind("year", date.year).bind("month", date.monthValue)
+            bind("$1", date.year).bind("$2", date.monthValue)
         }
     }
 
     fun getShopMonthItems(id: Long, date: LocalDate): Flux<ShopItemsSummary> {
         return helper.getList(GET_SHOP_MONTH_ITEMS, shopItemSummaryRowMapper) {
-            bind("id", id)
-                .bind("date", date)
+            bind("$1", id)
+                .bind("$2", date.withDayOfMonth(1))
+                .bind("$3", date.withDayOfMonth(date.lengthOfMonth()))
         }
     }
 
     fun getShopYearItems(shopId: Long, date: LocalDate): Flux<ShopItemsSummary> {
         return helper.getList(GET_SHOP_YEAR_ITEMS, shopItemSummaryRowMapper) {
-            bind("id", shopId)
-                .bind("date", date)
+            bind("$1", shopId)
+                .bind("$2", date.year)
         }
     }
 
     fun getShopItems(shopId: Long): Flux<ShopItem> {
         return helper.getList(GET_SHOP_ITEMS, shopItemRowMapper) {
-            bind("id", shopId)
+            bind("$1", shopId)
         }
     }
 

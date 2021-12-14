@@ -11,12 +11,12 @@ data class ShopItemsSummary(
 
 val shopItemSummaryRowMapper: (row: Row) -> ShopItemsSummary = { row ->
     ShopItemsSummary(
-        row.get("id", Number::class.java)!! as Int,
-        row.get("name", String::class.java)!!,
-        row.get("quantity", BigDecimal::class.java)!!,
-        row.get("min_price_for_unit", BigDecimal::class.java)!!,
-        row.get("max_price_for_unit", BigDecimal::class.java)!!,
-        row.get("discount_sum", BigDecimal::class.java)!!,
-        row.get("total_spend", BigDecimal::class.java)!!
+        row["id"] as Int,
+        row["name"] as String,
+        row["quantity"] as BigDecimal,
+        row["min_price_for_unit"] as BigDecimal,
+        row["max_price_for_unit"] as BigDecimal,
+        row["discount_sum"] as BigDecimal,
+        row["total_spend"] as BigDecimal
     )
 }

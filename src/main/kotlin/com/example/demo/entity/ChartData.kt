@@ -7,7 +7,7 @@ data class ChartData(val name: String, val value: BigDecimal)
 
 val chartDataRowMapper: (row: Row) -> ChartData = { row ->
     ChartData(
-        row.get("nazwa", String::class.java)!!,
-        row.get("suma", BigDecimal::class.java)!!
+        row.get("name", String::class.java)!!,
+        row.get("sum", BigDecimal::class.java)!!
     )
 }

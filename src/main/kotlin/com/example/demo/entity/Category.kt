@@ -12,18 +12,17 @@ data class Category(
     companion object {
         val bindByDate: (LocalDate, DatabaseClient.GenericExecuteSpec) -> DatabaseClient.GenericExecuteSpec =
             { date, query ->
-                query.bind("year", date.year)
-                    .bind("year2", date.year)
-                    .bind("month", date.monthValue)
+                query.bind("$1", date.year)
+                    .bind("$2", date.monthValue)
             }
     }
 }
 
 val categoryRowMapper: (row: Row) -> Category = { row ->
     Category(
-        row.get("id", Number::class.java)!! as Int,
-        row.get("nazwa", String::class.java)!!,
-        row.get("monthSummary", BigDecimal::class.java)!!,
-        row.get("yearSummary", BigDecimal::class.java)!!,
+        row["id"] as Int,
+        row["name"] as String,
+        row["monthSummary"] as BigDecimal,
+        row["yearSummary"] as BigDecimal,
     )
 }

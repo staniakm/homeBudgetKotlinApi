@@ -11,7 +11,7 @@ class ProductRepository(private val helper: RepositoryHelper) {
 
     fun getProductDetails(productId: Long): Flux<ProductDetails> {
         return helper.getList(GET_PRODUCT_DETAILS, productDetailsRowMapper) {
-            bind("id", productId)
+            bind("$1", productId)
         }
     }
 }

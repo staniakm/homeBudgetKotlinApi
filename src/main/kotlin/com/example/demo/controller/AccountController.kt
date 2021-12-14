@@ -27,6 +27,13 @@ class AccountController(private val accountService: AccountService) {
         @RequestParam("month", required = false, defaultValue = "0") month: Long
     ): Flux<ShoppingInvoice> = accountService.getAccountOperations(accountId, month)
 
+    @GetMapping("/{accountId}/income")
+    fun getAccountIncome(
+        @PathVariable accountId: Long,
+        @RequestParam("month", required = false, defaultValue = "0") month: Long
+    ): Flux<AccountIncome> = accountService.getAccountIncome(accountId, month)
+
+
     @PutMapping("/{accountId}")
     fun updateAccountMoneyAmount(@PathVariable accountId: Long, @RequestBody updateAccount: UpdateAccountDto) =
         accountService.updateAccount(accountId, updateAccount)

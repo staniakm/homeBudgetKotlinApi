@@ -12,7 +12,8 @@ class ChartRepository(private val helper: RepositoryHelper) {
 
     fun getMonthSummaryChartData(date: LocalDate): Flux<ChartData> {
         return helper.getList(GET_MONTH_SUMMARY_CHART_DATA, chartDataRowMapper) {
-            bind("date", date)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
         }
     }
 }

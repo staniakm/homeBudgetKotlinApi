@@ -26,18 +26,19 @@ class CategoryRepository(private val helper: RepositoryHelper) {
         return getCategoryById(id, date)
     }
 
-    fun getCategoryDetails(id: Long, date: LocalDate): Flux<CategoryDetails> {
+    fun getCategoryDetails(categoryId: Long, date: LocalDate): Flux<CategoryDetails> {
         return helper.getList(GET_CATEGORY_DETAILS, categoryDetailsRowMapper) {
-            bind(0, date)
-                .bind("date", date)
-                .bind("id", id)
+            bind("$1", date.withDayOfMonth(1))
+                .bind("$2", date.withDayOfMonth(date.lengthOfMonth()))
+                .bind("$3", categoryId)
         }
     }
 
     private fun getCategoryById(id: Long, date: LocalDate): Mono<Category> {
         return helper.findFirstOrNull(GET_CATEGORY_BY_ID, categoryRowMapper) {
-            bind("date", date)
-                .bind("id", id)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
+                .bind("$3", id)
         }
     }
 }

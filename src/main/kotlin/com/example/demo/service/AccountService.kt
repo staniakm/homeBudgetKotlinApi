@@ -28,6 +28,10 @@ class AccountService(
     fun getAccountOperations(accountId: Long, month: Long) =
         invoiceService.getAccountInvoices(accountId, clock.getDateFromMonth(month))
 
+    fun getAccountIncome(accountId: Long, month: Long) =
+        accountRepository.getAccountIncome(accountId, clock.getDateFromMonth(month))
+
+
     fun updateAccount(accountId: Long, updateAccount: UpdateAccountDto): Mono<Account> {
         if (accountId != updateAccount.id) {
             throw IllegalArgumentException("Invalid requested id")

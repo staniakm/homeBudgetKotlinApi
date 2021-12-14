@@ -6,21 +6,21 @@ import java.time.LocalDate
 
 data class ProductDetails(
     val shopName: String, val invoiceDate: LocalDate, val itemPrice: BigDecimal,
-    val quantity: BigDecimal, val discount: BigDecimal, val totalSum: BigDecimal, val invoiceId: Int,
-    val invoiceItemId: Int, val productName: String
+    val quantity: BigDecimal, val discount: BigDecimal, val totalSum: BigDecimal, val invoiceId: Long,
+    val invoiceItemId: Long, val productName: String
 )
 
 
 val productDetailsRowMapper: (row: Row) -> ProductDetails = { row ->
     ProductDetails(
-        row.get("sklep", String::class.java)!!,
-        row.get("data", LocalDate::class.java)!!,
-        row.get("cena", BigDecimal::class.java)!!,
-        row.get("ilosc", BigDecimal::class.java)!!,
-        row.get("rabat", BigDecimal::class.java)!!,
-        row.get("suma", BigDecimal::class.java)!!,
-        row.get("invoiceId", Number::class.java)!! as Int,
-        row.get("invoiceItemId", Number::class.java)!! as Int,
-        row.get("nazwa", String::class.java)!!
+        row["shopName"] as String,
+        row["date"] as LocalDate,
+        row["unitPrice"] as BigDecimal,
+        row["amount"] as BigDecimal,
+        row["discount"] as BigDecimal,
+        row["sum"] as BigDecimal,
+        row["invoiceId"] as Long,
+        row["invoiceItemId"] as Long,
+        row["assortmentName"] as String,
     )
 }

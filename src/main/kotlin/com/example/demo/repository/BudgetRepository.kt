@@ -27,10 +27,10 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
 
     fun updateBudget(date: LocalDate, updateBudget: UpdateBudgetDto) {
         client.sql(UPDATE_MONTH_BUDGE_DETAILS)
-            .bind("planed", updateBudget.planned)
-            .bind("category", updateBudget.category)
-            .bind("year", date.year)
-            .bind("month", date.monthValue)
+            .bind("$1", updateBudget.planned)
+            .bind("$2", updateBudget.category)
+            .bind("$3", date.year)
+            .bind("$4", date.monthValue)
             .then().and { recalculateBudget(date) }
             .subscribe()
 //        helper.executeUpdate(UPDATE_MONTH_BUDGE_DETAILS) {
@@ -49,23 +49,23 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
 
     private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {
         return helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
-            bind("year", date.year)
-                .bind("month", date.monthValue)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
         }
     }
 
     private fun getMonthBudgetForCategory(date: LocalDate, category: String): Flux<MonthBudget> {
         return helper.getList(GET_MONTH_BUDGET_FOR_CATEGORY, monthBudgetMapper) {
-            bind("year", date.year)
-                .bind("month", date.monthValue)
-                .bind("category", category)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
+                .bind("$3", category)
         }
     }
 
     private fun getMonthBudgets(date: LocalDate): Flux<MonthBudget> {
         return helper.getList(GET_MONTH_BUDGET, monthBudgetMapper) {
-            bind("year", date.year)
-                .bind("month", date.monthValue)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
         }
     }
 }

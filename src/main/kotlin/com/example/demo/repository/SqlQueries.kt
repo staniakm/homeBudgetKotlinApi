@@ -24,282 +24,295 @@ object SqlQueries {
     val GET_ACCOUNT_DATA: () -> String = { getAccountData() }
     val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
     val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
+    val GET_ACCOUNT_INCOME: () -> String = { getAccountIncome() }
 
     private fun updateSingleAccount(): String {
-        return "update konto set kwota = :amount from konto where del = 0 and id = :id;"
+        return "update account set money = $1 where del = false and id = $2"
     }
 
     private fun getAccountData(): String {
-        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0;"
+        return "select id, account_name, money as amount, owner from account where del = false"
     }
 
     private fun getSingleAccountData(): String {
-        return "select id, nazwa as name, kwota as amount, wlasciciel as owner from konto where del = 0 and id = :id;"
+        return "select id, account_name, money as amount, owner from account where del = false and id = $2"
+    }
+
+    private fun getAccountIncome(): String {
+        return """
+                select k.id, k.account_name name, coalesce(p.value,0) income, date, p.description description
+                from account k 
+                    left join income p on p.account = k.ID 
+                    where k.del = false and
+                      k.id = $3
+                      and extract(year from date) = $1 and extract(month from date) = $2""".trimIndent()
     }
 
     private fun getShopList(): String {
-        return "select id, sklep as name from sklepy order by sklep;"
+        return "select id, name from shop order by name"
     }
 
     private fun getAccountsSummaryForMonth(): String {
         return """select k.id, 
-                    k.nazwa, 
-                    isnull(k.kwota,0) kwota, 
-                    isnull(ex.wydatki,0) wydatki,  
-                    isnull(i.przychody,0) przychody 
-                from konto k 
-                    left join (select sum(suma) wydatki, konto from paragony where del = 0 and year(data) = :year and month(data) = :month group by konto) ex on ex.konto = k.ID 
-                    left join (select sum(kwota) przychody, konto from przychody where year(data) = :year and month(data) = :month group by konto) i on i.konto = k.ID 
-                where k.del = 0 and id > 1;""".trimIndent()
+                    k.account_name, 
+                    coalesce(k.money,0) money, 
+                    coalesce(ex.expense,0) expense,  
+                    coalesce(i.income,0) income 
+                from account k 
+                    left join (select sum(sum) expense, account from invoice where del = false and extract(year from date) = $1
+							and extract(month from date) = $2 group by account) ex on ex.account = k.ID 
+                    left join (select sum(value) income, account from income where extract(year from date) = $1 and extract(month from date) = $2 group by account) i on i.account = k.ID 
+                where k.del = false and id > 1""".trimIndent()
     }
 
     private fun updatePlanedBudget(): String {
-        return """update b set b.planed = :planed 
-                    from budzet b 
-                join kategoria c on c.id = b.category 
-                    where c.nazwa = :category 
-                    and b.rok = :year 
-                    and b.miesiac = :month
+        return """update budget set planned = $1
+                    from category c 
+                    where c."name" = $2 
+					and c.id = budget.category 
+                    and budget.year = $3 
+                    and budget.month = $4
                 """.trimIndent()
     }
 
     private fun getMonthBudgetDetails(): String {
 
         return """select spend outcome, 
-                    planed, 
-                    isnull(przychod,0) income
-                from 
-                    (select sum(used) spend, sum(planed) planed, rok, miesiac from budzet b group by rok, miesiac) b
-                    left join(select sum(kwota) przychod, year(data) rok, month(data) miesiac from przychody 
-                        group by year(data) , month(data) ) as p on p.rok = b.rok and p.miesiac = b.miesiac
-                where b.rok = :year and b.miesiac = :month""".trimIndent()
+                    planned, 
+                    coalesce(income,0) income
+					from
+                    (select sum(used) spend, sum(planned) planned, year, month from budget b group by year, month) b
+                    left join(select sum(value) income, extract(year from date) y , extract(month from date) m from income 
+                        group by extract(year from date) , extract(month from date) ) as p on p.y = b.year and p.m = b.month
+                where b.year = $1 and b.month = $2
+                """.trimIndent()
     }
 
     private fun getMonthBudget(): String {
         return """select 
                    b.id, 
-                   b.miesiac, 
-                   k.nazwa category, 
-                   b.planed planned,   
+                   b.month, 
+                   k.name category, 
+                   b.planned,   
                    b.used spent, 
-                   b.percentUsed percentage 
-                from budzet b 
-                   join kategoria k on k.id = b.category 
-                where rok = :year 
-                   and miesiac = :month
+                   b.percentage 
+                from budget b 
+                   join category k on k.id = b.category 
+                where year = $1
+                   and month = $2
                 order by b.used desc""".trimIndent()
     }
 
     private fun getMonthBudgetForCategory(): String {
         return """select 
                        b.id, 
-                       b.miesiac, 
-                       k.nazwa category, 
-                       b.planed planned, 
+                       b.month, 
+                       k.name category, 
+                       b.planned planned, 
                       b.used spent, 
-                      b.percentUsed percentage 
-                  from budzet b 
-                      join kategoria k on k.id = b.category 
-                  where rok = :year 
-                       and miesiac = :month 
-                       and k.nazwa = :category
+                      b.percentage 
+                  from budget b 
+                      join category k ON k.id = b.category
+                  where year = $1 
+                       and month = $2 
+                       and k.name = $3
                    order by spent desc""".trimIndent()
     }
 
     private fun getShopItems(): String {
         return """select 
                        a.id, 
-                       a.NAZWA 
-                 from ASORTYMENT_SKLEP aso_s 
-                       join sklepy s on s.ID = aso_s.id_sklep 
-                       join ASORTYMENT a on a.id = aso_s.id_aso 
-                 where aso_s.del = 0 
-                       and a.del = 0 
-                       and s.ID = :id 
-                 order by a.nazwa""".trimIndent()
+                       a.name 
+                 from shop_assortment aso_s 
+                       join shop s on s.ID = aso_s.shop 
+                       join assortment a on a.id = aso_s.aso 
+                 where aso_s.del = false 
+                       and a.del = false 
+                       and s.ID = $1 
+                 order by a.name""".trimIndent()
     }
 
     private fun getMonthSummary(): String {
         return """select 
-                   k.nazwa, 
-                   sum(ps.cena) suma 
-                 from paragony p 
-                   join paragony_szczegoly ps on ps.id_paragonu = p.ID 
-                   join kategoria k on k.id = ps.kategoria 
-                 where year(p.data) = year(:date) 
-                   and month(p.data) = month(:date) 
-                 group by k.nazwa 
-                 order by suma""".trimIndent()
+                   k.name, 
+                   sum(ps.price) sum
+                 from invoice p 
+                   join invoice_details ps on ps.invoice = p.ID 
+                   join category k on k.id = ps.category 
+                 where extract(year from p.date) = $1 
+                   and extract(month from p.date) = $2
+                 group by k.name 
+                 order by sum""".trimIndent()
     }
 
     private fun getShopYearShopping(): String {
         return """select 
                    a.id, 
-                   a.NAZWA name, 
-                   sum(ilosc) quantity, 
-                   min(cena_za_jednostke) min_price_for_unit, 
-                   max(cena_za_jednostke) max_price_for_unit, 
-                   sum(rabat) discount_sum, 
-                   sum(cena) total_spend 
-                 from paragony_szczegoly ps 
-                   join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 
-                 where ps.del=0 and ps.id_paragonu in 
+                   a.name, 
+                   sum(amount) quantity, 
+                   min(unit_price) min_price_for_unit, 
+                   max(unit_price) max_price_for_unit, 
+                   sum(discount) discount_sum, 
+                   sum(price) total_spend 
+                 from invoice_details ps 
+                   join assortment a on a.id = ps.assortment and a.del = false 
+                 where ps.del=false and ps.invoice in 
                                    (select id 
-                                       from paragony p 
-                                       where p.ID_sklep = :id 
-                                           and p.del = 0
-                                           and year(p.data) = year(:date)) 
-                                        group by a.id, 
-                                           a.NAZWA""".trimIndent()
+                                       from invoice p 
+                                       where p.shop = $1 
+                                           and p.del = false
+                                           and extract(year from p.date) = $2) 
+                                        group by a.id, a.name""".trimIndent()
     }
 
     private fun getShopMonthShopping(): String {
         return """select 
                    a.id, 
-                   a.NAZWA name, 
-                   sum(ilosc) quantity, 
-                   min(cena_za_jednostke) min_price_for_unit, 
-                   max(cena_za_jednostke) max_price_for_unit, 
-                   sum(rabat) discount_sum, 
-                   sum(cena) total_spend 
-                 from paragony_szczegoly ps 
-                   join ASORTYMENT a on a.id = ps.ID_ASO and a.del = 0 
-                 where ps.del = 0 and ps.id_paragonu in 
+                   a.name,
+                    sum(amount) quantity, 
+                    min(unit_price) min_price_for_unit, 
+                    max(unit_price) max_price_for_unit, 
+                    sum(discount) discount_sum, 
+                    sum(price) total_spend 
+                 from invoice_details ps 
+                   join assortment a on a.id = ps.assortment and a.del = false
+                 where ps.del = false 
+				 and ps.invoice in 
                                (select id 
-                                   from paragony p 
-                                   where p.ID_sklep = :id 
-                                       and p.del = 0
-                                       and p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)) 
-                                   group by a.id, 
-                                   a.NAZWA""".trimIndent()
+                                   from invoice p 
+                                   where p.shop = $1
+                                       and p.del = false
+                                       and p.date between $2 and $3)
+                                   group by a.id, a."name"
+                                   """.trimIndent()
     }
 
     private fun getShopListSummary(): String {
-        return """select 
-                   s.id, 
-                   s.sklep nazwa, 
-                   y.yearSum, 
-                   isnull(m.monthSummary, 0.00) monthSum 
-                 from sklepy s 
-                   join (select id_sklep, sum(suma) yearSum from paragony where year(data)= :year group by ID_sklep) as y 
-                       on y.ID_sklep = s.ID 
-                   left join (select p.ID_sklep, sum(p.suma) monthSummary from paragony p where year(p.data) = :year and month(p.data) = :month group by ID_sklep) m 
-                       on m.ID_sklep = s.ID 
-                  order by s.sklep""".trimIndent()
+        return """select s.id, 
+                         s."name" ,
+                         y.yearsum, 
+                         coalesce(m.monthSummary, 0.00) monthSum 
+                  from shop s 
+                  join (select shop, sum(sum) yearSum from invoice where extract(year from date)= $1 group by shop) as y 
+                        on y.shop = s.ID 
+                  left join (select p.shop, sum(p.sum) monthSummary from invoice p 
+                  			where extract(year from p.date) = $1 and extract(month from p.date) = $2 group by shop) m on m.shop = s.ID 
+                  order by s.id""".trimIndent()
 
     }
 
     private fun getCategoryById(): String {
         return """select 
                       k.id id, 
-                      nazwa, 
-                      isnull(ps.price,0.00) monthSummary, 
+                      name, 
+                      coalesce(ps.price,0.00) monthSummary, 
                       pr.price yearSummary 
-                  from kategoria k 
-                       join (select sum(cena) price, kategoria 
-                               from paragony_szczegoly ps 
-                                   join paragony p on p.ID = ps.id_paragonu 
-                               where year(p.data) = year(:date) 
-                               group by kategoria) as pr on pr.kategoria = k.id 
+                  from category k 
+                       join (select sum(price) price, category 
+                               from invoice_details ps 
+                                   join invoice p on p.ID = ps.invoice 
+                               where extract(year from p.date) = $1 
+                               group by category) as pr on pr.category = k.id 
                        left join (select 
-                                       sum(cena) price, 
-                                       kategoria 
-                                  from paragony_szczegoly ps 
-                                       join paragony p on p.ID = ps.id_paragonu 
-                                  where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)
-                                  group by kategoria) as ps on ps.kategoria = k.id where k.id = :id 
-                  order by nazwa""".trimIndent()
+                                       sum(price) price, 
+                                       category 
+                                  from invoice_details ps 
+                                       join invoice p on p.ID = ps.invoice 
+                                  where extract(year from p.date)=$1 and extract(month from p.date) = $2
+                                  group by category) as ps on ps.category = k.id where k.id = $3 
+                  order by name""".trimIndent()
     }
 
     private fun getCategoryList(): String {
         return """select k.id id, 
-                    nazwa, 
-                    isnull(ps.price,0.00) monthSummary, 
+                    k."name", 
+                    coalesce(ps.price,0.00) monthSummary, 
                     pr.price yearSummary 
-                from kategoria k 
-                join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                            join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year 
-                            group by kategoria) as pr on pr.kategoria = k.id 
-                left join (select sum(cena) price, kategoria from paragony_szczegoly ps 
-                join paragony p on p.ID = ps.id_paragonu where year(p.data) = :year2 and month(p.data) = :month 
-                group by kategoria) as ps on ps.kategoria = k.id 
-                order by nazwa""".trimIndent()
+                from category k 
+                join (select sum(sum) price, category from invoice_details ps 
+                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1
+                            group by category) as pr on pr.category = k.id 
+                left join (select sum(sum) price, category from invoice_details ps 
+                join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1 and extract(month from p.date) = $2
+                group by category) as ps on ps.category = k.id 
+                order by name""".trimIndent()
     }
 
     private fun getCategoryDetails(): String {
-        return """select 
-                   sum(cena) cena,  
-                   a.NAZWA 
-                 from paragony_szczegoly ps 
-                   join paragony p 
-                       on p.ID = ps.id_paragonu 
-                   join ASORTYMENT a 
-                       on a.id = ps.ID_ASO 
-                 where p.data between DATEADD(d,1,(EOMONTH(DATEADD(m, -1, :date)))) and EOMONTH(:date)
-                   and ps.kategoria = :id
-                 group by a.NAZWA;""".trimIndent()
+        return """select sum(sum) sum,
+                    	a.name
+                    from invoice_details ps 
+                        join invoice p on p.ID = ps.invoice
+                    	join assortment a on a.id = ps.assortment 
+                    where p.date between $1 and $2
+                                       and ps.category = $3
+                    group by a."name"
+                 """.trimIndent()
     }
 
     private fun getInvoices(): String {
         return """
                 select p.ID,
-                   DATA,
-                   NR_PARAGONU,
-                   SUMA,
-                   s.sklep,
-                   k.nazwa account
-                FROM dbo.paragony p
-                   join konto k on k.ID = p.konto
-                   join sklepy s on s.ID = p.ID_sklep where year(p.data) = :year and month(p.data) = :month  order by data desc
+                   date,
+                   invoice_number,
+                   sum,
+                   s."name" shopName,
+                   k.account_name
+                FROM invoice p
+                   join account k on k.ID = p.account
+                   join shop s on s.ID = p.shop where extract(year from p.date) = $1 and extract(month from p.date) = $2  order by date desc
                 """.trimIndent()
     }
 
     private fun getAccountInvoices(): String {
         return """
                 select p.ID,
-                   DATA,
-                   NR_PARAGONU,
-                   SUMA,
-                   s.sklep,
-                   k.nazwa account
-                FROM dbo.paragony p
-                   join konto k on k.ID = p.konto
-                   join sklepy s on s.ID = p.ID_sklep 
-                where year(p.data) = ? and month(p.data) = ?
-                    and k.id = ?
-                   order by data desc
+                   date,
+                   invoice_number,
+                   sum,
+                   s.name shopName,
+                   a.account_name
+                FROM invoice p
+                   join account a ON a.id = p.account
+                   join shop s ON s.id = p.shop
+                where extract(year from p.date) = $1
+						and extract(month from p.date) = $2
+                    	and a.id = $3
+                   order by date desc
                 """.trimIndent()
     }
 
     private fun getInvoiceDetails(): String {
         return """select ps.id,
-                        cena,
-                        opis,
-                        ilosc,
-                        cena_za_jednostke,
-                        a.NAZWA,
-                        ps.rabat,
-                        a.id itemId
-                    from paragony_szczegoly ps
-                        join ASORTYMENT a on a.id = ps.ID_ASO 
-                        where ps.del = 0 and id_paragonu = :invoiceId
+                         price,
+                         description,
+                         amount,
+                         unit_price,
+                         a.name,
+                         ps.discount,
+                         a.id itemId
+                    from invoice_details ps
+                        join assortment a on a.id = ps.assortment
+                        where ps.del = false and invoice = $1
                 """.trimIndent()
     }
 
     private fun getProductDetails(): String {
-        return """select s.sklep,
-                        p.data, 
-                        ps.cena_za_jednostke cena, 
-                        ps.ilosc, ps.rabat, p.suma, 
-                        p.ID invoiceId, 
-                        ps.ID invoiceItemId ,
-						a.NAZWA
-                    from paragony_szczegoly ps
-                        join paragony p on p.ID = ps.id_paragonu 
-                        join sklepy s on s.ID = p.ID_sklep
-						join ASORTYMENT a on a.id = ps.ID_ASO
-                    where ps.ID_ASO=:id
-                        order by p.data desc
+        return """select s.name shopName,
+                        p.date, 
+                        ps.unit_price unitPrice, 
+                        ps.amount,
+						ps.discount,
+						p.sum, 
+                        p.id invoiceId, 
+                        ps.id invoiceItemId ,
+						a.name assortmentName
+                    from invoice_details ps
+                        join invoice p ON p.id = ps.invoice
+                        join shop s on s.ID = p.shop
+						join assortment a on a.id = ps.assortment
+                    where ps.assortment=$1
+                        order by p.date desc
                 """.trimIndent()
     }
 }

@@ -1,11 +1,9 @@
 package com.example.demo.repository
 
-import com.example.demo.entity.Account
-import com.example.demo.entity.MonthAccountSummary
-import com.example.demo.entity.accountRowMapper
-import com.example.demo.entity.monthAccountRowMapper
+import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.GET_ACCOUNTS_SUMMARY_FOR_MONTH
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_DATA
+import com.example.demo.repository.SqlQueries.GET_ACCOUNT_INCOME
 import com.example.demo.repository.SqlQueries.GET_SINGLE_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
 import org.springframework.r2dbc.core.DatabaseClient
@@ -18,21 +16,29 @@ import java.time.LocalDate
 class AccountRepository(private val helper: RepositoryHelper, private val client: DatabaseClient) {
     fun getAccountsSummaryForMonth(date: LocalDate): Flux<MonthAccountSummary> {
         return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
-            bind("year", date.year)
-                .bind("month", date.monthValue)
+            bind("$1", date.year)
+                .bind("$2", date.monthValue)
         }
     }
 
     fun findAllAccounts() = helper.getList(GET_ACCOUNT_DATA, accountRowMapper)
 
     fun findById(id: Long) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
-        bind("id", id)
+        bind("$1", id)
     }
 
     fun update(account: Account): Mono<Void> {
         return client.sql(UPDATE_SINGLE_ACCOUNT_DATA)
-            .bind("amount", account.amount)
-            .bind("id", account.id)
+            .bind("$1", account.amount)
+            .bind("$2", account.id)
             .then()
+    }
+
+    fun getAccountIncome(accountId: Long, dateFromMonth: LocalDate): Flux<AccountIncome> {
+        return helper.getList(GET_ACCOUNT_INCOME, accountIncomeRowMapper) {
+            bind("$1", dateFromMonth.year)
+                .bind("$2", dateFromMonth.monthValue)
+                .bind("$3", accountId)
+        }
     }
 }

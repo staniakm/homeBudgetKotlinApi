@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 data class ShoppingInvoice(
-    val listId: Int,
+    val listId: Long,
     val name: String,
     val date: LocalDate,
     val price: BigDecimal,
@@ -15,10 +15,10 @@ data class ShoppingInvoice(
 
 val shoppingListRowMapper: (row: Row) -> ShoppingInvoice = { row ->
     ShoppingInvoice(
-        row.get("id", Number::class.java)!! as Int,
-        row.get("sklep", String::class.java)!!,
-        row.get("data", LocalDate::class.java)!!,
-        row.get("suma", BigDecimal::class.java)!!,
-        row.get("account", String::class.java)!!
+        row["id"] as Long,
+        row["shopName"] as String,
+        row["date"] as LocalDate,
+        row["sum"] as BigDecimal,
+        row["account_name"] as String,
     )
 }

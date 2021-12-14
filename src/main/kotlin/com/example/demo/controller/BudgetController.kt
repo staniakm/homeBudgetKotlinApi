@@ -14,10 +14,10 @@ import reactor.core.publisher.Mono
 class BudgetController(private val budgetService: BudgetService) {
 
     @GetMapping
-    fun getBudgetForMonth(@RequestParam("month") month: Long) : Mono<BudgetItem> =
-            budgetService.getMonthBudget(month)
+    fun getBudgetForMonth(@RequestParam("month", required = false, defaultValue = "0") month: Long): Mono<BudgetItem> =
+        budgetService.getMonthBudget(month)
 
     @PutMapping(produces = ["application/json"])
-    fun updateBudgetForMonth(@RequestParam("month") month: Long, @RequestBody updateBudget: UpdateBudgetDto)=
-         budgetService.updateBudget(month, updateBudget)
+    fun updateBudgetForMonth(@RequestParam("month", defaultValue = "0") month: Long, @RequestBody updateBudget: UpdateBudgetDto) =
+        budgetService.updateBudget(month, updateBudget)
 }
