@@ -37,7 +37,11 @@ class AccountService(
             throw IllegalArgumentException("Invalid requested id")
         }
 
-        val account: Mono<Account> = getAccount(accountId).map { it.copy(amount = updateAccount.newMoneyAmount) }
+        val account: Mono<Account> = getAccount(accountId)
+            .map {
+                val newName = updateAccount.name.ifBlank { it.name }
+                it.copy(amount = updateAccount.newMoneyAmount, name = newName)
+            }
         return account
             .flatMap { accountRepository.update(it) }
             .then(account)

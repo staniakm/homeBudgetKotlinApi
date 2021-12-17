@@ -35,7 +35,7 @@ object SqlQueries {
     }
 
     private fun getSingleAccountData(): String {
-        return "select id, account_name, money as amount, owner from account where del = false and id = $2"
+        return "select id, account_name, money as amount, owner from account where del = false and id = $1"
     }
 
     private fun getAccountIncome(): String {
