@@ -17,6 +17,7 @@ object SqlQueries {
     val GET_CATEGORY_BY_ID: () -> String = { getCategoryById() }
     val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
     val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
+    val GET_SINGLE_BUDGET: () -> String = { getSingleBudget() }
     val GET_PRODUCT_DETAILS: () -> String = { getProductDetails() }
     val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
     val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
@@ -66,13 +67,7 @@ object SqlQueries {
     }
 
     private fun updatePlanedBudget(): String {
-        return """update budget set planned = $1
-                    from category c 
-                    where c."name" = $2 
-					and c.id = budget.category 
-                    and budget.year = $3 
-                    and budget.month = $4
-                """.trimIndent()
+        return """update budget set planned = $1 where id = $2""".trimIndent()
     }
 
     private fun getMonthBudgetDetails(): String {
@@ -87,6 +82,19 @@ object SqlQueries {
                 where b.year = $1 and b.month = $2
                 """.trimIndent()
     }
+
+    private fun getSingleBudget() = """select 
+                   b.id, 
+                   b.month, 
+                   k.name category, 
+                   b.planned,   
+                   b.used spent, 
+                   b.percentage ,
+				   (select sum(planned) from budget where month=b.month and year=b.year) monthPlanned
+                from budget b 
+                   join category k on k.id = b.category
+                where b.id = $1
+                order by b.used desc""".trimIndent()
 
     private fun getMonthBudget(): String {
         return """select 

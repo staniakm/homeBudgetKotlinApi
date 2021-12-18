@@ -4,6 +4,7 @@ import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGET
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGET_FOR_CATEGORY
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
+import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
@@ -20,24 +21,20 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
     fun getBudgetForMonthAndCategory(date: LocalDate, category: String) =
         getBudgetCalculations(date, getMonthBudgetForCategory(date, category))
 
+    fun getSelectedBudgetItem(budgetId:Int) = helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper){
+        bind("$1", budgetId)
+    }
+
     private fun getBudgetCalculations(date: LocalDate, budgets: Flux<MonthBudget>): Mono<BudgetItem> {
         return getBudgetItem(date).zipWith(budgets.collectList())
             .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
     }
 
-    fun updateBudget(date: LocalDate, updateBudget: UpdateBudgetDto) {
-        client.sql(UPDATE_MONTH_BUDGE_DETAILS)
+    fun updateBudget(updateBudget: UpdateBudgetDto):Mono<Void> {
+        return client.sql(UPDATE_MONTH_BUDGE_DETAILS)
             .bind("$1", updateBudget.planned)
-            .bind("$2", updateBudget.category)
-            .bind("$3", date.year)
-            .bind("$4", date.monthValue)
-            .then().and { recalculateBudget(date) }
-            .subscribe()
-//        helper.executeUpdate(UPDATE_MONTH_BUDGE_DETAILS) {
-//            bind("planed", updateBudget.planned)
-//                .bind("category", updateBudget.category)
-//                .bind("year", date.year)
-//                .bind("month", date.monthValue)
+            .bind("$2", updateBudget.budgetId)
+            .then()
     }
 
     @Suppress("SqlResolve", "SqlNoDataSourceInspection") //procedure call warnings
@@ -45,6 +42,12 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
         client.sql("RecalculateBudget :date")
             .bind("date", date)
             .then().subscribe()
+    }
+
+    fun recalculateBudget(budgetId: Int): Mono<Void> {
+        return client.sql("call RecalculateSelectedBudget ($1)")
+            .bind("$1", budgetId)
+            .then()
     }
 
     private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {
