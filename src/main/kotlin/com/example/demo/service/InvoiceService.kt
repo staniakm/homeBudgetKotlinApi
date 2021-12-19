@@ -1,17 +1,31 @@
 package com.example.demo.service
 
+import com.example.demo.entity.Invoice
+import com.example.demo.entity.InvoiceUpdateAccountRequest
 import com.example.demo.entity.ShoppingInvoice
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
-class InvoiceService(private val invoiceRepository: InvoiceRepository, private val clock: ClockProvider) {
+class InvoiceService(
+    private val invoiceRepository: InvoiceRepository,
+    private val clock: ClockProvider
+) {
 
-    fun getInvoiceListForMonth(monthValue: Long)=
+    fun getInvoiceListForMonth(monthValue: Long) =
         invoiceRepository.getInvoices(clock.getDateFromMonth(monthValue))
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
 
     fun getAccountInvoices(accountId: Long, date: LocalDate) = invoiceRepository.getAccountInvoices(accountId, date)
+
+    @Transactional
+    fun updateInvoiceAccount(invoiceId: Long, update: InvoiceUpdateAccountRequest): Mono<Invoice> {
+        return invoiceRepository.updateInvoiceAccount(invoiceId, update.newAccount)
+            .then(invoiceRepository.getInvoice(invoiceId))
+    }
 }

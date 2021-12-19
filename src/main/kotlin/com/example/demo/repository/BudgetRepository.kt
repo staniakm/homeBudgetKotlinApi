@@ -18,9 +18,6 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
 
     fun getBudgetForMonth(date: LocalDate) = getBudgetCalculations(date, getMonthBudgets(date))
 
-    fun getBudgetForMonthAndCategory(date: LocalDate, category: String) =
-        getBudgetCalculations(date, getMonthBudgetForCategory(date, category))
-
     fun getSelectedBudgetItem(budgetId:Int) = helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper){
         bind("$1", budgetId)
     }
@@ -35,13 +32,6 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
             .bind("$1", updateBudget.planned)
             .bind("$2", updateBudget.budgetId)
             .then()
-    }
-
-    @Suppress("SqlResolve", "SqlNoDataSourceInspection") //procedure call warnings
-    fun recalculateBudget(date: LocalDate) {
-        client.sql("RecalculateBudget :date")
-            .bind("date", date)
-            .then().subscribe()
     }
 
     fun recalculateBudget(budgetId: Int): Mono<Void> {

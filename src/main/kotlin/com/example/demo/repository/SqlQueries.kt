@@ -4,6 +4,7 @@ package com.example.demo.repository
 object SqlQueries {
 
     val GET_INVOICE: () -> String = { getInvoices() }
+    val GET_INVOICE_DATA: () -> String = { getSelectedInvoice() }
     val GET_ACCOUNT_INVOICES: () -> String = { getAccountInvoices() }
     val GET_INVOICE_DETAILS: () -> String = { getInvoiceDetails() }
     val GET_CATEGORY_SUMMARY_LIST: () -> String = { getCategoryList() }
@@ -256,6 +257,9 @@ object SqlQueries {
                                        and ps.category = $3
                     group by a."name"
                  """.trimIndent()
+    }
+    private fun getSelectedInvoice(): String {
+        return """select id, date, invoice_number, sum, description, del, account, shop from invoice where id = $1""".trimIndent()
     }
 
     private fun getInvoices(): String {

@@ -47,6 +47,6 @@ class AccountService(
             .then(account)
     }
 
-    private fun getAccount(id: Long) =
+    fun getAccount(id: Long) =
         accountRepository.findById(id)
 }

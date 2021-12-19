@@ -66,12 +66,11 @@ class RepositoryHelper(private val client: DatabaseClient) {
     fun callProcedure(
         query: String,
         function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
-    ) {
-        client.sql(query)
+    ): Mono<Void> {
+        return client.sql(query)
             .let {
                 it.function()
-            }.fetch()
-            .one()
+            }.then()
     }
 
 //    fun callProcedure(query: String, function: Call.() -> Unit) {
