@@ -47,14 +47,6 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
         }
     }
 
-    private fun getMonthBudgetForCategory(date: LocalDate, category: String): Flux<MonthBudget> {
-        return helper.getList(GET_MONTH_BUDGET_FOR_CATEGORY, monthBudgetMapper) {
-            bind("$1", date.year)
-                .bind("$2", date.monthValue)
-                .bind("$3", category)
-        }
-    }
-
     private fun getMonthBudgets(date: LocalDate): Flux<MonthBudget> {
         return helper.getList(GET_MONTH_BUDGET, monthBudgetMapper) {
             bind("$1", date.year)
