@@ -18,7 +18,7 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
 
     fun getBudgetForMonth(date: LocalDate) = getBudgetCalculations(date, getMonthBudgets(date))
 
-    fun getSelectedBudgetItem(budgetId:Int) = helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper){
+    fun getSelectedBudgetItem(budgetId: Int) = helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper) {
         bind("$1", budgetId)
     }
 
@@ -27,7 +27,7 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
             .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
     }
 
-    fun updateBudget(updateBudget: UpdateBudgetDto):Mono<Void> {
+    fun updateBudget(updateBudget: UpdateBudgetDto): Mono<Void> {
         return client.sql(UPDATE_MONTH_BUDGE_DETAILS)
             .bind("$1", updateBudget.planned)
             .bind("$2", updateBudget.budgetId)
@@ -35,9 +35,9 @@ class BudgetRepository(private val helper: RepositoryHelper, private val client:
     }
 
     fun recalculateBudget(budgetId: Int): Mono<Void> {
-        return client.sql("call RecalculateSelectedBudget ($1)")
-            .bind("$1", budgetId)
-            .then()
+        return helper.callProcedure("call RecalculateSelectedBudget ($1)") {
+            bind("$1", budgetId)
+        }
     }
 
     private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {

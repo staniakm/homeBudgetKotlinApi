@@ -41,8 +41,8 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun updateInvoiceAccount(invoiceId: Long, accountId: Long):Mono<Void> {
-        return helper.callProcedure("call changeInvoiceAccount ($1. $2)"){
+    fun updateInvoiceAccount(invoiceId: Long, accountId: Int):Mono<Void> {
+        return helper.callProcedure("call changeinvoiceaccount ($1, $2)"){
             bind("$1", invoiceId)
                 .bind("$2", accountId)
         }
