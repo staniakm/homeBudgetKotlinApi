@@ -33,7 +33,7 @@ data class AccountIncomeRequest(
     val accountId: Int,
     val value: BigDecimal,
     val date: LocalDate,
-    val incomeType: Int
+    val incomeDescription: String
 )
 
 data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: BigDecimal)
