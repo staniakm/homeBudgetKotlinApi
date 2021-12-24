@@ -4,6 +4,7 @@ import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.GET_ACCOUNTS_SUMMARY_FOR_MONTH
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_INCOME
+import com.example.demo.repository.SqlQueries.GET_INCOME_TYPES
 import com.example.demo.repository.SqlQueries.GET_SINGLE_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
 import org.springframework.r2dbc.core.DatabaseClient
@@ -40,5 +41,9 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
                 .bind("$2", dateFromMonth.monthValue)
                 .bind("$3", accountId)
         }
+    }
+
+    fun getIncomeTypes(): Flux<IncomeType> {
+        return helper.getList(GET_INCOME_TYPES, incomeTypeMapper)
     }
 }

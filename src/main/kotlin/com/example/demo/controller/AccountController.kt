@@ -37,4 +37,15 @@ class AccountController(private val accountService: AccountService) {
     @PutMapping("/{accountId}")
     fun updateAccountMoneyAmount(@PathVariable accountId: Long, @RequestBody updateAccount: UpdateAccountDto) =
         accountService.updateAccount(accountId, updateAccount)
+
+    @PostMapping("/{accountId}")
+    fun addAccountIncome(@PathVariable accountId: Long,
+                         @RequestBody updateAccount: AccountIncomeRequest): Flux<AccountIncome> {
+        println(updateAccount)
+        return accountService.getAccountIncome(accountId, 0)
+    }
+
+    @GetMapping("/income/type")
+    fun getIncomeTypes() = accountService.getIncomeTypes()
+
 }

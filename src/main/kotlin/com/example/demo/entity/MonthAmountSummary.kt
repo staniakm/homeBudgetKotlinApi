@@ -29,6 +29,13 @@ data class Account(
     val owner: Int
 )
 
+data class AccountIncomeRequest(
+    val accountId: Int,
+    val value: BigDecimal,
+    val date: LocalDate,
+    val incomeType: Int
+)
+
 data class UpdateAccountDto(val id: Long, val name: String, val newMoneyAmount: BigDecimal)
 
 val accountRowMapper: (row: Row) -> Account = { row ->

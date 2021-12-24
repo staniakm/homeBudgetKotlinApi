@@ -27,6 +27,11 @@ object SqlQueries {
     val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
     val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
     val GET_ACCOUNT_INCOME: () -> String = { getAccountIncome() }
+    val GET_INCOME_TYPES: ()-> String = {getIncomeTypes()}
+
+    private fun getIncomeTypes(): String {
+        return "select id, name from salary_type"
+    }
 
     private fun updateSingleAccount(): String {
         return "update account set money = $1 where del = false and id = $2"

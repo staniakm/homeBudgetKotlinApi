@@ -49,4 +49,6 @@ class AccountService(
 
     fun getAccount(id: Long) =
         accountRepository.findById(id)
+
+    fun getIncomeTypes() = accountRepository.getIncomeTypes()
 }
