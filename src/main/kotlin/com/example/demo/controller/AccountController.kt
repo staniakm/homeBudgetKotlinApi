@@ -2,8 +2,6 @@ package com.example.demo.controller
 
 import com.example.demo.entity.*
 import com.example.demo.service.AccountService
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 
@@ -29,7 +27,7 @@ class AccountController(private val accountService: AccountService) {
 
     @GetMapping("/{accountId}/income")
     fun getAccountIncome(
-        @PathVariable accountId: Long,
+        @PathVariable accountId: Int,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
     ): Flux<AccountIncome> = accountService.getAccountIncome(accountId, month)
 
@@ -39,10 +37,11 @@ class AccountController(private val accountService: AccountService) {
         accountService.updateAccount(accountId, updateAccount)
 
     @PostMapping("/{accountId}")
-    fun addAccountIncome(@PathVariable accountId: Long,
-                         @RequestBody updateAccount: AccountIncomeRequest): Flux<AccountIncome> {
-        println(updateAccount)
-        return accountService.getAccountIncome(accountId, 0)
+    fun addAccountIncome(
+        @PathVariable accountId: Long,
+        @RequestBody updateAccount: AccountIncomeRequest
+    ): Flux<AccountIncome> {
+        return accountService.addAccountIncome(updateAccount)
     }
 
     @GetMapping("/income/type")

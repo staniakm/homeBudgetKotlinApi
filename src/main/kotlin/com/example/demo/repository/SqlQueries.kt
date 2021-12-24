@@ -27,7 +27,12 @@ object SqlQueries {
     val GET_SINGLE_ACCOUNT_DATA: () -> String = { getSingleAccountData() }
     val UPDATE_SINGLE_ACCOUNT_DATA: () -> String = { updateSingleAccount() }
     val GET_ACCOUNT_INCOME: () -> String = { getAccountIncome() }
-    val GET_INCOME_TYPES: ()-> String = {getIncomeTypes()}
+    val GET_INCOME_TYPES: () -> String = { getIncomeTypes() }
+    val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
+
+    private fun addAccountIncome() = """
+        insert into income(account, value, description, date) values ($1, $2, $3, $4)
+    """.trimIndent()
 
     private fun getIncomeTypes(): String {
         return "select id, name from salary_type"
@@ -263,6 +268,7 @@ object SqlQueries {
                     group by a."name"
                  """.trimIndent()
     }
+
     private fun getSelectedInvoice(): String {
         return """select id, date, invoice_number, sum, description, del, account, shop from invoice where id = $1""".trimIndent()
     }

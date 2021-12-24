@@ -1,9 +1,12 @@
 package com.example.demo.service
 
 import com.example.demo.entity.Account
+import com.example.demo.entity.AccountIncome
+import com.example.demo.entity.AccountIncomeRequest
 import com.example.demo.entity.UpdateAccountDto
 import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
@@ -18,17 +21,10 @@ class AccountService(
 
     fun findAll() = accountRepository.findAllAccounts()
 
-    fun getAccountDetails(accountId: Long) {
-        //account basic data
-
-        //account details data
-        //invoices for current month
-    }
-
     fun getAccountOperations(accountId: Long, month: Long) =
         invoiceService.getAccountInvoices(accountId, clock.getDateFromMonth(month))
 
-    fun getAccountIncome(accountId: Long, month: Long) =
+    fun getAccountIncome(accountId: Int, month: Long) =
         accountRepository.getAccountIncome(accountId, clock.getDateFromMonth(month))
 
 
@@ -51,4 +47,8 @@ class AccountService(
         accountRepository.findById(id)
 
     fun getIncomeTypes() = accountRepository.getIncomeTypes()
+    fun addAccountIncome(updateAccount: AccountIncomeRequest): Flux<AccountIncome> {
+        return accountRepository.addIncome(updateAccount)
+            .thenMany(getAccountIncome(updateAccount.accountId, 0))
+    }
 }

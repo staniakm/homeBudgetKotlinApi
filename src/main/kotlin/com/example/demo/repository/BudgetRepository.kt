@@ -2,7 +2,6 @@ package com.example.demo.repository
 
 import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGET
-import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGET_FOR_CATEGORY
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS

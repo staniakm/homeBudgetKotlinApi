@@ -1,6 +1,7 @@
 package com.example.demo.repository
 
 import com.example.demo.entity.*
+import com.example.demo.repository.SqlQueries.ADD_ACCOUNT_INCOME
 import com.example.demo.repository.SqlQueries.GET_ACCOUNTS_SUMMARY_FOR_MONTH
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_INCOME
@@ -35,7 +36,7 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
             .then()
     }
 
-    fun getAccountIncome(accountId: Long, dateFromMonth: LocalDate): Flux<AccountIncome> {
+    fun getAccountIncome(accountId: Int, dateFromMonth: LocalDate): Flux<AccountIncome> {
         return helper.getList(GET_ACCOUNT_INCOME, accountIncomeRowMapper) {
             bind("$1", dateFromMonth.year)
                 .bind("$2", dateFromMonth.monthValue)
@@ -45,5 +46,14 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
 
     fun getIncomeTypes(): Flux<IncomeType> {
         return helper.getList(GET_INCOME_TYPES, incomeTypeMapper)
+    }
+
+    fun addIncome(updateAccount: AccountIncomeRequest): Mono<Void> {
+        return client.sql(ADD_ACCOUNT_INCOME)
+            .bind("$1", updateAccount.accountId)
+            .bind("$2", updateAccount.value)
+            .bind("$3", updateAccount.incomeDescription)
+            .bind("$4", updateAccount.date)
+            .then()
     }
 }
