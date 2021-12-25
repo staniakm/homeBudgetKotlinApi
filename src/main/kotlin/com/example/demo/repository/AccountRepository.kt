@@ -9,7 +9,6 @@ import com.example.demo.repository.SqlQueries.GET_INCOME_TYPES
 import com.example.demo.repository.SqlQueries.GET_SINGLE_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.UPDATE_ACCOUNT_WITH_NEW_AMOUNT
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
-import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
@@ -17,7 +16,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @Repository
-class AccountRepository(private val helper: RepositoryHelper, private val client: DatabaseClient) {
+class AccountRepository(private val helper: RepositoryHelper) {
     fun getAccountsSummaryForMonth(date: LocalDate): Flux<MonthAccountSummary> {
         return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
             bind("$1", date.year)
@@ -32,10 +31,10 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
     }
 
     fun update(account: Account): Mono<Void> {
-        return client.sql(UPDATE_SINGLE_ACCOUNT_DATA)
-            .bind("$1", account.amount)
-            .bind("$2", account.id)
-            .then()
+        return helper.executeUpdate(UPDATE_SINGLE_ACCOUNT_DATA) {
+            bind("$1", account.amount)
+                .bind("$2", account.id)
+        }
     }
 
     fun getAccountIncome(accountId: Int, dateFromMonth: LocalDate): Flux<AccountIncome> {
@@ -52,17 +51,16 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
 
     @Transactional
     fun addIncome(updateAccount: AccountIncomeRequest): Mono<Void> {
-        return client.sql(ADD_ACCOUNT_INCOME)
-            .bind("$1", updateAccount.accountId)
-            .bind("$2", updateAccount.value)
-            .bind("$3", updateAccount.incomeDescription)
-            .bind("$4", updateAccount.date)
-            .then()
-            .then(
-                client.sql(UPDATE_ACCOUNT_WITH_NEW_AMOUNT)
-                    .bind("$1", updateAccount.value)
+        return helper.executeUpdate(ADD_ACCOUNT_INCOME) {
+            bind("$1", updateAccount.accountId)
+                .bind("$2", updateAccount.value)
+                .bind("$3", updateAccount.incomeDescription)
+                .bind("$4", updateAccount.date)
+        }.then(
+            helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+                bind("$1", updateAccount.value)
                     .bind("$2", updateAccount.accountId)
-                    .then()
-            )
+            }
+        )
     }
 }

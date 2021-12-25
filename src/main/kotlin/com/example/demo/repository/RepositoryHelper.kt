@@ -31,12 +31,13 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .all()
     }
 
-    fun executeUpdate(query: () -> String, params: DatabaseClient.GenericExecuteSpec.() -> Unit = {}): Mono<Void> {
+    fun executeUpdate(
+        query: () -> String,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Mono<Void> {
         return client.sql(query)
-            .let {
-                it.params()
-                it
-            }.then()
+            .let(function)
+            .then()
     }
 
     fun <T> findFirstOrNull(
