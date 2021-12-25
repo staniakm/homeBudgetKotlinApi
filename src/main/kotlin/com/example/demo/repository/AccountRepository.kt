@@ -11,6 +11,7 @@ import com.example.demo.repository.SqlQueries.UPDATE_ACCOUNT_WITH_NEW_AMOUNT
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDate
@@ -49,6 +50,7 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
         return helper.getList(GET_INCOME_TYPES, incomeTypeMapper)
     }
 
+    @Transactional
     fun addIncome(updateAccount: AccountIncomeRequest): Mono<Void> {
         return client.sql(ADD_ACCOUNT_INCOME)
             .bind("$1", updateAccount.accountId)
