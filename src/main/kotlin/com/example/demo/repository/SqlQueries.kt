@@ -48,7 +48,7 @@ object SqlQueries {
     }
 
     private fun getAccountData(): String {
-        return "select id, account_name, money as amount, owner from account where del = false"
+        return "select id, account_name, money as amount, owner from account where del = false order by account_name"
     }
 
     private fun getSingleAccountData(): String {
@@ -79,7 +79,8 @@ object SqlQueries {
                     left join (select sum(sum) expense, account from invoice where del = false and extract(year from date) = $1
 							and extract(month from date) = $2 group by account) ex on ex.account = k.ID 
                     left join (select sum(value) income, account from income where extract(year from date) = $1 and extract(month from date) = $2 group by account) i on i.account = k.ID 
-                where k.del = false and id > 1""".trimIndent()
+                where k.del = false and id > 1
+                order by k.account_name""".trimIndent()
     }
 
     private fun updatePlanedBudget(): String {
