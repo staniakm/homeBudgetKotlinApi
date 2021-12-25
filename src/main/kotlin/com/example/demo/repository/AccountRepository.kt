@@ -7,6 +7,7 @@ import com.example.demo.repository.SqlQueries.GET_ACCOUNT_DATA
 import com.example.demo.repository.SqlQueries.GET_ACCOUNT_INCOME
 import com.example.demo.repository.SqlQueries.GET_INCOME_TYPES
 import com.example.demo.repository.SqlQueries.GET_SINGLE_ACCOUNT_DATA
+import com.example.demo.repository.SqlQueries.UPDATE_ACCOUNT_WITH_NEW_AMOUNT
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
@@ -55,5 +56,11 @@ class AccountRepository(private val helper: RepositoryHelper, private val client
             .bind("$3", updateAccount.incomeDescription)
             .bind("$4", updateAccount.date)
             .then()
+            .then(
+                client.sql(UPDATE_ACCOUNT_WITH_NEW_AMOUNT)
+                    .bind("$1", updateAccount.value)
+                    .bind("$2", updateAccount.accountId)
+                    .then()
+            )
     }
 }

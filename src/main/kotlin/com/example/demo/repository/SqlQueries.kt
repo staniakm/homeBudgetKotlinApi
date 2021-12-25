@@ -29,6 +29,11 @@ object SqlQueries {
     val GET_ACCOUNT_INCOME: () -> String = { getAccountIncome() }
     val GET_INCOME_TYPES: () -> String = { getIncomeTypes() }
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
+    val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = {updateAccountWithNewAmount()}
+
+    private fun updateAccountWithNewAmount() = """
+        update account set money = money + $1 where del = false and id = $2 
+    """.trimIndent()
 
     private fun addAccountIncome() = """
         insert into income(account, value, description, date) values ($1, $2, $3, $4)
