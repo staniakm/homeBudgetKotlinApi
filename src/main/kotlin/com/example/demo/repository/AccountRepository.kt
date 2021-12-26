@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Repository
@@ -60,6 +61,18 @@ class AccountRepository(private val helper: RepositoryHelper) {
             helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
                 bind("$1", updateAccount.value)
                     .bind("$2", updateAccount.accountId)
+            }
+        )
+    }
+
+    fun transferMoney(accountId: Long, value: BigDecimal, targetAccount: Long): Mono<Void> {
+        return helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+            bind("$1", value.multiply(BigDecimal.valueOf(-1)))
+                .bind("$2", accountId)
+        }.then(
+            helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+                bind("$1", value)
+                    .bind("$2", targetAccount)
             }
         )
     }

@@ -47,4 +47,8 @@ class AccountController(private val accountService: AccountService) {
     @GetMapping("/income/type")
     fun getIncomeTypes() = accountService.getIncomeTypes()
 
+    @PutMapping("/{accountId}/transfer")
+    fun transferMoney(@PathVariable accountId: Long, @RequestBody request: TransferMoneyRequest) =
+        accountService.transferMoney(accountId, request)
+
 }

@@ -1,11 +1,9 @@
 package com.example.demo.service
 
-import com.example.demo.entity.Account
-import com.example.demo.entity.AccountIncome
-import com.example.demo.entity.AccountIncomeRequest
-import com.example.demo.entity.UpdateAccountDto
+import com.example.demo.entity.*
 import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -50,5 +48,15 @@ class AccountService(
     fun addAccountIncome(updateAccount: AccountIncomeRequest): Flux<AccountIncome> {
         return accountRepository.addIncome(updateAccount)
             .thenMany(getAccountIncome(updateAccount.accountId, 0))
+    }
+
+    @Transactional
+    fun transferMoney(accountId: Long, request: TransferMoneyRequest): Mono<Account> {
+        return accountRepository.findById(accountId)
+            .flatMap {
+                accountRepository.findById(request.targetAccount)
+            }.flatMap {
+                accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
+            }.then( accountRepository.findById(request.targetAccount) )
     }
 }
