@@ -10,7 +10,8 @@ Also android app is able to insert some data into database.
 
 
 #TBD
-- test with testcontainers
-- add database schema, initial data and required procedures
-- update readme with "how to run" information
-- update existing PR with new code
+- ✔️ test with testcontainers
+- ✔️ add database schema and required procedures
+-  (Optional) initial data
+-  update readme with "how to run" information
+-  update existing PR with new code
