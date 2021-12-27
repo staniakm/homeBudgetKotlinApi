@@ -10,13 +10,15 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import java.math.BigDecimal
+import java.time.LocalDate
 
 @SpringBootTest
 @Testcontainers
 open class IntegrationTest {
 
     @Autowired
-    lateinit var client: DatabaseClient
+    private lateinit var client: DatabaseClient
 
     @AfterEach
     internal fun tearDown() {
@@ -26,8 +28,8 @@ open class IntegrationTest {
         client.sql("delete from invoice ").then().block()
         client.sql("delete from account ").then().block()
         client.sql("delete from account_owner ").then().block()
+        client.sql("delete from shop ").then().block()
     }
-
 
     companion object {
         @Container
@@ -58,4 +60,29 @@ open class IntegrationTest {
             registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword)
         }
     }
+
+    fun executeInsert(query: String) {
+        client.sql(query).then().block()
+    }
+
+    fun createShop() {
+        executeInsert("insert into shop (id, name) values (1, 'shop name')")
+    }
+
+    fun createInvoice(accountId: Int = 1, date: LocalDate = LocalDate.now(), amount: BigDecimal = BigDecimal.TEN) {
+        executeInsert("insert into invoice(date, invoice_number, sum, description, account, shop) values ( '$date', '1a', $amount, '', $accountId, 1)")
+    }
+
+    fun createIncome(accountId: Int = 1, amount: BigDecimal, date: LocalDate) {
+        executeInsert("insert into income(value, description, account, date) values ( $amount, 'Income', $accountId, '$date')")
+    }
+
+    fun createAccount(accountId: Int = 1, amount: BigDecimal = BigDecimal.ONE, name: String = "account") {
+        executeInsert("insert into account (id, account_name,description, money, owner) values ($accountId, '$name','desc',$amount, 1)")
+    }
+
+    fun createAccountOwner() {
+        executeInsert("insert into account_owner (id, description, owner_name) values (1, 'owner', 'name')")
+    }
+
 }

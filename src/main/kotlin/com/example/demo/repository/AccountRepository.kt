@@ -18,7 +18,7 @@ import java.time.LocalDate
 
 @Repository
 class AccountRepository(private val helper: RepositoryHelper) {
-    fun getAccountsSummaryForMonth(date: LocalDate): Flux<MonthAccountSummary> {
+    fun getAccountsSummaryForMonthSkipDefaultAccount(date: LocalDate): Flux<MonthAccountSummary> {
         return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
             bind("$1", date.year)
                 .bind("$2", date.monthValue)
@@ -65,6 +65,7 @@ class AccountRepository(private val helper: RepositoryHelper) {
         )
     }
 
+    @Transactional
     fun transferMoney(accountId: Long, value: BigDecimal, targetAccount: Long): Mono<Void> {
         return helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
             bind("$1", value.multiply(BigDecimal.valueOf(-1)))

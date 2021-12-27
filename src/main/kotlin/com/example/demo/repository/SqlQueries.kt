@@ -57,7 +57,7 @@ object SqlQueries {
 
     private fun getAccountIncome(): String {
         return """
-                select k.id, k.account_name name, coalesce(p.value,0) income, date, p.description description
+                select k.id, k.account_name as name, coalesce(p.value,0) income, date, p.description description
                 from account k 
                     left join income p on p.account = k.ID 
                     where k.del = false and

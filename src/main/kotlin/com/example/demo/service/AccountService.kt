@@ -3,7 +3,6 @@ package com.example.demo.service
 import com.example.demo.entity.*
 import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -15,7 +14,7 @@ class AccountService(
 ) {
 
     fun getAccountsSummaryForMonth(month: Long) =
-        accountRepository.getAccountsSummaryForMonth(clock.getDateFromMonth(month))
+        accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(clock.getDateFromMonth(month))
 
     fun findAll() = accountRepository.findAllAccounts()
 
@@ -50,7 +49,6 @@ class AccountService(
             .thenMany(getAccountIncome(updateAccount.accountId, 0))
     }
 
-    @Transactional
     fun transferMoney(accountId: Long, request: TransferMoneyRequest): Mono<Account> {
         return accountRepository.findById(accountId)
             .flatMap {
