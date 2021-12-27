@@ -20,22 +20,22 @@ class BudgetRepository(private val helper: RepositoryHelper) {
         bind("$1", budgetId)
     }
 
-    private fun getBudgetCalculations(date: LocalDate, budgets: Flux<MonthBudget>): Mono<BudgetItem> {
-        return getBudgetItem(date).zipWith(budgets.collectList())
-            .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
-    }
-
     fun updateBudget(updateBudget: UpdateBudgetDto): Mono<Void> {
         return helper.executeUpdate(UPDATE_MONTH_BUDGE_DETAILS) {
             bind("$1", updateBudget.planned)
                 .bind("$2", updateBudget.budgetId)
-        }
+        }.then(recalculateBudget(updateBudget.budgetId))
     }
 
-    fun recalculateBudget(budgetId: Int): Mono<Void> {
+    private fun recalculateBudget(budgetId: Int): Mono<Void> {
         return helper.callProcedure("call RecalculateSelectedBudget ($1)") {
             bind("$1", budgetId)
         }
+    }
+
+    private fun getBudgetCalculations(date: LocalDate, budgets: Flux<MonthBudget>): Mono<BudgetItem> {
+        return getBudgetItem(date).zipWith(budgets.collectList())
+            .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
     }
 
     private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {

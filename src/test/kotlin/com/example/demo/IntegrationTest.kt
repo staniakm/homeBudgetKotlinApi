@@ -1,6 +1,7 @@
 package com.example.demo
 
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.r2dbc.core.DatabaseClient
@@ -15,7 +16,7 @@ import java.time.LocalDate
 
 @SpringBootTest
 @Testcontainers
-open class IntegrationTest {
+abstract class IntegrationTest {
 
     @Autowired
     private lateinit var client: DatabaseClient
@@ -29,15 +30,23 @@ open class IntegrationTest {
         client.sql("delete from account ").then().block()
         client.sql("delete from account_owner ").then().block()
         client.sql("delete from shop ").then().block()
+        client.sql("delete from budget").then().block()
+        client.sql("delete from category").then().block()
     }
 
     companion object {
-        @Container
+        @JvmStatic
         val postgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:13-alpine"))
             .withDatabaseName("test")
             .withUsername("user")
             .withPassword("password")
             .withInitScript("schema.sql")
+
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll() {
+            postgreSQLContainer.start()
+        }
 
         @DynamicPropertySource
         @JvmStatic
@@ -85,4 +94,19 @@ open class IntegrationTest {
         executeInsert("insert into account_owner (id, description, owner_name) values (1, 'owner', 'name')")
     }
 
+    fun createCategory(categoryId: Int = 1, categoryName: String = "Unknown") {
+        executeInsert("insert into category(id, name) values ($categoryId, '$categoryName')")
+    }
+
+    fun createBudgetItem(
+        id: Int = 1,
+        categoryId: Int = 1,
+        month: Int = LocalDate.now().monthValue,
+        year: Int = LocalDate.now().year,
+        planned: BigDecimal = BigDecimal.ZERO,
+        used: BigDecimal = BigDecimal.ZERO,
+        percentage: Int = 0
+    ) {
+        executeInsert("insert into budget (id, category, month, year, planned, used, percentage) values ($id, $categoryId, $month, $year, $planned, $used, $percentage)")
+    }
 }

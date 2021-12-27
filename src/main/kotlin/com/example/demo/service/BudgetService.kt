@@ -15,7 +15,6 @@ class BudgetService(private val repository: BudgetRepository, private val clock:
     @Transactional
     fun updateBudget(updateBudget: UpdateBudgetDto): Mono<MonthBudgetPlanned> {
         return repository.updateBudget(updateBudget)
-            .then(repository.recalculateBudget(updateBudget.budgetId))
             .then(repository.getSelectedBudgetItem(updateBudget.budgetId))
     }
 }

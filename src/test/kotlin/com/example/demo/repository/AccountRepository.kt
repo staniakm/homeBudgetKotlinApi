@@ -12,9 +12,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 
-class AccountRepositoryTest : IntegrationTest() {
-    @Autowired
-    private lateinit var accountRepository: AccountRepository
+class AccountRepositoryTest(@Autowired private val accountRepository: AccountRepository) : IntegrationTest() {
 
     @Test
     fun `should get all accounts`() {
