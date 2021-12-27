@@ -1,3 +1,5 @@
+[![CI tests status](https://github.com/staniakm/homeBudgetKotlinApi/actions/workflows/maven.yml/badge.svg)](https://github.com/staniakm/homeBudgetKotlinApi/actions/workflows/maven.yml)
+
 Rest api build with Koltin and Spring Boot. Is used as bridge between postgres database and consumer applications:   
 1. [react frontend application](https://github.com/staniakm/homeBudgetReact).     
 2. [android app](https://github.com/staniakm/android_budget_app)
