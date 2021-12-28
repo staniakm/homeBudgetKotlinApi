@@ -254,17 +254,17 @@ object SqlQueries {
                     coalesce(ps.price,0.00) monthSummary, 
                     pr.price yearSummary 
                 from category k 
-                join (select sum(sum) price, category from invoice_details ps 
+                join (select sum(ps.price) price, category from invoice_details ps 
                             join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1
                             group by category) as pr on pr.category = k.id 
-                left join (select sum(sum) price, category from invoice_details ps 
+                left join (select sum(ps.price) price, category from invoice_details ps 
                 join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1 and extract(month from p.date) = $2
                 group by category) as ps on ps.category = k.id 
                 order by name""".trimIndent()
     }
 
     private fun getCategoryDetails(): String {
-        return """select sum(sum) sum,
+        return """select sum(ps.price) sum,
                     	a.name
                     from invoice_details ps 
                         join invoice p on p.ID = ps.invoice

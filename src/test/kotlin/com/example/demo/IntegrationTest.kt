@@ -18,20 +18,27 @@ import java.time.LocalDate
 @Testcontainers
 abstract class IntegrationTest {
 
+    val tables = listOf(
+        "automatic_invoice_products",
+        "income",
+        "invoice_details",
+        "invoice",
+        "account",
+        "account_owner",
+        "shop",
+        "budget",
+        "assortment",
+        "category"
+    )
+
     @Autowired
     private lateinit var client: DatabaseClient
 
     @AfterEach
     internal fun tearDown() {
-        client.sql("delete from automatic_invoice_products ").then().block()
-        client.sql("delete from income ").then().block()
-        client.sql("delete from invoice_details ").then().block()
-        client.sql("delete from invoice ").then().block()
-        client.sql("delete from account ").then().block()
-        client.sql("delete from account_owner ").then().block()
-        client.sql("delete from shop ").then().block()
-        client.sql("delete from budget").then().block()
-        client.sql("delete from category").then().block()
+        tables.forEach { tableName ->
+            client.sql("delete from $tableName").then().block()
+        }
     }
 
     companion object {
@@ -78,8 +85,33 @@ abstract class IntegrationTest {
         executeInsert("insert into shop (id, name) values (1, 'shop name')")
     }
 
-    fun createInvoice(accountId: Int = 1, date: LocalDate = LocalDate.now(), amount: BigDecimal = BigDecimal.TEN) {
-        executeInsert("insert into invoice(date, invoice_number, sum, description, account, shop) values ( '$date', '1a', $amount, '', $accountId, 1)")
+    fun createInvoice(
+        invoiceId: Int = 1,
+        accountId: Int = 1,
+        date: LocalDate = LocalDate.now(),
+        amount: BigDecimal = BigDecimal.TEN
+    ) {
+        executeInsert("insert into invoice(id, date, invoice_number, sum, description, account, shop) values ($invoiceId, '$date', '1a', $amount, '', $accountId, 1)")
+    }
+
+    fun createInvoiceItem(
+        id: Int,
+        invoiceId: Int,
+        price: BigDecimal,
+        amount: BigDecimal,
+        unitPrice: BigDecimal,
+        discount: BigDecimal,
+        categoryId: Int,
+        assortment: Int
+    ) {
+        executeInsert(
+            """insert into invoice_details(id, invoice, price, amount, unit_price, discount, category, assortment)
+	                                                values ($id, $invoiceId, $price, $amount, $unitPrice, $discount, $categoryId, $assortment)"""
+        )
+    }
+
+    fun createAssortment(id: Int, name: String, category: Int) {
+        executeInsert("insert into assortment(id, name, category) values ($id, '$name', $category)")
     }
 
     fun createIncome(accountId: Int = 1, amount: BigDecimal, date: LocalDate) {

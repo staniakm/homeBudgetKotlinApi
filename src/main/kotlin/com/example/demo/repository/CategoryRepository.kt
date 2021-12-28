@@ -21,12 +21,11 @@ class CategoryRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun getCategory(id: Long, date: LocalDate): Mono<Category>? {
-
+    fun getCategory(id: Long, date: LocalDate): Mono<Category> {
         return getCategoryById(id, date)
     }
 
-    fun getCategoryDetails(categoryId: Long, date: LocalDate): Flux<CategoryDetails> {
+    fun getProductsForCategoryAndMonth(categoryId: Long, date: LocalDate): Flux<CategoryDetails> {
         return helper.getList(GET_CATEGORY_DETAILS, categoryDetailsRowMapper) {
             bind("$1", date.withDayOfMonth(1))
                 .bind("$2", date.withDayOfMonth(date.lengthOfMonth()))

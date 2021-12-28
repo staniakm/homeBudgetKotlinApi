@@ -139,7 +139,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccount(2, amount = BigDecimal(100))
         createIncome(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
         createShop()
-        createInvoice(2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
+        createInvoice(1,2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
 
         val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
 
@@ -158,9 +158,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(2, BigDecimal("200"), LocalDate.of(2021, 10, 10))
         createIncome(2, BigDecimal("300"), LocalDate.of(2021, 11, 10))
         createShop()
-        createInvoice(2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        createInvoice(1,2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        createInvoice(2,2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        createInvoice(3,2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
 
@@ -179,9 +179,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(2, BigDecimal("200"), LocalDate.of(2021, 11, 10))
         createIncome(3, BigDecimal("300"), LocalDate.of(2021, 10, 10))
         createShop()
-        createInvoice(3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        createInvoice(1,3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        createInvoice(2,2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        createInvoice(3,2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
 
