@@ -14,8 +14,7 @@ import java.time.LocalDate
 @Service
 class InvoiceRepository(private val helper: RepositoryHelper) {
 
-    fun getInvoices(date: LocalDate): Flux<ShoppingInvoice> {
-        println("fetch data $date")
+    fun getInvoicesForMonth(date: LocalDate): Flux<ShoppingInvoice> {
         return helper.getList(GET_INVOICE, shoppingListRowMapper) {
             bind("$1", date.year).bind("$2", date.monthValue)
         }

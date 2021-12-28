@@ -2,12 +2,10 @@ package com.example.demo.service
 
 import com.example.demo.entity.Invoice
 import com.example.demo.entity.InvoiceUpdateAccountRequest
-import com.example.demo.entity.ShoppingInvoice
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
@@ -17,7 +15,7 @@ class InvoiceService(
 ) {
 
     fun getInvoiceListForMonth(monthValue: Long) =
-        invoiceRepository.getInvoices(clock.getDateFromMonth(monthValue))
+        invoiceRepository.getInvoicesForMonth(clock.getDateFromMonth(monthValue))
 
     fun getInvoiceDetails(id: Long) = invoiceRepository.getInvoiceDetails(id)
 
