@@ -363,7 +363,7 @@ begin
     end if;
 
     begin
-        update invoice_details i set price = (i.amount * i.unit_price) - i.discount
+        update invoice_details i set price = (i.amount * i.unit_price) - i.discount, category = a.category
         from assortment a
         where i.assortment = a.id and i.invoice = invoice_to_update and i.del = false;
         select date into month_date from invoice where id = invoice_to_update;
