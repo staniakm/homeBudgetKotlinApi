@@ -28,7 +28,8 @@ abstract class IntegrationTest {
         "shop",
         "budget",
         "assortment",
-        "category"
+        "category",
+        "media_type"
     )
 
     @Autowired
@@ -140,5 +141,12 @@ abstract class IntegrationTest {
         percentage: Int = 0
     ) {
         executeInsert("insert into budget (id, category, month, year, planned, used, percentage) values ($id, $categoryId, $month, $year, $planned, $used, $percentage)")
+    }
+
+    fun createMediaType(
+        id: Int = 1,
+        name: String = "MEDIA"
+    ) {
+        executeInsert("insert into media_type(id, name) values ($id, '$name')")
     }
 }

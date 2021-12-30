@@ -800,7 +800,8 @@ ALTER TABLE public.invoice_details OWNER TO postgres;
 
 CREATE TABLE public.media_type (
                                    id integer NOT NULL,
-                                   name character varying NOT NULL
+                                   name character varying NOT NULL,
+                                   del boolean DEFAULT false NOT NULL
 );
 
 
