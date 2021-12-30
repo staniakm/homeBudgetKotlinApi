@@ -794,20 +794,6 @@ CREATE TABLE public.invoice_details (
 ALTER TABLE public.invoice_details OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 16793)
--- Name: media_type; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.media_type (
-                                   id integer NOT NULL,
-                                   name character varying NOT NULL,
-                                   del boolean DEFAULT false NOT NULL
-);
-
-
-ALTER TABLE public.media_type OWNER TO postgres;
-
---
 -- TOC entry 236 (class 1259 OID 16792)
 -- Name: media_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -829,25 +815,22 @@ ALTER TABLE public.media_type_id_seq OWNER TO postgres;
 -- Name: media_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.media_type_id_seq OWNED BY public.media_type.id;
-
 
 --
--- TOC entry 240 (class 1259 OID 16803)
--- Name: media_usage; Type: TABLE; Schema: public; Owner: postgres
+-- TOC entry 237 (class 1259 OID 16793)
+-- Name: media_type; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.media_usage (
-                                    id integer NOT NULL,
-                                    media_type integer NOT NULL,
-                                    year integer NOT NULL,
-                                    month integer NOT NULL,
-                                    usage double precision NOT NULL
+CREATE TABLE public.media_type (
+                                   id integer DEFAULT nextval('public.media_type_id_seq'::regclass) NOT NULL,
+                                   name character varying NOT NULL,
+                                   del boolean DEFAULT false NOT NULL
 );
 
 
-ALTER TABLE public.media_usage OWNER TO postgres;
+ALTER TABLE public.media_type OWNER TO postgres;
 
+CREATE UNIQUE INDEX name_unique ON media_type (UPPER(name));
 --
 -- TOC entry 238 (class 1259 OID 16801)
 -- Name: media_usage_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -865,43 +848,24 @@ CREATE SEQUENCE public.media_usage_id_seq
 ALTER TABLE public.media_usage_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3497 (class 0 OID 0)
--- Dependencies: 238
--- Name: media_usage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- TOC entry 240 (class 1259 OID 16803)
+-- Name: media_usage; Type: TABLE; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.media_usage_id_seq OWNED BY public.media_usage.id;
 
+CREATE TABLE public.media_usage (
+                                    id integer DEFAULT nextval('public.media_usage_id_seq'::regclass) NOT NULL,
+                                    media_type integer NOT NULL,
+                                    year integer NOT NULL,
+                                    month integer NOT NULL,
+                                    meter_read double precision NOT NULL,
+                                    read_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 
---
--- TOC entry 239 (class 1259 OID 16802)
--- Name: media_usage_media_type_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
+ALTER TABLE public.media_usage OWNER TO postgres;
 
-CREATE SEQUENCE public.media_usage_media_type_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.media_usage_media_type_seq OWNER TO postgres;
-
---
--- TOC entry 3498 (class 0 OID 0)
--- Dependencies: 239
--- Name: media_usage_media_type_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.media_usage_media_type_seq OWNED BY public.media_usage.media_type;
-
-
---
--- TOC entry 230 (class 1259 OID 16667)
--- Name: report_settings; Type: TABLE; Schema: public; Owner: postgres
---
+ALTER TABLE IF EXISTS public.media_usage
+    ADD CONSTRAINT year_month_type_unique UNIQUE (year, month, media_type);
 
 CREATE TABLE public.report_settings (
                                         min_val character varying(100),
@@ -999,14 +963,6 @@ ALTER TABLE ONLY public.media_type ALTER COLUMN id SET DEFAULT nextval('public.m
 --
 
 ALTER TABLE ONLY public.media_usage ALTER COLUMN id SET DEFAULT nextval('public.media_usage_id_seq'::regclass);
-
-
---
--- TOC entry 3280 (class 2604 OID 16807)
--- Name: media_usage media_type; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.media_usage ALTER COLUMN media_type SET DEFAULT nextval('public.media_usage_media_type_seq'::regclass);
 
 
 --

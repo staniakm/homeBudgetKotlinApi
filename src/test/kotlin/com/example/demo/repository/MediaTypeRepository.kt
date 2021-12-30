@@ -1,17 +1,11 @@
 package com.example.demo.repository
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.Account
-import com.example.demo.entity.AccountIncomeRequest
 import com.example.demo.entity.MediaType
-import io.kotest.assertions.asClue
-import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.math.BigDecimal
-import java.time.LocalDate
 
 
 class MediaTypeRepositoryTest(@Autowired private val mediaTypeRepository: MediaTypeRepository) : IntegrationTest() {

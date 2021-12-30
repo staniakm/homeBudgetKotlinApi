@@ -8,7 +8,6 @@ import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import java.math.BigDecimal
@@ -29,6 +28,7 @@ abstract class IntegrationTest {
         "budget",
         "assortment",
         "category",
+        "media_usage",
         "media_type"
     )
 
@@ -38,7 +38,7 @@ abstract class IntegrationTest {
     @AfterEach
     internal fun tearDown() {
         tables.forEach { tableName ->
-            client.sql("delete from $tableName").then().block()
+            client.sql("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;").then().block()
         }
     }
 
@@ -148,5 +148,15 @@ abstract class IntegrationTest {
         name: String = "MEDIA"
     ) {
         executeInsert("insert into media_type(id, name) values ($id, '$name')")
+    }
+
+    fun createMedia(
+        id: Int = 1,
+        mediaTypeId: Int = 1,
+        year: Int = LocalDate.now().year,
+        month: Int = LocalDate.now().monthValue,
+        meterRead: Double = 0.0
+    ) {
+        executeInsert("insert into media_usage(id, media_type, year, month, meter_read) values ($id, $mediaTypeId, $year, $month, $meterRead)")
     }
 }

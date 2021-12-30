@@ -3,9 +3,11 @@ package com.example.demo.repository
 
 object SqlQueries {
 
-    val FIND_ALL_MEDIA_TYPES: () -> String = {findAllMediaTypes()}
+    val ADD_NEW_MEDIA_USAGE: () -> String = { addMediaUsage() }
+    val GET_MEDIA_READS_FOR_MONTH: () -> String = { getAllMediaReadsFromMonth() }
+    val FIND_ALL_MEDIA_TYPES: () -> String = { findAllMediaTypes() }
     val FIND_MEDIA_TYPE_BY_ID: () -> String = { findMediaTypeById() }
-    val FIND_MEDIA_TYPE_BY_NAME: () -> String = {findMediaTypeByName()}
+    val FIND_MEDIA_TYPE_BY_NAME: () -> String = { findMediaTypeByName() }
     val ADD_NEW_MEDIA_TYPE: () -> String = { createNewMediaType() }
     val GET_INVOICE: () -> String = { getInvoices() }
     val GET_INVOICE_DATA: () -> String = { getSelectedInvoice() }
@@ -39,6 +41,12 @@ object SqlQueries {
     private fun findMediaTypeByName() = """select id, name from media_type where name = $1"""
     private fun findMediaTypeById() = """select id, name from media_type where id = $1"""
     private fun findAllMediaTypes() = """select id, name from media_type where del = false"""
+
+    private fun getAllMediaReadsFromMonth() =
+        """select id, media_type, year, month, meter_read from media_usage where year = $1 and month = $2"""
+
+    private fun addMediaUsage() =
+        """insert into media_usage(media_type, meter_read, year, month) values ($1, $2, $3, $4)"""
 
     private fun updateAccountWithNewAmount() = """
         update account set money = money + $1 where del = false and id = $2 
