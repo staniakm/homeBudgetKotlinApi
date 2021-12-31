@@ -123,8 +123,8 @@ abstract class IntegrationTest {
         executeInsert("insert into account (id, account_name,description, money, owner) values ($accountId, '$name','desc',$amount, 1)")
     }
 
-    fun createAccountOwner() {
-        executeInsert("insert into account_owner (id, description, owner_name) values (1, 'owner', 'name')")
+    fun createAccountOwner(id: Int = 1, name: String = "Owner name", description: String = "") {
+        executeInsert("insert into account_owner (id, owner_name,description) values ($id, '$name', '$description')")
     }
 
     fun createCategory(categoryId: Int = 1, categoryName: String = "Unknown") {

@@ -3,6 +3,9 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val GET_OWNER_BY_NAME: () -> String = { getOwnerByName() }
+    val ADD_NEW_OWNER: () -> String = { createNewOwner() }
+    val GET_ALL_OWNERS: () -> String = { getAllOwners() }
     val ADD_NEW_MEDIA_USAGE: () -> String = { addMediaUsage() }
     val GET_MEDIA_READS_FOR_MONTH: () -> String = { getAllMediaReadsFromMonth() }
     val FIND_ALL_MEDIA_TYPES: () -> String = { findAllMediaTypes() }
@@ -36,6 +39,11 @@ object SqlQueries {
     val GET_INCOME_TYPES: () -> String = { getIncomeTypes() }
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
+
+    private fun getAllOwners() = """select id, owner_name, description from account_owner"""
+    private fun createNewOwner() = """insert into account_owner (owner_name, description) values ($1, $2)"""
+    private fun getOwnerByName() =
+        """select id, owner_name, description from account_owner where lower(owner_name)  = lower($1) order by id desc limit 1"""
 
     private fun createNewMediaType() = """insert into media_type(name) values ($1)""".trimIndent()
     private fun findMediaTypeByName() = """select id, name from media_type where name = $1"""
