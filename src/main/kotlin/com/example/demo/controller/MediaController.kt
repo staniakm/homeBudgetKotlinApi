@@ -5,7 +5,6 @@ import com.example.demo.entity.MediaRegisterRequest
 import com.example.demo.entity.MediaType
 import com.example.demo.entity.MediaTypeRequest
 import com.example.demo.service.MediaService
-import org.springframework.data.r2dbc.repository.Query
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -14,7 +13,7 @@ import reactor.core.publisher.Mono
 @RequestMapping("/api/media")
 class MediaController(private val mediaService: MediaService) {
 
-    @PostMapping("type")
+    @PostMapping("/type")
     fun createMediaType(@RequestBody request: MediaTypeRequest): Mono<MediaType> {
         return mediaService.registerNewMediaType(request)
     }
