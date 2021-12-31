@@ -3,6 +3,7 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val GET_MEDIA_USAGE_BY_TYPE: () -> String = {getMediaUsageBYType()}
     val GET_OWNER_BY_NAME: () -> String = { getOwnerByName() }
     val ADD_NEW_OWNER: () -> String = { createNewOwner() }
     val GET_ALL_OWNERS: () -> String = { getAllOwners() }
@@ -50,6 +51,10 @@ object SqlQueries {
     private fun findMediaTypeById() = """select id, name from media_type where id = $1"""
     private fun findAllMediaTypes() = """select id, name from media_type where del = false"""
 
+
+    private fun getMediaUsageBYType() = """select media_usage.id, media_type.id type_id, year, month, meter_read from media_usage
+        | join media_type on media_usage.media_type=media_type.id
+        |  where media_type.id = $1 order by year desc, month desc""".trimMargin()
     private fun getAllMediaReadsFromMonth() =
         """select id, media_type, year, month, meter_read from media_usage where year = $1 and month = $2"""
 

@@ -1,14 +1,10 @@
 package com.example.demo.repository
 
-import com.example.demo.entity.MediaItem
-import com.example.demo.entity.MediaType
-import com.example.demo.entity.mediaMapper
-import com.example.demo.entity.mediaTypeMapper
+import com.example.demo.entity.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.LocalDate
 
 @Service
 class MediaTypeRepository(private val helper: RepositoryHelper) {
@@ -41,15 +37,22 @@ class MediaRepository(private val helper: RepositoryHelper) {
                 .bind("$2", month)
         }
     }
+
     @Transactional
-    fun createMediaUsage(mediaTypeId: Int, meterRead: Double, year: Int, month: Int): Flux<MediaItem> {
+    fun createMediaUsage(mediaTypeId: Int, meterRead: Double, year: Int, month: Int): Flux<MediaUsage> {
         return helper.executeUpdate(SqlQueries.ADD_NEW_MEDIA_USAGE) {
             bind("$1", mediaTypeId)
                 .bind("$2", meterRead)
                 .bind("$3", year)
                 .bind("$4", month)
-        }.thenMany(getMediaForMonth(year, month))
+        }.thenMany(findByMediaType(mediaTypeId))
 
+    }
+
+    fun findByMediaType(it: Int): Flux<MediaUsage> {
+        return helper.getList(SqlQueries.GET_MEDIA_USAGE_BY_TYPE, mediaUsageMapper) {
+            bind("$1", it)
+        }
     }
 
 }

@@ -1,8 +1,6 @@
 package com.example.demo.service
 
-import com.example.demo.entity.MediaItem
-import com.example.demo.entity.MediaRegisterRequest
-import com.example.demo.entity.MediaTypeRequest
+import com.example.demo.entity.*
 import com.example.demo.repository.MediaRepository
 import com.example.demo.repository.MediaTypeRepository
 import org.springframework.stereotype.Service
@@ -17,7 +15,7 @@ class MediaService(
     fun registerNewMediaType(request: MediaTypeRequest) = mediaTypeRepository.registerNewMediaType(request.mediaName)
     fun getAll() = mediaTypeRepository.findAll()
     fun getMediaTypeById(id: Int) = mediaTypeRepository.findById(id)
-    fun registerNewMediaUsage(mediaRegisterRequest: MediaRegisterRequest): Flux<MediaItem> {
+    fun registerNewMediaUsage(mediaRegisterRequest: MediaRegisterRequest): Flux<MediaUsageResponse> {
         return getMediaTypeById(mediaRegisterRequest.mediaType)
             .flatMapMany {
                 mediaRepository.createMediaUsage(
@@ -26,6 +24,8 @@ class MediaService(
                     mediaRegisterRequest.year,
                     mediaRegisterRequest.month
                 )
+            }.map {
+                it.toResponse()
             }
     }
 
@@ -33,4 +33,13 @@ class MediaService(
         .let {
             mediaRepository.getMediaForMonth(it.year, it.monthValue)
         }
+
+    fun getMediaUsageByType(mediaTypeId: Int): Flux<MediaUsageResponse> {
+        return mediaTypeRepository.findById(mediaTypeId)
+            .flatMapMany {
+                mediaRepository.findByMediaType(it.id)
+            }.map {
+                it.toResponse()
+            }
+    }
 }

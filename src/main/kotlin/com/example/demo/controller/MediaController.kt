@@ -1,9 +1,6 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.MediaItem
-import com.example.demo.entity.MediaRegisterRequest
-import com.example.demo.entity.MediaType
-import com.example.demo.entity.MediaTypeRequest
+import com.example.demo.entity.*
 import com.example.demo.service.MediaService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -29,8 +26,11 @@ class MediaController(private val mediaService: MediaService) {
         return mediaService.getMediaForMonth(month)
     }
 
+    @GetMapping("/usage/{mediaTypeId}")
+    fun getMediaUsageByType(@PathVariable mediaTypeId: Int) = mediaService.getMediaUsageByType(mediaTypeId)
+
     @PostMapping("/usage")
-    fun registerNewMediaUsage(@RequestBody mediaRegisterRequest: MediaRegisterRequest): Flux<MediaItem> {
+    fun registerNewMediaUsage(@RequestBody mediaRegisterRequest: MediaRegisterRequest): Flux<MediaUsageResponse> {
         return mediaService.registerNewMediaUsage(mediaRegisterRequest)
     }
 
