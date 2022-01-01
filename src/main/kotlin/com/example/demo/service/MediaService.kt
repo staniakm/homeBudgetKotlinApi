@@ -5,6 +5,7 @@ import com.example.demo.repository.MediaRepository
 import com.example.demo.repository.MediaTypeRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class MediaService(
@@ -41,5 +42,9 @@ class MediaService(
             }.map {
                 it.toResponse()
             }
+    }
+
+    fun deleteMediaUsage(mediaUsageId: Int): Mono<Void> {
+        return mediaRepository.deleteMediaUsageEntry(mediaUsageId)
     }
 }

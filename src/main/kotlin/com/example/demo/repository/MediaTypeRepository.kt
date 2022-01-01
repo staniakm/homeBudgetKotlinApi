@@ -55,4 +55,10 @@ class MediaRepository(private val helper: RepositoryHelper) {
         }
     }
 
+    fun deleteMediaUsageEntry(mediaUsageId: Int): Mono<Void> {
+        return helper.executeUpdate(SqlQueries.DELETE_MEDIA_USAGE){
+            bind("$1", mediaUsageId)
+        }
+    }
+
 }

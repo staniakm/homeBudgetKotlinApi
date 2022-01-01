@@ -34,4 +34,9 @@ class MediaController(private val mediaService: MediaService) {
         return mediaService.registerNewMediaUsage(mediaRegisterRequest)
     }
 
+    @DeleteMapping("/usage/{mediaUsageId}")
+    fun deleteMediaUsage(@PathVariable mediaUsageId: Int):Mono<Void> {
+        return mediaService.deleteMediaUsage(mediaUsageId)
+    }
+
 }

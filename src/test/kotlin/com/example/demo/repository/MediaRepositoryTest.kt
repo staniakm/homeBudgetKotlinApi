@@ -2,7 +2,6 @@ package com.example.demo.repository
 
 import com.example.demo.IntegrationTest
 import com.example.demo.entity.MediaItem
-import com.example.demo.entity.MediaType
 import com.example.demo.entity.MediaUsage
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
@@ -78,5 +77,17 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
             MediaUsage(3, 1, 2021, 11, 162.11),
             MediaUsage(4, 1, 2021, 12, 182.11)
         )
+    }
+
+    @Test
+    internal fun `should delete media usage`() {
+        createMediaType(1, "POWER")
+        createMedia(1, 1)
+
+        mediaRepository.deleteMediaUsageEntry(1).block()
+
+        val media = mediaRepository.findByMediaType(1).collectList().block()!!
+
+        media.size shouldBe 0
     }
 }
