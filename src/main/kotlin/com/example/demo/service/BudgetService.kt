@@ -1,5 +1,6 @@
 package com.example.demo.service
 
+import com.example.demo.entity.BudgetItem
 import com.example.demo.entity.MonthBudgetPlanned
 import com.example.demo.entity.UpdateBudgetDto
 import com.example.demo.repository.BudgetRepository
@@ -16,5 +17,10 @@ class BudgetService(private val repository: BudgetRepository, private val clock:
     fun updateBudget(updateBudget: UpdateBudgetDto): Mono<MonthBudgetPlanned> {
         return repository.updateBudget(updateBudget)
             .then(repository.getSelectedBudgetItem(updateBudget.budgetId))
+    }
+
+    fun recalculateBudgets(month: Long): Mono<BudgetItem> {
+        return repository.recalcualteBudgets(clock.getDateFromMonth(month))
+            .then(getMonthBudget(month))
     }
 }

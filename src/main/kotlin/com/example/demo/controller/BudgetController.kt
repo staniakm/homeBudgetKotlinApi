@@ -17,4 +17,7 @@ class BudgetController(private val budgetService: BudgetService) {
 
     @PutMapping(produces = ["application/json"])
     fun updateBudgetForMonth(@RequestBody updateBudget: UpdateBudgetDto) = budgetService.updateBudget(updateBudget)
+
+    @PutMapping("/recalculate")
+    fun recalculateBudget(@RequestParam("month", required = false, defaultValue = "0") month: Long): Mono<BudgetItem> = budgetService.recalculateBudgets(month)
 }

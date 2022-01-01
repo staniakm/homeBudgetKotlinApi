@@ -51,4 +51,10 @@ class BudgetRepository(private val helper: RepositoryHelper) {
                 .bind("$2", date.monthValue)
         }
     }
+
+    fun recalcualteBudgets(dateFromMonth: LocalDate): Mono<Void> {
+        return helper.callProcedure("call recalculatebudget ($1)") {
+            bind("$1", dateFromMonth)
+        }
+    }
 }
