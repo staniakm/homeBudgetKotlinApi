@@ -4,15 +4,15 @@ import io.r2dbc.spi.Row
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class ProductDetails(
+data class ProductHistory(
     val shopName: String, val invoiceDate: LocalDate, val itemPrice: BigDecimal,
-    val quantity: BigDecimal, val discount: BigDecimal, val totalSum: BigDecimal, val invoiceId: Long,
-    val invoiceItemId: Long, val productName: String
+    val itemQuantity: BigDecimal, val itemDiscount: BigDecimal, val invoiceSum: BigDecimal, val invoiceId: Long,
+    val invoiceDetailsId: Long, val productName: String
 )
 
 
-val productDetailsRowMapper: (row: Row) -> ProductDetails = { row ->
-    ProductDetails(
+val productHistoryRowMapper: (row: Row) -> ProductHistory = { row ->
+    ProductHistory(
         row["shopName"] as String,
         row["date"] as LocalDate,
         row["unitPrice"] as BigDecimal,

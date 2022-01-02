@@ -30,7 +30,7 @@ object SqlQueries {
     val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
     val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
     val GET_SINGLE_BUDGET: () -> String = { getSingleBudget() }
-    val GET_PRODUCT_DETAILS: () -> String = { getProductDetails() }
+    val GET_PRODUCT_HISTORY: () -> String = { getProductHistory() }
     val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
     val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
     val GET_SHOP_LIST: () -> String = { getShopList() }
@@ -361,7 +361,7 @@ object SqlQueries {
                 """.trimIndent()
     }
 
-    private fun getProductDetails(): String {
+    private fun getProductHistory(): String {
         return """select s.name shopName,
                         p.date, 
                         ps.unit_price unitPrice, 

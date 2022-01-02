@@ -20,7 +20,7 @@ class BudgetService(private val repository: BudgetRepository, private val clock:
     }
 
     fun recalculateBudgets(month: Long): Mono<BudgetItem> {
-        return repository.recalcualteBudgets(clock.getDateFromMonth(month))
+        return repository.recalculateBudgets(clock.getDateFromMonth(month))
             .then(getMonthBudget(month))
     }
 }
