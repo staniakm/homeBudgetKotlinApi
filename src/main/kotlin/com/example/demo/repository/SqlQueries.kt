@@ -3,6 +3,8 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val GET_SHOP_BY_NAME: () -> String = {getShopByName()}
+    val CREATE_SHOP: () -> String = {createShop()}
     val DELETE_MEDIA_USAGE: () -> String = { deleteMediaUsage() }
     val GET_MEDIA_USAGE_BY_TYPE: () -> String = { getMediaUsageBYType() }
     val GET_OWNER_BY_NAME: () -> String = { getOwnerByName() }
@@ -99,6 +101,10 @@ object SqlQueries {
                       k.id = $3
                       and extract(year from date) = $1 and extract(month from date) = $2""".trimIndent()
     }
+
+    private fun createShop() = """insert into shop (name) values ($1)"""
+
+    private fun getShopByName() = """select id, name from shop where name = $1 order by id desc limit 1"""
 
     private fun getShopList(): String {
         return "select id, name from shop order by name"

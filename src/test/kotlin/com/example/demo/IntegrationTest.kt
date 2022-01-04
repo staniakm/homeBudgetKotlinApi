@@ -82,8 +82,8 @@ abstract class IntegrationTest {
         client.sql(query).then().block()
     }
 
-    fun createShop() {
-        executeInsert("insert into shop (id, name) values (1, 'shop name')")
+    fun createShop(shopId: Int = 1, shopName: String = "ShopName") {
+        executeInsert("insert into shop (id, name) values ($shopId, '$shopName')")
     }
 
     fun createInvoice(
@@ -158,5 +158,9 @@ abstract class IntegrationTest {
         meterRead: Double = 0.0
     ) {
         executeInsert("insert into media_usage(id, media_type, year, month, meter_read) values ($id, $mediaTypeId, $year, $month, $meterRead)")
+    }
+
+    fun createShopItem(shopId: Int = 1, asoId: Int = 1) {
+        executeInsert("insert into shop_assortment(shop, aso) values ($shopId, $asoId)")
     }
 }

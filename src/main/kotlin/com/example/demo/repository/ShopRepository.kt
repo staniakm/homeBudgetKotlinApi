@@ -8,6 +8,7 @@ import com.example.demo.repository.SqlQueries.GET_SHOP_MONTH_ITEMS
 import com.example.demo.repository.SqlQueries.GET_SHOP_YEAR_ITEMS
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @Repository
@@ -41,4 +42,11 @@ class ShopRepository(private val helper: RepositoryHelper) {
     }
 
     fun getAllShops(): Flux<Shop> = helper.getList(GET_SHOP_LIST, shopRowMapper)
+    fun createShop(shopName: String): Mono<Shop> {
+        return helper.executeUpdate(SqlQueries.CREATE_SHOP) {
+            bind("$1", shopName)
+        }.then(helper.findOne(SqlQueries.GET_SHOP_BY_NAME, shopRowMapper) {
+            bind("$1", shopName)
+        })
+    }
 }
