@@ -1,9 +1,6 @@
 package com.example.demo.controller
 
-import com.example.demo.entity.Shop
-import com.example.demo.entity.ShopItem
-import com.example.demo.entity.ShopItemsSummary
-import com.example.demo.entity.ShopSummary
+import com.example.demo.entity.*
 import com.example.demo.service.ShopService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,4 +36,7 @@ class ShopController(private val shopService: ShopService) {
 
     @GetMapping("/all")
     fun getAllShops(): ResponseEntity<Flux<Shop>> = ResponseEntity.ok(shopService.findAllShops())
+
+    @PostMapping("")
+    fun createShop(@RequestBody createShopRequest: CreateShopRequest) = ResponseEntity.ok(shopService.createShop(createShopRequest))
 }

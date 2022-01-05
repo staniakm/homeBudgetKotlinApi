@@ -7,6 +7,7 @@ data class ShopSummary(val shopId: Int, val name: String, val monthSum: BigDecim
 
 data class Shop(val shopId: Int, val name: String)
 
+data class CreateShopRequest(val name: String)
 
 val shopRowMapper: (row: Row) -> Shop = { row ->
     Shop(

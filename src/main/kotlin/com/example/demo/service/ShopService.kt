@@ -1,5 +1,6 @@
 package com.example.demo.service
 
+import com.example.demo.entity.CreateShopRequest
 import com.example.demo.entity.ShopItem
 import com.example.demo.entity.ShopItemsSummary
 import com.example.demo.entity.ShopSummary
@@ -12,12 +13,13 @@ class ShopService(private val repository: ShopRepository, private val clock: Clo
     fun getShopsSummaryForMonth(month: Long) =
         repository.getAllShopsSummary(clock.getDateFromMonth(month))
 
-    fun getMonthShopItemsSummary(id: Long, month: Long)=
+    fun getMonthShopItemsSummary(id: Long, month: Long) =
         repository.getShopMonthItems(id, clock.getDateFromMonth(month))
 
-    fun getYearShopItemsSummary(id: Long, month: Long)=
+    fun getYearShopItemsSummary(id: Long, month: Long) =
         repository.getShopYearItems(id, clock.getDateFromMonth(month))
 
-    fun getShopItems(shopId: Long)= repository.getShopItems(shopId)
+    fun getShopItems(shopId: Long) = repository.getShopItems(shopId)
     fun findAllShops() = repository.getAllShops()
+    fun createShop(createShopRequest: CreateShopRequest) = repository.createShop(createShopRequest.name)
 }
