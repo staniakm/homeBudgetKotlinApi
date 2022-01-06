@@ -3,6 +3,7 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val GET_SHOP_ITEM_BY_NAME: () -> String = {getShopItemByName()}
     val GET_SHOP_BY_NAME: () -> String = {getShopByName()}
     val CREATE_SHOP: () -> String = {createShop()}
     val DELETE_MEDIA_USAGE: () -> String = { deleteMediaUsage() }
@@ -195,6 +196,20 @@ object SqlQueries {
                  where aso_s.del = false 
                        and a.del = false 
                        and s.ID = $1 
+                 order by a.name""".trimIndent()
+    }
+
+    private fun getShopItemByName(): String {
+        return """select 
+                       a.id, 
+                       a.name 
+                 from shop_assortment aso_s 
+                       join shop s on s.ID = aso_s.shop 
+                       join assortment a on a.id = aso_s.aso 
+                 where aso_s.del = false 
+                       and a.del = false 
+                       and s.ID = $2
+                       and a.name = $1
                  order by a.name""".trimIndent()
     }
 

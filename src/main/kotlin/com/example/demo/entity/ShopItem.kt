@@ -11,3 +11,5 @@ val shopItemRowMapper: (row: Row) -> ShopItem = { row ->
         row["name"] as  String,
     )
 }
+
+data class CreateShopItemRequest(val shopId: Int, val name: String)

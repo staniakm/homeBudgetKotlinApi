@@ -1,6 +1,7 @@
 package com.example.demo.controller
 
 import com.example.demo.entity.InvoiceUpdateAccountRequest
+import com.example.demo.entity.NewInvoiceRequest
 import com.example.demo.service.InvoiceService
 import org.springframework.web.bind.annotation.*
 
@@ -18,5 +19,12 @@ class InvoiceController(private val invoiceService: InvoiceService) {
     fun getInvoiceDetails(@PathVariable("id") invoiceId: Long) = invoiceService.getInvoiceDetails(invoiceId)
 
     @PutMapping("/{invoiceId}")
-    fun updateInvoiceAccount(@PathVariable invoiceId: Long, @RequestBody update: InvoiceUpdateAccountRequest) = invoiceService.updateInvoiceAccount(invoiceId, update)
+    fun updateInvoiceAccount(@PathVariable invoiceId: Long, @RequestBody update: InvoiceUpdateAccountRequest) =
+        invoiceService.updateInvoiceAccount(invoiceId, update)
+
+    @PostMapping("")
+    fun createNewInvoice(@RequestBody invoice: NewInvoiceRequest) {
+        println(invoice)
+
+    }
 }

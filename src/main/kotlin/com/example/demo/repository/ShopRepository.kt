@@ -49,4 +49,12 @@ class ShopRepository(private val helper: RepositoryHelper) {
             bind("$1", shopName)
         })
     }
+
+    fun createShopItem(shopId: Int, name: String): Mono<ShopItem> {
+        return helper.callProcedure("call addasotoshop ($1, $2)") {
+            bind("$1", name.uppercase()).bind("$2", shopId)
+        }.then(helper.findOne(SqlQueries.GET_SHOP_ITEM_BY_NAME, shopItemRowMapper) {
+            bind("$1", name.uppercase()).bind("$2", shopId)
+        })
+    }
 }

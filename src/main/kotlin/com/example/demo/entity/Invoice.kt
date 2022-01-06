@@ -1,7 +1,6 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
-import org.springframework.cglib.core.Local
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -28,3 +27,20 @@ val invoiceRowMapper: (row: Row) -> Invoice = { row ->
         row["shop"] as Int
     )
 }
+
+
+data class NewInvoiceRequest(
+    val accountId: Int,
+    val shopId: Int,
+    val date: LocalDate,
+    val items: List<NewInvoiceItemRequest>,
+    val sum: BigDecimal,
+    val number: String,
+    val description: String
+)
+
+data class NewInvoiceItemRequest(
+    val shopItem: ShopItem, val unitPrice: BigDecimal,
+    val amount: BigDecimal, val discount: BigDecimal,
+    val totalPrice: BigDecimal
+)

@@ -1,11 +1,9 @@
 package com.example.demo.service
 
-import com.example.demo.entity.CreateShopRequest
-import com.example.demo.entity.ShopItem
-import com.example.demo.entity.ShopItemsSummary
-import com.example.demo.entity.ShopSummary
+import com.example.demo.entity.*
 import com.example.demo.repository.ShopRepository
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 class ShopService(private val repository: ShopRepository, private val clock: ClockProvider) {
@@ -22,4 +20,7 @@ class ShopService(private val repository: ShopRepository, private val clock: Clo
     fun getShopItems(shopId: Long) = repository.getShopItems(shopId)
     fun findAllShops() = repository.getAllShops()
     fun createShop(createShopRequest: CreateShopRequest) = repository.createShop(createShopRequest.name)
+    fun createShopItem(createShopItemRequest: CreateShopItemRequest): Mono<ShopItem> {
+        return repository.createShopItem(createShopItemRequest.shopId, createShopItemRequest.name)
+    }
 }

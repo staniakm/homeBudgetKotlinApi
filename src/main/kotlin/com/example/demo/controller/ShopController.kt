@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @CrossOrigin
 @RestController
@@ -39,4 +40,9 @@ class ShopController(private val shopService: ShopService) {
 
     @PostMapping("")
     fun createShop(@RequestBody createShopRequest: CreateShopRequest) = ResponseEntity.ok(shopService.createShop(createShopRequest))
+
+    @PostMapping("/newItem")
+    fun createNewShopItem(@RequestBody createShopItemRequest: CreateShopItemRequest): ResponseEntity<Mono<ShopItem>> {
+        return ResponseEntity.ok(shopService.createShopItem(createShopItemRequest))
+    }
 }
