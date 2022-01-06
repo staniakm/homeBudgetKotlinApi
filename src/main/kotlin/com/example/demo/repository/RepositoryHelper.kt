@@ -1,5 +1,9 @@
 package com.example.demo.repository
 
+import com.example.demo.entity.Invoice
+import com.example.demo.entity.NewInvoiceItemRequest
+import com.example.demo.entity.ShopItem
+import com.example.demo.entity.shopItemRowMapper
 import io.r2dbc.spi.Row
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
@@ -64,6 +68,16 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .one()
     }
 
+    fun <T> findOne(
+        query: () -> String,
+        mapper: (Row) -> T
+    ): Mono<T> {
+        return client.sql(query)
+            .map(mapper)
+            .one()
+    }
+
+
     fun callProcedure(
         query: String,
         function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
@@ -74,12 +88,23 @@ class RepositoryHelper(private val client: DatabaseClient) {
             }.then()
     }
 
-//    fun callProcedure(query: String, function: Call.() -> Unit) {
-//        client.jdbi.withHandle<Any, SQLException> { handle ->
-//            handle.createCall("{call dbo.RecalculateBudget (?)}")
-//                .apply {
-//                    function()
-//                }.invoke()
-//        }
-//    }
+    fun createInvoiceItems(it: Invoice, items: List<NewInvoiceItemRequest>):Flux<Long> {
+        return client.inConnectionMany { con ->
+            var statement = con.createStatement(SqlQueries.CREATE_INVOICE_DETAILS.invoke()).returnGeneratedValues("id")
+
+            for (item in items) {
+                statement.bind(0, it.id)
+                    .bind(1, item.totalPrice)
+                    .bind(2, item.amount)
+                    .bind(3, item.unitPrice)
+                    .bind(4, item.discount)
+                    .bind(5, item.shopItem.itemId)
+                    .add()
+            }
+            Flux.from(statement.execute())
+                .flatMap {
+                    it.map { row, _ -> row["id"] as Long }
+                }
+        }
+    }
 }

@@ -3,9 +3,12 @@ package com.example.demo.repository
 
 object SqlQueries {
 
-    val GET_SHOP_ITEM_BY_NAME: () -> String = {getShopItemByName()}
-    val GET_SHOP_BY_NAME: () -> String = {getShopByName()}
-    val CREATE_SHOP: () -> String = {createShop()}
+    val CREATE_INVOICE_DETAILS:()-> String = {createInvoiceDetails()}
+    val GET_LAST_INVOICE: () -> String = {getLastInvoice()}
+    val CREATE_INVOICE: () -> String = { createInvoice() }
+    val GET_SHOP_ITEM_BY_NAME: () -> String = { getShopItemByName() }
+    val GET_SHOP_BY_NAME: () -> String = { getShopByName() }
+    val CREATE_SHOP: () -> String = { createShop() }
     val DELETE_MEDIA_USAGE: () -> String = { deleteMediaUsage() }
     val GET_MEDIA_USAGE_BY_TYPE: () -> String = { getMediaUsageBYType() }
     val GET_OWNER_BY_NAME: () -> String = { getOwnerByName() }
@@ -400,4 +403,13 @@ object SqlQueries {
                         order by p.date desc
                 """.trimIndent()
     }
+
+    private fun createInvoice() = """
+        insert into invoice(date, invoice_number, sum, description, account, shop) values ($1, $2,$3, $4,$5,$6)
+    """.trimIndent()
+
+    private fun getLastInvoice() =  """select id, date, invoice_number, sum, description, del, account, shop from invoice order by id desc limit 1""".trimIndent()
+    private fun createInvoiceDetails() = """
+        insert into invoice_details (invoice, price, amount, unit_price, discount, assortment) values ($1,$2,$3,$4,$5,$6)
+    """.trimIndent()
 }

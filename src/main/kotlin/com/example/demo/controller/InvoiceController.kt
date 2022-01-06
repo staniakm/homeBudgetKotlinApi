@@ -1,9 +1,11 @@
 package com.example.demo.controller
 
+import com.example.demo.entity.Invoice
 import com.example.demo.entity.InvoiceUpdateAccountRequest
 import com.example.demo.entity.NewInvoiceRequest
 import com.example.demo.service.InvoiceService
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 
 
 @CrossOrigin
@@ -23,8 +25,8 @@ class InvoiceController(private val invoiceService: InvoiceService) {
         invoiceService.updateInvoiceAccount(invoiceId, update)
 
     @PostMapping("")
-    fun createNewInvoice(@RequestBody invoice: NewInvoiceRequest) {
-        println(invoice)
+    fun createNewInvoice(@RequestBody invoice: NewInvoiceRequest): Mono<Invoice> {
+        return invoiceService.createNewInvoiceWithItems(invoice)
 
     }
 }

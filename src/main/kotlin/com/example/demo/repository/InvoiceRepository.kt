@@ -26,8 +26,8 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun getInvoice(id:Long): Mono<Invoice> {
-        return helper.findOne(GET_INVOICE_DATA, invoiceRowMapper){
+    fun getInvoice(id: Long): Mono<Invoice> {
+        return helper.findOne(GET_INVOICE_DATA, invoiceRowMapper) {
             bind("$1", id)
         }
     }
@@ -40,10 +40,29 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun updateInvoiceAccount(invoiceId: Long, accountId: Int):Mono<Void> {
-        return helper.callProcedure("call changeinvoiceaccount ($1, $2)"){
+    fun updateInvoiceAccount(invoiceId: Long, accountId: Int): Mono<Void> {
+        return helper.callProcedure("call changeinvoiceaccount ($1, $2)") {
             bind("$1", invoiceId)
                 .bind("$2", accountId)
         }
+    }
+
+    fun createInvoice(invoice: NewInvoiceRequest): Mono<Invoice> {
+        return helper.executeUpdate(SqlQueries.CREATE_INVOICE) {
+            bind("$1", invoice.date)
+                .bind("$2", invoice.number)
+                .bind("$3", invoice.sum)
+                .bind("$4", invoice.description)
+                .bind("$5", invoice.accountId)
+                .bind("$6", invoice.shopId)
+        }.then(getLastInsertedInvoice())
+    }
+
+    private fun getLastInsertedInvoice(): Mono<Invoice> {
+        return helper.findOne(SqlQueries.GET_LAST_INVOICE, invoiceRowMapper)
+    }
+
+    fun createInvoiceItems(it: Invoice, items: List<NewInvoiceItemRequest>): Flux<Long> {
+        return helper.createInvoiceItems(it, items)
     }
 }
