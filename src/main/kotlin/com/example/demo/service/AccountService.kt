@@ -5,6 +5,7 @@ import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.math.BigDecimal
 
 @Service
 class AccountService(
@@ -25,7 +26,7 @@ class AccountService(
         accountRepository.getAccountIncome(accountId, clock.getDateFromMonth(month))
 
 
-    fun updateAccount(accountId: Long, updateAccount: UpdateAccountDto): Mono<Account> {
+    fun updateAccount(accountId: Int, updateAccount: UpdateAccountDto): Mono<Account> {
         if (accountId != updateAccount.id) {
             throw IllegalArgumentException("Invalid requested id")
         }
@@ -40,7 +41,7 @@ class AccountService(
             .then(account)
     }
 
-    fun getAccount(id: Long) =
+    fun getAccount(id: Int) =
         accountRepository.findById(id)
 
     fun getIncomeTypes() = accountRepository.getIncomeTypes()
@@ -49,7 +50,7 @@ class AccountService(
             .thenMany(getAccountIncome(updateAccount.accountId, 0))
     }
 
-    fun transferMoney(accountId: Long, request: TransferMoneyRequest): Mono<Account> {
+    fun transferMoney(accountId: Int, request: TransferMoneyRequest): Mono<Account> {
         return accountRepository.findById(accountId)
             .flatMap {
                 accountRepository.findById(request.targetAccount)

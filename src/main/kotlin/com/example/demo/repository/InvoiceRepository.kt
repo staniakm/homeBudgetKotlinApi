@@ -65,4 +65,11 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     fun createInvoiceItems(it: Invoice, items: List<NewInvoiceItemRequest>): Flux<Long> {
         return helper.createInvoiceItems(it, items)
     }
+
+    fun recaculatInvoice(id: Long): Mono<Void> {
+        return helper.callProcedure("call recalculateinvoice ($1)") {
+            bind("$1", id)
+        }
+
+    }
 }

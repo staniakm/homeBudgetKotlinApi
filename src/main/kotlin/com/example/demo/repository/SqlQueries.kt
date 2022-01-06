@@ -3,6 +3,7 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val DECREASE_ACCOUNT_MONEY: () -> String = {decreaseAccountMoney()}
     val CREATE_INVOICE_DETAILS:()-> String = {createInvoiceDetails()}
     val GET_LAST_INVOICE: () -> String = {getLastInvoice()}
     val CREATE_INVOICE: () -> String = { createInvoice() }
@@ -52,6 +53,9 @@ object SqlQueries {
     private fun createNewOwner() = """insert into account_owner (owner_name, description) values ($1, $2)"""
     private fun getOwnerByName() =
         """select id, owner_name, description from account_owner where lower(owner_name)  = lower($1) order by id desc limit 1"""
+    private fun decreaseAccountMoney() = """
+        update account set money = money - $1 where id = $2
+    """.trimIndent()
 
     private fun createNewMediaType() = """insert into media_type(name) values ($1)""".trimIndent()
     private fun findMediaTypeByName() = """select id, name from media_type where name = $1"""

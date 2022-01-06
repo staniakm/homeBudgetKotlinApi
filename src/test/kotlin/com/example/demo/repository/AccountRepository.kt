@@ -30,7 +30,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccountOwner()
         createAccount()
 
-        val account = accountRepository.findById(1L).block()!!
+        val account = accountRepository.findById(1).block()!!
 
         account.asClue {
             it.id shouldBe 1

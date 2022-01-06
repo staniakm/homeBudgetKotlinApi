@@ -27,7 +27,7 @@ class AccountRepository(private val helper: RepositoryHelper) {
 
     fun findAllAccounts() = helper.getList(GET_ACCOUNT_DATA, accountRowMapper)
 
-    fun findById(id: Long) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
+    fun findById(id: Int) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
         bind("$1", id)
     }
 
@@ -66,7 +66,7 @@ class AccountRepository(private val helper: RepositoryHelper) {
     }
 
     @Transactional
-    fun transferMoney(accountId: Long, value: BigDecimal, targetAccount: Long): Mono<Void> {
+    fun transferMoney(accountId: Int, value: BigDecimal, targetAccount: Int): Mono<Void> {
         return helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
             bind("$1", value.multiply(BigDecimal.valueOf(-1)))
                 .bind("$2", accountId)
@@ -76,5 +76,12 @@ class AccountRepository(private val helper: RepositoryHelper) {
                     .bind("$2", targetAccount)
             }
         )
+    }
+
+    fun decreaseMoney(id: Int, sum: BigDecimal): Mono<Void> {
+        return helper.executeUpdate(SqlQueries.DECREASE_ACCOUNT_MONEY) {
+            bind("$1", sum)
+                .bind("$2", id)
+        }
     }
 }

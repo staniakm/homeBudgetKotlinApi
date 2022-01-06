@@ -33,7 +33,7 @@ class AccountController(private val accountService: AccountService) {
 
 
     @PutMapping("/{accountId}")
-    fun updateAccountMoneyAmount(@PathVariable accountId: Long, @RequestBody updateAccount: UpdateAccountDto) =
+    fun updateAccountMoneyAmount(@PathVariable accountId: Int, @RequestBody updateAccount: UpdateAccountDto) =
         accountService.updateAccount(accountId, updateAccount)
 
     @PostMapping("/{accountId}")
@@ -48,7 +48,7 @@ class AccountController(private val accountService: AccountService) {
     fun getIncomeTypes() = accountService.getIncomeTypes()
 
     @PutMapping("/{accountId}/transfer")
-    fun transferMoney(@PathVariable accountId: Long, @RequestBody request: TransferMoneyRequest) =
+    fun transferMoney(@PathVariable accountId: Int, @RequestBody request: TransferMoneyRequest) =
         accountService.transferMoney(accountId, request)
 
 }

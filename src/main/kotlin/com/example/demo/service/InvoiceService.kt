@@ -3,6 +3,7 @@ package com.example.demo.service
 import com.example.demo.entity.Invoice
 import com.example.demo.entity.InvoiceUpdateAccountRequest
 import com.example.demo.entity.NewInvoiceRequest
+import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +13,7 @@ import java.time.LocalDate
 @Service
 class InvoiceService(
     private val invoiceRepository: InvoiceRepository,
+    private val accountRepository: AccountRepository,
     private val clock: ClockProvider
 ) {
 
@@ -33,6 +35,8 @@ class InvoiceService(
         return invoiceRepository.createInvoice(invoice)
             .flatMap {
                 invoiceRepository.createInvoiceItems(it, invoice.items)
+                    .then(accountRepository.decreaseMoney(invoice.accountId, invoice.sum))
+                    .then(invoiceRepository.recaculatInvoice(it.id))
                     .then(invoiceRepository.getInvoice(it.id))
             }
     }
