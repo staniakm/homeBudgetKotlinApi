@@ -33,9 +33,9 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
 
         invoices.size shouldBe 3
         invoices shouldContainAll listOf(
-            ShoppingInvoice(1, "shop name", LocalDate.of(2021,11,1), BigDecimal("10.01"),"account"),
-            ShoppingInvoice(2, "shop name", LocalDate.of(2021,11,2), BigDecimal("20.02"),"account"),
-            ShoppingInvoice(3, "shop name", LocalDate.of(2021,11,3), BigDecimal("30.03"),"account")
+            ShoppingInvoice(1, "ShopName", LocalDate.of(2021,11,1), BigDecimal("10.01"),"account"),
+            ShoppingInvoice(2, "ShopName", LocalDate.of(2021,11,2), BigDecimal("20.02"),"account"),
+            ShoppingInvoice(3, "ShopName", LocalDate.of(2021,11,3), BigDecimal("30.03"),"account")
         )
     }
 
@@ -81,8 +81,8 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
 
         invoices.size shouldBe 2
         invoices shouldContainAll listOf(
-            ShoppingInvoice(1, "shop name", LocalDate.of(2021,11,1), BigDecimal("10.01"),"account"),
-            ShoppingInvoice(2, "shop name", LocalDate.of(2021,11,2), BigDecimal("20.02"),"account"),
+            ShoppingInvoice(1, "ShopName", LocalDate.of(2021,11,1), BigDecimal("10.01"),"account"),
+            ShoppingInvoice(2, "ShopName", LocalDate.of(2021,11,2), BigDecimal("20.02"),"account"),
         )
     }
 
