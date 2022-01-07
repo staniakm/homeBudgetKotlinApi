@@ -86,6 +86,13 @@ class RepositoryHelper(private val client: DatabaseClient) {
             }.then()
     }
 
+    fun callProcedure(
+        query: String,
+    ): Mono<Void> {
+        return client.sql(query)
+            .then()
+    }
+
     fun createInvoiceItems(invoiceId: Long, items: List<NewInvoiceItemRequest>): Flux<Long> {
         return client.inConnectionMany { con ->
             var statement = con.createStatement(SqlQueries.CREATE_INVOICE_DETAILS.invoke()).returnGeneratedValues("id")

@@ -466,6 +466,50 @@ end;
 
 ALTER PROCEDURE public.updateasocategory(IN assortment_id integer, IN category_name character varying, IN assortment_name character varying, IN category_id integer) OWNER TO postgres;
 
+
+-- PROCEDURE: public.copybudgetfromlastmonthorcreatezero(date)
+
+-- DROP PROCEDURE IF EXISTS public.copybudgetfromlastmonthorcreatezero(date);
+
+CREATE OR REPLACE PROCEDURE public.copybudgetfromlastmonthorcreatezero(IN budget_date date)
+AS '
+begin
+
+    CREATE TEMP TABLE con ON COMMIT DROP AS
+    SELECT extract(year from (budget_date - interval ''1 month'') ) as previous_year,
+           extract(month from (budget_date- interval ''1 month'')) as previous_month,
+           extract(year from budget_date ) as current_year,
+           extract(month from budget_date) as current_month;
+
+    if exists (select 1 from budget, con where year = con.previous_year and month = con.previous_month ) then
+        insert into budget(category, month, year, planned, used, percentage)
+        select category, t.month, t.year, planned, 0 as used, 0 as percentage from
+                                                                                  (
+                                                                                      select category,con.current_month as month ,con.current_year as year,planned
+                                                                                      from budget b, con where b.year = con.previous_year and b.month = con.previous_month
+                                                                                      union
+                                                                                      select id, con.current_month ,con.current_year, 0 from category k, con
+                                                                                      where not exists (select 1 from budget b where b.category = k.id and b.month = con.previous_month and b.year = con.previous_year)
+                                                                                  ) as t, con
+        where not exists (select 1 from budget as b where t.category = b.category and b.month = con.current_month and b.year = con.current_year);
+
+    else
+-- budget zero
+        insert into budget(category, month, year, planned, used, percentage)
+        select category, t.month, t.year, 0 as planed , 0 as used, 0 as percentage from
+                                                                                       (
+                                                                                           select id as category, con.current_month as month ,con.current_year as year from category k, con
+                                                                                           where not exists (select 1 from budget b where b.category = k.id and b.month = con.previous_month and b.year = con.previous_year)
+                                                                                       ) as t, con
+        where not exists (select 1 from budget as b where t.category = b.category and b.month = con.current_month and b.year = con.current_year);
+    end if;
+
+end;
+'LANGUAGE PLPGSQL;
+
+ALTER PROCEDURE public.copybudgetfromlastmonthorcreatezero(IN budget_date date) OWNER TO postgres;
+
+
 --
 -- TOC entry 210 (class 1259 OID 16607)
 -- Name: account_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres

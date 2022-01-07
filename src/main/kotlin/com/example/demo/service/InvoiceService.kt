@@ -1,7 +1,7 @@
 package com.example.demo.service
 
 import com.example.demo.entity.Invoice
-import com.example.demo.entity.InvoiceUpdateAccountRequest
+import com.example.demo.entity.UpdateInvoiceAccountRequest
 import com.example.demo.entity.NewInvoiceRequest
 import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
@@ -25,7 +25,7 @@ class InvoiceService(
     fun getAccountInvoices(accountId: Long, date: LocalDate) = invoiceRepository.getAccountInvoices(accountId, date)
 
     @Transactional
-    fun updateInvoiceAccount(invoiceId: Long, update: InvoiceUpdateAccountRequest): Mono<Invoice> {
+    fun updateInvoiceAccount(invoiceId: Long, update: UpdateInvoiceAccountRequest): Mono<Invoice> {
         return invoiceRepository.updateInvoiceAccount(invoiceId, update.newAccount)
             .then(invoiceRepository.getInvoice(invoiceId))
     }

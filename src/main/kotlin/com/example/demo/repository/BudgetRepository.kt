@@ -6,8 +6,10 @@ import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.math.BigDecimal
 import java.time.LocalDate
 
 
@@ -16,8 +18,10 @@ class BudgetRepository(private val helper: RepositoryHelper) {
 
     fun getBudgetForMonth(date: LocalDate) = getBudgetCalculations(date, getMonthBudgets(date))
 
-    fun getSelectedBudgetItem(budgetId: Int) = helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper) {
-        bind("$1", budgetId)
+    fun getSelectedBudgetItem(budgetId: Int): Mono<MonthBudgetPlanned> {
+        return helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper) {
+            bind("$1", budgetId)
+        }
     }
 
     fun updateBudget(updateBudget: UpdateBudgetDto): Mono<Void> {
@@ -42,7 +46,17 @@ class BudgetRepository(private val helper: RepositoryHelper) {
         return helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
             bind("$1", date.year)
                 .bind("$2", date.monthValue)
-        }
+        }.switchIfEmpty(getRecalculatedBudget(date))
+    }
+
+    private fun getRecalculatedBudget(date: LocalDate): Mono<out BudgetItem> {
+        return copyBudgetsOrCreateNew(date)
+            .flatMap {
+                helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
+                    bind("$1", date.year)
+                        .bind("$2", date.monthValue)
+                }
+            }.defaultIfEmpty(BudgetItem(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO))
     }
 
     private fun getMonthBudgets(date: LocalDate): Flux<MonthBudget> {
@@ -55,6 +69,12 @@ class BudgetRepository(private val helper: RepositoryHelper) {
     fun recalculateBudgets(dateFromMonth: LocalDate): Mono<Void> {
         return helper.callProcedure("call recalculatebudget ($1)") {
             bind("$1", dateFromMonth)
+        }
+    }
+
+    fun copyBudgetsOrCreateNew(date: LocalDate): Mono<Void> {
+        return helper.callProcedure("call copybudgetfromlastmonthorcreatezero ($1)") {
+            bind("$1", date)
         }
     }
 }

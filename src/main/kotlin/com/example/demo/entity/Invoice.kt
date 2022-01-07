@@ -44,3 +44,5 @@ data class NewInvoiceItemRequest(
     val amount: BigDecimal, val discount: BigDecimal,
     val totalPrice: BigDecimal
 )
+
+data class UpdateInvoiceAccountRequest(val oldAccountId: Int, val newAccount: Int, val invoiceId: Long)
