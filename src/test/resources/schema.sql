@@ -61,7 +61,7 @@ CREATE PROCEDURE public.autoinvoice()
 
 AS '
 declare
-    invoice_id integer;
+    invoice_id bigint;
 begin
     if not exists(select 1 from invoice
                   where shop = 8
@@ -349,7 +349,7 @@ ALTER PROCEDURE public.recalculatebudget(IN recalculation_date date) OWNER TO po
 -- Name: recalculateinvoice(integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
-CREATE PROCEDURE public.recalculateinvoice(IN invoice_id integer DEFAULT '-1'::integer)
+CREATE PROCEDURE public.recalculateinvoice(IN invoice_id bigint DEFAULT '-1'::bigint)
 
 AS '
 DECLARE
@@ -373,7 +373,7 @@ end;
 '  LANGUAGE PLPGSQL;
 
 
-ALTER PROCEDURE public.recalculateinvoice(IN invoice_id integer) OWNER TO postgres;
+ALTER PROCEDURE public.recalculateinvoice(IN invoice_id bigint) OWNER TO postgres;
 
 --
 -- TOC entry 241 (class 1255 OID 16791)

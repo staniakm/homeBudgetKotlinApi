@@ -2,8 +2,6 @@ package com.example.demo.repository
 
 import com.example.demo.entity.Invoice
 import com.example.demo.entity.NewInvoiceItemRequest
-import com.example.demo.entity.ShopItem
-import com.example.demo.entity.shopItemRowMapper
 import io.r2dbc.spi.Row
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
@@ -88,12 +86,12 @@ class RepositoryHelper(private val client: DatabaseClient) {
             }.then()
     }
 
-    fun createInvoiceItems(it: Invoice, items: List<NewInvoiceItemRequest>):Flux<Long> {
+    fun createInvoiceItems(invoiceId: Long, items: List<NewInvoiceItemRequest>): Flux<Long> {
         return client.inConnectionMany { con ->
             var statement = con.createStatement(SqlQueries.CREATE_INVOICE_DETAILS.invoke()).returnGeneratedValues("id")
 
             for (item in items) {
-                statement.bind(0, it.id)
+                statement.bind(0, invoiceId)
                     .bind(1, item.totalPrice)
                     .bind(2, item.amount)
                     .bind(3, item.unitPrice)

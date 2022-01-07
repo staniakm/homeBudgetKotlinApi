@@ -34,7 +34,7 @@ class InvoiceService(
     fun createNewInvoiceWithItems(invoice: NewInvoiceRequest): Mono<Invoice> {
         return invoiceRepository.createInvoice(invoice)
             .flatMap {
-                invoiceRepository.createInvoiceItems(it, invoice.items)
+                invoiceRepository.createInvoiceItems(it.id, invoice.items)
                     .then(accountRepository.decreaseMoney(invoice.accountId, invoice.sum))
                     .then(invoiceRepository.recaculatInvoice(it.id))
                     .then(invoiceRepository.getInvoice(it.id))

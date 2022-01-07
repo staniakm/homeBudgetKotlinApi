@@ -139,9 +139,11 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccount(2, amount = BigDecimal(100))
         createIncome(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
         createShop()
-        createInvoice(1,2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
+        createInvoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
 
-        val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val accounts =
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
+                .block()!!
 
         accounts.size shouldBe 1
         accounts[0].id shouldBe 2
@@ -158,11 +160,13 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(2, BigDecimal("200"), LocalDate.of(2021, 10, 10))
         createIncome(2, BigDecimal("300"), LocalDate.of(2021, 11, 10))
         createShop()
-        createInvoice(1,2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2,2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(3,2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        createInvoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
-        val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val accounts =
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
+                .block()!!
 
         accounts.size shouldBe 1
         accounts[0].id shouldBe 2
@@ -179,11 +183,13 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(2, BigDecimal("200"), LocalDate.of(2021, 11, 10))
         createIncome(3, BigDecimal("300"), LocalDate.of(2021, 10, 10))
         createShop()
-        createInvoice(1,3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2,2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(3,2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        createInvoice(1, 3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
-        val accounts = accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val accounts =
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
+                .block()!!
 
         withClue("There should be 2 accounts") {
             accounts.size shouldBe 2
@@ -199,5 +205,16 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
             accounts[1].income shouldBe BigDecimal("200.00")
             accounts[1].expense shouldBe BigDecimal("150.11")
         }
+    }
+
+    @Test
+    fun `should decrease account money`() {
+        createAccountOwner()
+        createAccount(amount = BigDecimal(200))
+
+        accountRepository.decreaseMoney(1, BigDecimal(100)).block()
+        val account = accountRepository.findById(1).block()!!
+
+        account.amount shouldBe BigDecimal("100.00")
     }
 }

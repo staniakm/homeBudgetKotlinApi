@@ -58,11 +58,7 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }.then(getLastInsertedInvoice())
     }
 
-    private fun getLastInsertedInvoice(): Mono<Invoice> {
-        return helper.findOne(SqlQueries.GET_LAST_INVOICE, invoiceRowMapper)
-    }
-
-    fun createInvoiceItems(it: Invoice, items: List<NewInvoiceItemRequest>): Flux<Long> {
+    fun createInvoiceItems(it: Long, items: List<NewInvoiceItemRequest>): Flux<Long> {
         return helper.createInvoiceItems(it, items)
     }
 
@@ -71,5 +67,9 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
             bind("$1", id)
         }
 
+    }
+
+    fun getLastInsertedInvoice(): Mono<Invoice> {
+        return helper.findOne(SqlQueries.GET_LAST_INVOICE, invoiceRowMapper)
     }
 }
