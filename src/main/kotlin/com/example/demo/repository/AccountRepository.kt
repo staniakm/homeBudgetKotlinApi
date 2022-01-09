@@ -84,4 +84,11 @@ class AccountRepository(private val helper: RepositoryHelper) {
                 .bind("$2", id)
         }
     }
+
+    fun getOperations(accountId: Int, limit: Int):Flux<AccountOperation> {
+        return helper.getList(SqlQueries.GET_ACCOUNT_OPERATIONS, operationMapper){
+            bind("$1", accountId)
+                .bind("$2", limit)
+        }
+    }
 }

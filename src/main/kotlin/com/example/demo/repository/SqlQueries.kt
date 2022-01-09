@@ -3,9 +3,10 @@ package com.example.demo.repository
 
 object SqlQueries {
 
-    val DECREASE_ACCOUNT_MONEY: () -> String = {decreaseAccountMoney()}
-    val CREATE_INVOICE_DETAILS:()-> String = {createInvoiceDetails()}
-    val GET_LAST_INVOICE: () -> String = {getLastInvoice()}
+    val GET_ACCOUNT_OPERATIONS: () -> String = { getAccountOperations() }
+    val DECREASE_ACCOUNT_MONEY: () -> String = { decreaseAccountMoney() }
+    val CREATE_INVOICE_DETAILS: () -> String = { createInvoiceDetails() }
+    val GET_LAST_INVOICE: () -> String = { getLastInvoice() }
     val CREATE_INVOICE: () -> String = { createInvoice() }
     val GET_SHOP_ITEM_BY_NAME: () -> String = { getShopItemByName() }
     val GET_SHOP_BY_NAME: () -> String = { getShopByName() }
@@ -49,10 +50,18 @@ object SqlQueries {
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
 
+
+    private fun getAccountOperations() = """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = $1
+                                                union 
+                                                select id, date, value, account,'INCOME' from income where account = $1
+                                                order by date desc
+                                                limit $2""".trimIndent()
+
     private fun getAllOwners() = """select id, owner_name, description from account_owner"""
     private fun createNewOwner() = """insert into account_owner (owner_name, description) values ($1, $2)"""
     private fun getOwnerByName() =
         """select id, owner_name, description from account_owner where lower(owner_name)  = lower($1) order by id desc limit 1"""
+
     private fun decreaseAccountMoney() = """
         update account set money = money - $1 where id = $2
     """.trimIndent()
@@ -412,7 +421,9 @@ object SqlQueries {
         insert into invoice(date, invoice_number, sum, description, account, shop) values ($1, $2,$3, $4,$5,$6)
     """.trimIndent()
 
-    private fun getLastInvoice() =  """select id, date, invoice_number, sum, description, del, account, shop from invoice order by id desc limit 1""".trimIndent()
+    private fun getLastInvoice() =
+        """select id, date, invoice_number, sum, description, del, account, shop from invoice order by id desc limit 1""".trimIndent()
+
     private fun createInvoiceDetails() = """
         insert into invoice_details (invoice, price, amount, unit_price, discount, assortment) values ($1,$2,$3,$4,$5,$6)
     """.trimIndent()

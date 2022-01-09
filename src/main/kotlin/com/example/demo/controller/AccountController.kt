@@ -51,4 +51,12 @@ class AccountController(private val accountService: AccountService) {
     fun transferMoney(@PathVariable accountId: Int, @RequestBody request: TransferMoneyRequest) =
         accountService.transferMoney(accountId, request)
 
+    @GetMapping("/{accountId}/operations")
+    fun getLastOperations(
+        @PathVariable accountId: Int,
+        @RequestParam(name = "limit", required = false, defaultValue = "10") limit: Int
+    ): Flux<AccountOperation> {
+        return accountService.getOperations(accountId, limit)
+    }
+
 }

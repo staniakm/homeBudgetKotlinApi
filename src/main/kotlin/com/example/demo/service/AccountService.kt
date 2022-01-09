@@ -5,7 +5,6 @@ import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.math.BigDecimal
 
 @Service
 class AccountService(
@@ -56,6 +55,10 @@ class AccountService(
                 accountRepository.findById(request.targetAccount)
             }.flatMap {
                 accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
-            }.then( accountRepository.findById(request.targetAccount) )
+            }.then(accountRepository.findById(request.targetAccount))
+    }
+
+    fun getOperations(accountId: Int, limit: Int): Flux<AccountOperation> {
+        return accountRepository.getOperations(accountId, limit)
     }
 }

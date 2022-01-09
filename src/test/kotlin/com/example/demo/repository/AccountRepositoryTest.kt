@@ -3,8 +3,10 @@ package com.example.demo.repository
 import com.example.demo.IntegrationTest
 import com.example.demo.entity.Account
 import com.example.demo.entity.AccountIncomeRequest
+import com.example.demo.entity.AccountOperation
 import io.kotest.assertions.asClue
 import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -216,5 +218,28 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         val account = accountRepository.findById(1).block()!!
 
         account.amount shouldBe BigDecimal("100.00")
+    }
+
+    @Test
+    fun `should fetch last x operations for account`() {
+        createAccountOwner()
+        createAccount()
+        createAccount(accountId = 2)
+        createShop()
+        createIncomeWithId(1, 1, BigDecimal("100"), LocalDate.of(2021, 11, 10))
+        createIncomeWithId(2, 1, BigDecimal("200"), LocalDate.of(2021, 11, 10))
+        createIncomeWithId(3, 2, BigDecimal("300"), LocalDate.of(2021, 10, 10))
+        createInvoice(1, 1, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        createInvoice(3, 1, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+
+        val operations = accountRepository.getOperations(1, 10).collectList().block()!!
+        operations.size shouldBe 4
+        operations shouldContainAll listOf(
+            AccountOperation(1, LocalDate.of(2021, 11, 10), BigDecimal("100.00"), 1, "INCOME"),
+            AccountOperation(2, LocalDate.of(2021, 11, 10), BigDecimal("200.00"), 1, "INCOME"),
+            AccountOperation(1, LocalDate.of(2021, 11, 20), BigDecimal("120.10"), 1, "OUTCOME"),
+            AccountOperation(3, LocalDate.of(2021, 11, 1), BigDecimal("150.11"), 1, "OUTCOME"),
+        )
     }
 }
