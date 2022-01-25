@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>HomeBudgetKotlinApi</artifactId>
+    <artifactId>home-budget-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>BudgetTracker</name>
     <description>Demo project for Spring Boot</description>
@@ -108,6 +108,19 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.6.1</version>
+                <configuration>
+                    <from>
+                        <image>gcr.io/distroless/java11-debian11</image>
+                    </from>
+                    <to>
+                        <image>${project.artifactId}</image>
+                    </to>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

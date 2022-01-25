@@ -8,10 +8,14 @@ Rest api build with Koltin and Spring Boot. Is used as bridge between postgres d
 At this moment [desktop application](https://github.com/staniakm/HomeBudgetApp) is used to fill data in database.    
 Also android app is able to insert some data into database.
 
+##How to run
+### Run with local database installed
+#### Run application code from IDE
+ - provide credentials to database in application.properties file
+ - run application with IDE with default profile
 
-#TBD
-- ✔️ test with testcontainers
-- ✔️ add database schema and required procedures
--  (Optional) initial data
--  update readme with "how to run" information
--  update existing PR with new code
+#### Run application inside container
+ - provide credentials to database in application-docker.properties
+ - build application docker image with jib 
+    - run command `.\mvnw clean install jib:dockerBuild`
+ - run docker-compose.yml

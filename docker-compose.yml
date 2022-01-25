@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  backend-application:
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+      - JAVA_TOOL_OPTIONS=-Xmx100m
+    container_name: backend
+    image: home-budget-api:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - budget-app-network
+networks:
+  budget-app-network:
+    driver: bridge
