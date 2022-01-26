@@ -119,7 +119,7 @@ abstract class IntegrationTest {
         executeInsert("insert into income(value, description, account, date) values ( $amount, 'Income', $accountId, '$date')")
     }
 
-    fun createIncomeWithId(id:Int, accountId: Int = 1, amount: BigDecimal, date: LocalDate) {
+    fun createIncomeWithId(id: Int, accountId: Int = 1, amount: BigDecimal, date: LocalDate) {
         executeInsert("insert into income(id, value, description, account, date) values ($id, $amount, 'Income', $accountId, '$date')")
     }
 
