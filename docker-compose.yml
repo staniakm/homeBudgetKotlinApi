@@ -3,7 +3,7 @@ services:
   backend-application:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
-      - JAVA_TOOL_OPTIONS=-Xmx100m
+      - JAVA_TOOL_OPTIONS=-Xmx400m
     container_name: backend
     image: home-budget-api:latest
     restart: always
