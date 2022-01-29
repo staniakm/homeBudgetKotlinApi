@@ -1,12 +1,14 @@
 package com.example.demo.service
 
 import com.example.demo.entity.Invoice
+import com.example.demo.entity.InvoiceItem
 import com.example.demo.entity.UpdateInvoiceAccountRequest
 import com.example.demo.entity.NewInvoiceRequest
 import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDate
 
@@ -39,5 +41,9 @@ class InvoiceService(
                     .then(invoiceRepository.recaculatInvoice(it.id))
                     .then(invoiceRepository.getInvoice(it.id))
             }
+    }
+
+    fun getInvoiceItemsByCategoryAndMonth(category: Int, year: Int, month: Int): Flux<InvoiceItem> {
+        return invoiceRepository.getInvoiceItemsByCategoryAndDate(category, year, month)
     }
 }

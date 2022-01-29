@@ -6,7 +6,6 @@ import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
@@ -37,30 +36,30 @@ class BudgetRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    private fun getBudgetCalculations(date: LocalDate, budgets: Flux<MonthBudget>): Mono<BudgetItem> {
+    private fun getBudgetCalculations(date: LocalDate, budgets: Flux<BudgetItem>): Mono<MonthBudget> {
         return getBudgetItem(date).zipWith(budgets.collectList())
             .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
     }
 
-    private fun getBudgetItem(date: LocalDate): Mono<BudgetItem> {
-        return helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
+    private fun getBudgetItem(date: LocalDate): Mono<MonthBudget> {
+        return helper.findOne(GET_MONTH_BUDGE_DETAILS, monthBudgetMapper) {
             bind("$1", date.year)
                 .bind("$2", date.monthValue)
         }.switchIfEmpty(getRecalculatedBudget(date))
     }
 
-    private fun getRecalculatedBudget(date: LocalDate): Mono<out BudgetItem> {
+    private fun getRecalculatedBudget(date: LocalDate): Mono<out MonthBudget> {
         return copyBudgetsOrCreateNew(date)
             .flatMap {
-                helper.findOne(GET_MONTH_BUDGE_DETAILS, budgetItemMapper) {
+                helper.findOne(GET_MONTH_BUDGE_DETAILS, monthBudgetMapper) {
                     bind("$1", date.year)
                         .bind("$2", date.monthValue)
                 }
-            }.defaultIfEmpty(BudgetItem(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO))
+            }.defaultIfEmpty(MonthBudget(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO))
     }
 
-    private fun getMonthBudgets(date: LocalDate): Flux<MonthBudget> {
-        return helper.getList(GET_MONTH_BUDGET, monthBudgetMapper) {
+    private fun getMonthBudgets(date: LocalDate): Flux<BudgetItem> {
+        return helper.getList(GET_MONTH_BUDGET, budgetItemMapper) {
             bind("$1", date.year)
                 .bind("$2", date.monthValue)
         }

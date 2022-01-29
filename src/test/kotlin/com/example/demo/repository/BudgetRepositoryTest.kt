@@ -1,7 +1,7 @@
 package com.example.demo.repository
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.MonthBudget
+import com.example.demo.entity.BudgetItem
 import com.example.demo.entity.UpdateBudgetDto
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -46,8 +46,24 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
         budget.totalSpend shouldBe BigDecimal("22.00")
         budget.date shouldBe "2021-11"
         budget.budgets.size shouldBe 2
-        budget.budgets shouldContain MonthBudget(1, "categoryName", BigDecimal("1.00"), BigDecimal("10.00"), 10)
-        budget.budgets shouldContain MonthBudget(2, "categoryName2", BigDecimal("21.00"), BigDecimal("30.00"), 65)
+        budget.budgets shouldContain BudgetItem(
+            1,
+            "categoryName",
+            11,
+            2021,
+            BigDecimal("1.00"),
+            BigDecimal("10.00"),
+            10
+        )
+        budget.budgets shouldContain BudgetItem(
+            2,
+            "categoryName2",
+            11,
+            2021,
+            BigDecimal("21.00"),
+            BigDecimal("30.00"),
+            65
+        )
     }
 
     @Test

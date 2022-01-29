@@ -80,7 +80,7 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
         val invoiceDetails = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
 
         invoiceDetails.size shouldBe 3
-        invoiceDetails shouldContain ShopCartDetails(
+        invoiceDetails shouldContain InvoiceItem(
             1,
             "aso1",
             "1.000".toBigDecimal(),
@@ -89,7 +89,7 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
             "1.01".toBigDecimal(),
             1
         )
-        invoiceDetails shouldContain ShopCartDetails(
+        invoiceDetails shouldContain InvoiceItem(
             2,
             "aso2",
             "2.000".toBigDecimal(),
@@ -98,7 +98,7 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
             "2.01".toBigDecimal(),
             2
         )
-        invoiceDetails shouldContain ShopCartDetails(
+        invoiceDetails shouldContain InvoiceItem(
             3,
             "aso3",
             "3.000".toBigDecimal(),
@@ -187,7 +187,7 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
         val items = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
         items.size shouldBe 2
         items shouldContainAll listOf(
-            ShopCartDetails(
+            InvoiceItem(
                 1,
                 "item1",
                 BigDecimal("0.500"),
@@ -196,7 +196,7 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
                 BigDecimal("5.00"),
                 1
             ),
-            ShopCartDetails(
+            InvoiceItem(
                 2,
                 "item2",
                 BigDecimal("0.500"),

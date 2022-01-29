@@ -3,6 +3,7 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val GET_INVOICE_ITEMS_BY_CATEGORY_AND_DATE: () -> String = { getInvoiceItemsByCategoryAndDate() }
     val GET_ACCOUNT_OPERATIONS: () -> String = { getAccountOperations() }
     val DECREASE_ACCOUNT_MONEY: () -> String = { decreaseAccountMoney() }
     val CREATE_INVOICE_DETAILS: () -> String = { createInvoiceDetails() }
@@ -51,7 +52,8 @@ object SqlQueries {
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
 
 
-    private fun getAccountOperations() = """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = $1
+    private fun getAccountOperations() =
+        """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = $1
                                                 union 
                                                 select id, date, value, account,'INCOME' from income where account = $1
                                                 order by date desc
@@ -161,6 +163,8 @@ object SqlQueries {
     private fun getSingleBudget() = """select 
                    b.id, 
                    b.month, 
+                   b.year,
+                   k.id categoryId,
                    k.name category, 
                    b.planned,   
                    b.used spent, 
@@ -174,7 +178,8 @@ object SqlQueries {
     private fun getMonthBudget(): String {
         return """select 
                    b.id, 
-                   b.month, 
+                   b.month,
+                   b.year,
                    k.name category, 
                    b.planned,   
                    b.used spent, 
@@ -396,6 +401,25 @@ object SqlQueries {
                         join assortment a on a.id = ps.assortment
                         where ps.del = false and invoice = $1
                 """.trimIndent()
+    }
+
+    private fun getInvoiceItemsByCategoryAndDate(): String {
+        return """
+            select id.id,
+                         id.price,
+                         id.description,
+                         id.amount,
+                         id.unit_price,
+                         a.name,
+                         id.discount,
+                         a.id itemId
+                     from invoice i
+                            join invoice_details id on i.id = id.invoice
+                            join assortment a on id.assortment = a.id
+                            where extract('YEAR' from i.date) = $1 and  extract('MONTH' from i.date) = $2
+                                and id.category =$3
+                            order by  a.name
+        """.trimIndent()
     }
 
     private fun getProductHistory(): String {

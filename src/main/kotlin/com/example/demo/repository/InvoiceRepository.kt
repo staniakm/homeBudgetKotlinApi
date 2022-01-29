@@ -20,8 +20,8 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun getInvoiceDetails(id: Long): Flux<ShopCartDetails> {
-        return helper.getList(GET_INVOICE_DETAILS, shopCartDetailsRowMapper) {
+    fun getInvoiceDetails(id: Long): Flux<InvoiceItem> {
+        return helper.getList(GET_INVOICE_DETAILS, invoiceItemRowMapper) {
             bind("$1", id)
         }
     }
@@ -71,5 +71,14 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
 
     fun getLastInsertedInvoice(): Mono<Invoice> {
         return helper.findOne(SqlQueries.GET_LAST_INVOICE, invoiceRowMapper)
+    }
+
+    fun getInvoiceItemsByCategoryAndDate(categoryId: Int, year: Int, month: Int): Flux<InvoiceItem> {
+        return helper.getList(SqlQueries.GET_INVOICE_ITEMS_BY_CATEGORY_AND_DATE, invoiceItemRowMapper) {
+            bind("$1", year)
+                .bind("$2", month)
+                .bind("$3", categoryId)
+        }
+
     }
 }

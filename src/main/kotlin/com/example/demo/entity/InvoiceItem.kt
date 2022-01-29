@@ -3,13 +3,13 @@ package com.example.demo.entity
 import io.r2dbc.spi.Row
 import java.math.BigDecimal
 
-data class ShopCartDetails(
+data class InvoiceItem(
     val invoiceItemId: Long, val productName: String, val quantity: BigDecimal,
     val price: BigDecimal, val discount: BigDecimal, val totalPrice: BigDecimal, val itemId: Int
 )
 
-val shopCartDetailsRowMapper: (row: Row) -> ShopCartDetails = { row ->
-    ShopCartDetails(
+val invoiceItemRowMapper: (row: Row) -> InvoiceItem = { row ->
+    InvoiceItem(
         row["id"] as Long,
         row["name"] as String,
         row["amount"] as BigDecimal,
