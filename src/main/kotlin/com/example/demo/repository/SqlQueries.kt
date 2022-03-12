@@ -3,6 +3,8 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val CREATE_USER: () -> String = {createUser()}
+    val FIND_USER_BY_NAME: () -> String = { findUserByName() }
     val GET_INVOICE_ITEMS_BY_CATEGORY_AND_DATE: () -> String = { getInvoiceItemsByCategoryAndDate() }
     val GET_ACCOUNT_OPERATIONS: () -> String = { getAccountOperations() }
     val DECREASE_ACCOUNT_MONEY: () -> String = { decreaseAccountMoney() }
@@ -51,6 +53,8 @@ object SqlQueries {
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
 
+    private fun createUser() = """insert into users(username, password) values ($1, $2)"""
+    private fun findUserByName() = """select id, username, password from users where username =$1"""
 
     private fun getAccountOperations() =
         """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = $1
