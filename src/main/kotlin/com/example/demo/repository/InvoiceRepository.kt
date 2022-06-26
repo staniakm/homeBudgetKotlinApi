@@ -81,4 +81,8 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
         }
 
     }
+
+    fun createAutoInvoice(): Mono<Void> {
+        return helper.callProcedure("call autoinvoice()")
+    }
 }

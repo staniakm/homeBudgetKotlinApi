@@ -19,13 +19,19 @@ AS
                   where name = product) then
             begin
                 --pobieramy id asortymentu
-                select id into asoId from assortment where name = product limit 1;
+                select id
+                into asoId
+                from assortment
+                where name = product
+                limit 1;
                 --jeśli asortyment oznaczony jako usunięty - podnosimy
                 if exists(select 1
                           from assortment
                           where id = asoId
                             and del = true) then
-                    update assortment set del = false where id = asoId;
+                    update assortment
+                    set del = false
+                    where id = asoId;
                 end if;
                 --sprawdzamy czy asortyment istniej już w sklepie
                 if exists(select 1
@@ -34,7 +40,9 @@ AS
                             and aso = asoId) then
                     begin
                         --jeśli istnieje to sprawdzamy czy jest usunięty i ewentualnie podnosimy
-                        if (select del from shop_assortment where shop = shopId and aso = asoId) = true then
+                        if (select del
+                            from shop_assortment
+                            where shop = shopId and aso = asoId) = true then
                             update shop_assortment
                             set del = false
                             where shop = shopId
@@ -43,7 +51,8 @@ AS
                     end;
                 else
                     --jeśli asortyment istnieje ale nie ma go w splepie to dpisujemy
-                    insert into shop_assortment (aso, shop) values (asoId, shopId);
+                    insert into shop_assortment (aso, shop)
+                    values (asoId, shopId);
                 end if;
             end;
         else
@@ -92,8 +101,7 @@ AS
                 with rows as (
                     insert into invoice (date, invoice_number, sum, shop, account)
                         VALUES (current_date, concat(''Rachunki '', (extract(month from current_date)::varchar)), 0, 8,
-                                3) RETURNING id
-                )
+                                3) RETURNING id)
                 SELECT id
                 into invoice_id
                 FROM rows;
@@ -114,6 +122,9 @@ AS
                 where l.del = false;
 
                 call recalculateInvoice(invoice_id);
+                update account
+                set money = money - (select sum from invoice where id = invoice_id)
+                where id = 3;
             end;
         end if;
     end;
@@ -205,12 +216,12 @@ CREATE PROCEDURE public.copybudgetfromlastmonth()
 AS
 '
     begin
-        with con (previous_year, previous_month, current_year, current_month) as (
-            values (extract(year from (current_date - interval ''1 month'')),
-                    extract(month from (current_date - interval ''1 month'')),
-                    extract(year from current_date),
-                    extract(month from current_date))
-        )
+        with con (previous_year, previous_month, current_year, current_month) as (values (extract(year from
+                                                                                                  (current_date - interval ''1 month'')),
+                                                                                          extract(month from
+                                                                                                  (current_date - interval ''1 month'')),
+                                                                                          extract(year from current_date),
+                                                                                          extract(month from current_date)))
 
         insert
         into budget(category, month, year, planned, used, percentage)
@@ -220,28 +231,26 @@ AS
                planned,
                0 as used,
                0 as percentage
-        from (
-                 select category,
-                        con.current_month as month,
-                        con.current_year  as year,
-                        planned
-                 from budget b,
-                      con
-                 where b.year = con.previous_year
-                   and b.month = con.previous_month
-                 union
-                 select id,
-                        con.current_month,
-                        con.current_year,
-                        0
-                 from category k,
-                      con
-                 where not exists(select 1
-                                  from budget b
-                                  where b.category = k.id
-                                    and b.month = con.previous_month
-                                    and b.year = con.previous_year)
-             ) as t,
+        from (select category,
+                     con.current_month as month,
+                     con.current_year  as year,
+                     planned
+              from budget b,
+                   con
+              where b.year = con.previous_year
+                and b.month = con.previous_month
+              union
+              select id,
+                     con.current_month,
+                     con.current_year,
+                     0
+              from category k,
+                   con
+              where not exists(select 1
+                               from budget b
+                               where b.category = k.id
+                                 and b.month = con.previous_month
+                                 and b.year = con.previous_year)) as t,
              con
         where not exists(select 1
                          from budget as b
@@ -275,21 +284,21 @@ AS
         total_sum decimal;
     begin
         return query
-            WITH t as (
-                select k.name,
-                       sum(ps.price)
-                from invoice p
-                         join invoice_details ps on p.ID = ps.invoice and ps.del = false
-                         join category k on k.id = ps.category
-                         left join report_settings as rDat on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
-                         left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
-                         left join report_settings rSkl on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
-                where p.del = false
-                  and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
-                  and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
-                  and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
-                group by k.name
-            )
+            WITH t as (select k.name,
+                              sum(ps.price)
+                       from invoice p
+                                join invoice_details ps on p.ID = ps.invoice and ps.del = false
+                                join category k on k.id = ps.category
+                                left join report_settings as rDat
+                                          on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
+                                left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
+                                left join report_settings rSkl
+                                          on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
+                       where p.del = false
+                         and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
+                         and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
+                         and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
+                       group by k.name)
             SELECT t.name,
                    t.sum,
                    cast((t.sum / (select sum(t1.sum) from t as t1)) * 100 as decimal(10, 2))
@@ -320,25 +329,25 @@ AS
         total_sum decimal;
     begin
         return query
-            WITH t as (
-                select ao.owner_name,
-                       k.name as category_name,
-                       sum(ps.price)
-                from invoice p
-                         join invoice_details ps on p.ID = ps.invoice and ps.del = false
-                         join category k on k.id = ps.category
-                         join account a on a.id = p.account
-                         join account_owner ao ON ao.id = a."owner"
-                         left join report_settings as rDat on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
-                         left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
-                         left join report_settings rSkl on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
-                where p.del = false
-                  and ps.del = false
-                  and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
-                  and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
-                  and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
-                group by ao.owner_name, k.name
-            )
+            WITH t as (select ao.owner_name,
+                              k.name as category_name,
+                              sum(ps.price)
+                       from invoice p
+                                join invoice_details ps on p.ID = ps.invoice and ps.del = false
+                                join category k on k.id = ps.category
+                                join account a on a.id = p.account
+                                join account_owner ao ON ao.id = a."owner"
+                                left join report_settings as rDat
+                                          on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
+                                left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
+                                left join report_settings rSkl
+                                          on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
+                       where p.del = false
+                         and ps.del = false
+                         and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
+                         and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
+                         and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
+                       group by ao.owner_name, k.name)
             SELECT t.owner_name,
                    t.category_name,
                    t.sum,
@@ -374,22 +383,22 @@ AS
 '
     begin
         return query
-            WITH t as (
-                select distinct extract(MONTH from date) as month,
-                                extract(year from date)  as year,
-                                account,
-                                sum(ps.price)               sums
-                from invoice p
-                         join invoice_details ps on p.ID = ps.invoice and ps.del = false
-                         left join report_settings as rDat on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
-                         left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
-                         left join report_settings rSkl on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
-                where p.del = false
-                  and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
-                  and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
-                  and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
-                group by account, extract(month from p.date), extract(year from p.date)
-            )
+            WITH t as (select distinct extract(MONTH from date) as month,
+                                       extract(year from date)  as year,
+                                       account,
+                                       sum(ps.price)               sums
+                       from invoice p
+                                join invoice_details ps on p.ID = ps.invoice and ps.del = false
+                                left join report_settings as rDat
+                                          on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
+                                left join report_settings kat on kat.parameter = 2 and kat.session_id = pg_backend_pid()
+                                left join report_settings rSkl
+                                          on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
+                       where p.del = false
+                         and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
+                         and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
+                         and (kat.session_id is null or kat.min_val::INTEGER = ps.category)
+                       group by account, extract(month from p.date), extract(year from p.date))
 
             SELECT t.month::INTEGER,
                    t.year::INTEGER,
@@ -449,16 +458,18 @@ AS
         update budget b
         set used = coalesce(s.kwota, 0)
         from budget b1
-                 left join (
-            select sum(ps.price) kwota, a.category, extract(month from p.date) miesiac
-            from invoice_details ps
-                     join invoice p ON p.id = ps.invoice
-                     join assortment a ON a.id = ps.assortment
-            where extract(month from p.date) = extract(month from recalculation_date)
-              and extract(year from p.date) = extract(year from recalculation_date)
-              and ps.del = false
-              and a.category = ps.category
-            group by a.category, extract(month from p.date)) as s on s.category = b1.category and s.miesiac = b1.month
+                 left join (select sum(ps.price)              kwota,
+                                   a.category,
+                                   extract(month from p.date) miesiac
+                            from invoice_details ps
+                                     join invoice p ON p.id = ps.invoice
+                                     join assortment a ON a.id = ps.assortment
+                            where extract(month from p.date) = extract(month from recalculation_date)
+                              and extract(year from p.date) = extract(year from recalculation_date)
+                              and ps.del = false
+                              and a.category = ps.category
+                            group by a.category, extract(month from p.date)) as s
+                           on s.category = b1.category and s.miesiac = b1.month
         where b1.id = b.id
           and b1.used <> coalesce(s.kwota, 0)
           and b1.month = extract(month from recalculation_date)
@@ -493,7 +504,8 @@ AS
             into invoice_to_update
             from invoice;
         else
-            select invoice_id into invoice_to_update ;
+            select invoice_id
+            into invoice_to_update;
         end if;
 
         begin
@@ -509,7 +521,7 @@ AS
             from invoice
             where id = invoice_to_update;
             update invoice
-            set sum = (select sum(price)
+            set sum = (select coalesce(sum(price), 0)
                        from invoice_details
                        where invoice = invoice_to_update)
             where id = invoice_to_update;
@@ -565,23 +577,23 @@ AS
         total_sum decimal;
     begin
         return query
-            WITH t as (
-                select p.id,
-                       to_char(p.date::date, ''yyyy-MM-dd''),
-                       p.invoice_number,
-                       p.sum,
-                       ao.owner_name,
-                       shop.name as shop_name
-                from invoice p
-                         join account a on a.id = p.account
-                         join account_owner ao ON ao.id = a."owner"
-                         join shop ON shop.id = p.shop
-                         left join report_settings as rDat on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
-                         left join report_settings rSkl on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
-                where p.del = false
-                  and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
-                  and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER)
-            )
+            WITH t as (select p.id,
+                              to_char(p.date::date, ''yyyy-MM-dd''),
+                              p.invoice_number,
+                              p.sum,
+                              ao.owner_name,
+                              shop.name as shop_name
+                       from invoice p
+                                join account a on a.id = p.account
+                                join account_owner ao ON ao.id = a."owner"
+                                join shop ON shop.id = p.shop
+                                left join report_settings as rDat
+                                          on rDat.parameter = 1 and rDat.session_id = pg_backend_pid()
+                                left join report_settings rSkl
+                                          on rSkl.parameter = 3 and rSkl.session_id = pg_backend_pid()
+                       where p.del = false
+                         and (rDat.session_id is null or p.date between rDat.min_val::date and rDat.max_val::date)
+                         and (rSkl.session_id is null or p.shop = rSkl.min_val::INTEGER))
             SELECT *
             from t;
     end
@@ -609,7 +621,7 @@ AS
                               where upper(name) = upper(category_name)) then
                     begin
                         insert
-                        into category(name)
+                            into category(name)
                         values (category_name);
                         update assortment
                         set category = (select coalesce(id, 1)
@@ -617,7 +629,12 @@ AS
                                         where name = category_name)
                         where id = assortment_id;
                         insert into budget(category, month, year, planned, used, percentage)
-                        select k.id, l.id, extract(year from current_date), 0, 0, 0
+                        select k.id,
+                               l.id,
+                               extract(year from current_date),
+                               0,
+                               0,
+                               0
                         from category k
                                  cross join counter l
                         where name = category_name
@@ -669,30 +686,34 @@ AS
                        con
                   where year = con.previous_year
                     and month = con.previous_month) then
-            insert into budget(category, month, year, planned, used, percentage)
-            select category, t.month, t.year, planned, 0 as used, 0 as percentage
-            from (
-                     select category,
-                            con.current_month as month,
-                            con.current_year  as year,
-                            planned
-                     from budget b,
-                          con
-                     where b.year = con.previous_year
-                       and b.month = con.previous_month
-                     union
-                     select id,
-                            con.current_month,
-                            con.current_year,
-                            0
-                     from category k,
-                          con
-                     where not exists(select 1
-                                      from budget b
-                                      where b.category = k.id
-                                        and b.month = con.previous_month
-                                        and b.year = con.previous_year)
-                 ) as t,
+            insert
+            into budget(category, month, year, planned, used, percentage)
+            select category,
+                   t.month,
+                   t.year,
+                   planned,
+                   0 as used,
+                   0 as percentage
+            from (select category,
+                         con.current_month as month,
+                         con.current_year  as year,
+                         planned
+                  from budget b,
+                       con
+                  where b.year = con.previous_year
+                    and b.month = con.previous_month
+                  union
+                  select id,
+                         con.current_month,
+                         con.current_year,
+                         0
+                  from category k,
+                       con
+                  where not exists(select 1
+                                   from budget b
+                                   where b.category = k.id
+                                     and b.month = con.previous_month
+                                     and b.year = con.previous_year)) as t,
                  con
             where not exists(select 1
                              from budget as b
@@ -701,26 +722,25 @@ AS
                                and b.year = con.current_year);
 
         else
--- budget zero
-            insert into budget(category, month, year, planned, used, percentage)
+            -- budget zero
+            insert
+            into budget(category, month, year, planned, used, percentage)
             select category,
                    t.month,
                    t.year,
                    0 as planed,
                    0 as used,
                    0 as percentage
-            from (
-                     select id                as category,
-                            con.current_month as month,
-                            con.current_year  as year
-                     from category k,
-                          con
-                     where not exists(select 1
-                                      from budget b
-                                      where b.category = k.id
-                                        and b.month = con.previous_month
-                                        and b.year = con.previous_year)
-                 ) as t,
+            from (select id                as category,
+                         con.current_month as month,
+                         con.current_year  as year
+                  from category k,
+                       con
+                  where not exists(select 1
+                                   from budget b
+                                   where b.category = k.id
+                                     and b.month = con.previous_month
+                                     and b.year = con.previous_year)) as t,
                  con
             where not exists(select 1
                              from budget as b

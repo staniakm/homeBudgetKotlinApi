@@ -4,14 +4,20 @@ import com.example.demo.IntegrationTest
 import com.example.demo.entity.*
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRepository) : IntegrationTest() {
+class InvoiceRepositoryTest(
+    @Autowired private val invoiceRepository: InvoiceRepository,
+    @Autowired private val accountRepository: AccountRepository
+) : IntegrationTest() {
 
     @BeforeEach
     internal fun setUp() {
@@ -225,6 +231,51 @@ class InvoiceRepositoryTest(@Autowired private val invoiceRepository: InvoiceRep
         val items = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
         items.size shouldBe 2
         items.map { it.totalPrice } shouldContainAll listOf(BigDecimal("19.00"), BigDecimal("11.00"))
+    }
 
+    @Test
+    fun `should create automatic invoice with zero sum when no automatic entries exists`() {
+        //given
+        createAccount(accountId = 3)
+        createShop(shopId = 8)
+        //when
+        invoiceRepository.createAutoInvoice().block()
+        //then
+        val invoice = invoiceRepository.getInvoice(1).block()
+        invoice shouldNotBe null
+        invoice?.let {
+            it.sum shouldBeEqualComparingTo BigDecimal.ZERO
+            it.account shouldBe 3
+            it.shop shouldBe 8
+            it.invoiceNumber shouldStartWith "Rachunki"
+        }
+    }
+
+    @Test
+    fun `should create automatic invoice`() {
+        //given create initial state
+        createAccount(accountId = 3, amount = BigDecimal("100"))
+        createShop(shopId = 8)
+        createCategory(2, "Cat2")
+        createAssortment(1, "aso1", 2)
+        createAssortment(2, "aso2", 2)
+        createAutoinvoiceEntry(asoId = 1, price = BigDecimal("1.2"), quantity = BigDecimal.ONE)
+        createAutoinvoiceEntry(asoId = 2, price = BigDecimal("8.9"), quantity = BigDecimal.ONE)
+        //when call auto invoice procedure
+        invoiceRepository.createAutoInvoice().block()
+        //then invoice created
+        val invoice = invoiceRepository.getInvoice(1).block()
+        invoice shouldNotBe null
+        invoice?.let {
+            it.sum shouldBeEqualComparingTo BigDecimal("10.1")
+            it.account shouldBe 3
+            it.shop shouldBe 8
+            it.invoiceNumber shouldStartWith "Rachunki"
+        }
+        //and account money amount decreased
+        val account = accountRepository.findById(3).block()!!
+        with(account) {
+            this.amount shouldBeEqualComparingTo BigDecimal("89.9")
+        }
     }
 }

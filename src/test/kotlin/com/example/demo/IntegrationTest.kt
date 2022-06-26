@@ -86,6 +86,16 @@ abstract class IntegrationTest {
         executeInsert("insert into shop (id, name) values ($shopId, '$shopName')")
     }
 
+    fun createAutoinvoiceEntry(
+        asoId: Int = 1,
+        price: BigDecimal = BigDecimal.ONE,
+        quantity: BigDecimal = BigDecimal.ONE,
+        shopId: Int = 8,
+        accountId: Int = 3
+    ) {
+        executeInsert("insert into automatic_invoice_products (aso, price, quantity, shop, account) values ($asoId, $price, $quantity, $shopId, $accountId)")
+    }
+
     fun createInvoice(
         invoiceId: Int = 1,
         accountId: Int = 1,
