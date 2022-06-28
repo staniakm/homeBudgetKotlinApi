@@ -5,6 +5,7 @@ import com.example.demo.repository.SqlQueries.GET_ACCOUNT_INVOICES
 import com.example.demo.repository.SqlQueries.GET_INVOICE
 import com.example.demo.repository.SqlQueries.GET_INVOICE_DATA
 import com.example.demo.repository.SqlQueries.GET_INVOICE_DETAILS
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -13,7 +14,7 @@ import java.time.LocalDate
 
 @Service
 class InvoiceRepository(private val helper: RepositoryHelper) {
-
+    val logger = LoggerFactory.getLogger(this.javaClass)
     fun getInvoicesForMonth(date: LocalDate): Flux<ShoppingInvoice> {
         return helper.getList(GET_INVOICE, shoppingListRowMapper) {
             bind("$1", date.year).bind("$2", date.monthValue)
@@ -27,6 +28,7 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     }
 
     fun getInvoice(id: Long): Mono<Invoice> {
+        logger.info("Get invoice")
         return helper.findOne(GET_INVOICE_DATA, invoiceRowMapper) {
             bind("$1", id)
         }
@@ -84,5 +86,21 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
 
     fun createAutoInvoice(): Mono<Void> {
         return helper.callProcedure("call autoinvoice()")
+    }
+
+    fun deleteDetails(id: Long): Mono<Long> {
+        logger.info("Delete invoice details")
+        return helper
+            .delete(SqlQueries.DELETE_INVOICE_DETAILS) {
+                bind("$1", id)
+            }.then(Mono.just(id))
+    }
+
+    fun deleteInvoice(id: Long): Mono<Long> {
+        logger.info("Delete invoice")
+        return helper
+            .delete(SqlQueries.DELETE_INVOICE) {
+                bind("$1", id)
+            }.then(Mono.just(id))
     }
 }

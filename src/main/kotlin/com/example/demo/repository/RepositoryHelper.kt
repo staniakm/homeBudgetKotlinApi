@@ -66,6 +66,16 @@ class RepositoryHelper(private val client: DatabaseClient) {
             .one()
     }
 
+    fun delete(
+        query: () -> String,
+        function: DatabaseClient.GenericExecuteSpec.() -> DatabaseClient.GenericExecuteSpec
+    ): Mono<Void> {
+        return client.sql(query)
+            .let {
+                it.function()
+            }.then()
+    }
+
     fun <T> findOne(
         query: () -> String,
         mapper: (Row) -> T

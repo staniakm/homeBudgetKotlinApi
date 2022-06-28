@@ -3,6 +3,8 @@ package com.example.demo.repository
 
 object SqlQueries {
 
+    val DELETE_INVOICE: () -> String ={deleteInvoice()}
+    val DELETE_INVOICE_DETAILS: () -> String ={deleteInvoiceDetails()}
     val GET_INVOICE_ITEMS_BY_CATEGORY_AND_DATE: () -> String = { getInvoiceItemsByCategoryAndDate() }
     val GET_ACCOUNT_OPERATIONS: () -> String = { getAccountOperations() }
     val DECREASE_ACCOUNT_MONEY: () -> String = { decreaseAccountMoney() }
@@ -401,6 +403,18 @@ object SqlQueries {
                         join assortment a on a.id = ps.assortment
                         where ps.del = false and invoice = $1
                 """.trimIndent()
+    }
+
+    private fun deleteInvoice() :String {
+        return """
+            delete from invoice where id = $1
+        """.trimIndent()
+    }
+
+    private fun deleteInvoiceDetails() :String {
+        return """
+            delete from invoice_details where invoice = $1
+        """.trimIndent()
     }
 
     private fun getInvoiceItemsByCategoryAndDate(): String {

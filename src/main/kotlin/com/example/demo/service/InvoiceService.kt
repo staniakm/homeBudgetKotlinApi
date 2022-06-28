@@ -2,8 +2,8 @@ package com.example.demo.service
 
 import com.example.demo.entity.Invoice
 import com.example.demo.entity.InvoiceItem
-import com.example.demo.entity.UpdateInvoiceAccountRequest
 import com.example.demo.entity.NewInvoiceRequest
+import com.example.demo.entity.UpdateInvoiceAccountRequest
 import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
@@ -45,5 +45,16 @@ class InvoiceService(
 
     fun getInvoiceItemsByCategoryAndMonth(category: Int, year: Int, month: Int): Flux<InvoiceItem> {
         return invoiceRepository.getInvoiceItemsByCategoryAndDate(category, year, month)
+    }
+
+    @Transactional
+    fun deleteInvoice(invoiceId: Long): Mono<Long> {
+        return invoiceRepository.getInvoice(invoiceId)
+            .flatMap {
+                invoiceRepository.deleteDetails(it.id)
+                    .then(invoiceRepository.deleteInvoice(it.id))
+                    .then(accountRepository.increaseMoney(it.account, it.sum))
+                    .then(Mono.just(invoiceId))
+            }
     }
 }

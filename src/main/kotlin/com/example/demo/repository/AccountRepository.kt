@@ -85,8 +85,12 @@ class AccountRepository(private val helper: RepositoryHelper) {
         }
     }
 
-    fun getOperations(accountId: Int, limit: Int):Flux<AccountOperation> {
-        return helper.getList(SqlQueries.GET_ACCOUNT_OPERATIONS, operationMapper){
+    fun increaseMoney(id: Int, sum: BigDecimal): Mono<Void> {
+        return decreaseMoney(id, sum.multiply(BigDecimal("-1")))
+    }
+
+    fun getOperations(accountId: Int, limit: Int): Flux<AccountOperation> {
+        return helper.getList(SqlQueries.GET_ACCOUNT_OPERATIONS, operationMapper) {
             bind("$1", accountId)
                 .bind("$2", limit)
         }
