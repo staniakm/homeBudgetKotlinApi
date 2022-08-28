@@ -13,11 +13,14 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.util.logging.Logger
 
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
 abstract class IntegrationTest {
+
+    val logger = Logger.getLogger("[TEST LOGGER]")
 
     val tables = listOf(
         "automatic_invoice_products",
@@ -147,6 +150,34 @@ abstract class IntegrationTest {
         executeInsert("insert into category(id, name) values ($categoryId, '$categoryName')")
     }
 
+    fun accountOwnerCreator(op: AccountOwnerCreator.() -> Unit) {
+        with(AccountOwnerCreator()) {
+            op.invoke(this)
+            createAccountOwner(withId!!, withName!!, description)
+        }
+    }
+
+    fun setup(description: String, op: () -> Unit) {
+        logger.info(description)
+        op.invoke()
+        logger.info("Setup data created")
+    }
+
+    fun <T> methodUnderTest(description: String = "", op: () -> T): T {
+        if (description.isNotBlank()) logger.info(description)
+        return op.invoke()
+    }
+
+    fun validateResults(description: String = "", op: () -> Unit) {
+        if (description.isNotBlank()) logger.info(description)
+        op.invoke()
+    }
+
+    fun <T> validateResults(description: String = "", result: T, op: T.() -> Unit) {
+        if (description.isNotBlank()) logger.info(description)
+        op.invoke(result)
+    }
+
     fun createBudgetItem(
         id: Int = 1,
         categoryId: Int = 1,
@@ -178,5 +209,27 @@ abstract class IntegrationTest {
 
     fun createShopItem(shopId: Int = 1, asoId: Int = 1) {
         executeInsert("insert into shop_assortment(shop, aso) values ($shopId, $asoId)")
+    }
+}
+
+class AccountOwnerCreator {
+    var description = ""
+    var withId: Int? = null
+        get() {
+            if (field == null) {
+                throw java.lang.IllegalArgumentException("Id is required")
+            }
+            return field
+        }
+    var withName: String? = null
+        get() {
+            if (field == null) {
+                throw java.lang.IllegalArgumentException("Name is required")
+            }
+            return field
+        }
+
+    fun withEmptyDescription() {
+        description = ""
     }
 }
