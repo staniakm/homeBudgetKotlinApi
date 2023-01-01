@@ -1,6 +1,7 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
+import io.r2dbc.spi.RowMetadata
 import org.springframework.r2dbc.core.DatabaseClient
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -18,7 +19,7 @@ data class Category(
     }
 }
 
-val categoryRowMapper: (row: Row) -> Category = { row ->
+val categoryRowMapper: (row: Row, metadata: RowMetadata) -> Category = { row,_ ->
     Category(
         row["id"] as Int,
         row["name"] as String,

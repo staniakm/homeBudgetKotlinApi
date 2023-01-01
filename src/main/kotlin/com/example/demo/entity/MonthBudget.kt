@@ -1,6 +1,7 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
+import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
 
 
@@ -9,7 +10,7 @@ data class MonthBudget(
     val totalEarned: BigDecimal, val date: String = "", val budgets: List<BudgetItem> = listOf()
 )
 
-val monthBudgetMapper: (row: Row) -> MonthBudget = { row ->
+val monthBudgetMapper: (row: Row, metadata:RowMetadata) -> MonthBudget = { row,_ ->
     MonthBudget(
         row["outcome"] as BigDecimal,
         row["planned"] as BigDecimal,
@@ -41,7 +42,7 @@ data class MonthBudgetPlanned(
 
 data class UpdateBudgetDto(val budgetId: Int, var planned: BigDecimal)
 
-val budgetItemMapper: (row: Row) -> BudgetItem = { row ->
+val budgetItemMapper: (row: Row, metadata:RowMetadata) -> BudgetItem = { row,_ ->
     BudgetItem(
         row["id"] as Int,
         row["category"] as String,
@@ -53,7 +54,7 @@ val budgetItemMapper: (row: Row) -> BudgetItem = { row ->
     )
 }
 
-val monthSingleBudgetMapper: (row: Row) -> MonthBudgetPlanned = { row ->
+val monthSingleBudgetMapper: (row: Row, metadata: RowMetadata) -> MonthBudgetPlanned = { row, _ ->
     MonthBudgetPlanned(
         row["id"] as Int,
         row["month"] as Int,

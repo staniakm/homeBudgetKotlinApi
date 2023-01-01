@@ -49,7 +49,7 @@ abstract class IntegrationTest {
 
     companion object {
         @JvmStatic
-        val postgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:13-alpine"))
+        val postgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:15-alpine"))
             .withDatabaseName("test")
             .withUsername("user")
             .withPassword("password")

@@ -1,14 +1,15 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
+import io.r2dbc.spi.RowMetadata
 
 data class AccountOwner(val id: Int, val name: String, val description: String)
 
-val accountOwnerMapper: (row: Row) -> AccountOwner = {
+val accountOwnerMapper: (row: Row, metadata: RowMetadata) -> AccountOwner = {row,_->
     AccountOwner(
-        it["id"] as Int,
-        it["owner_name"] as String,
-        it["description"] as String
+        row["id"] as Int,
+        row["owner_name"] as String,
+        row["description"] as String
     )
 }
 

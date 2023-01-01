@@ -1,6 +1,7 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
+import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
 
 data class ShopItemsSummary(
@@ -9,7 +10,7 @@ data class ShopItemsSummary(
     val totalDiscount: BigDecimal, val totalSpend: BigDecimal
 )
 
-val shopItemSummaryRowMapper: (row: Row) -> ShopItemsSummary = { row ->
+val shopItemSummaryRowMapper: (row: Row, metadata: RowMetadata) -> ShopItemsSummary = { row,_ ->
     ShopItemsSummary(
         row["id"] as Int,
         row["name"] as String,

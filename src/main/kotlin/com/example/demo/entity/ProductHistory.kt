@@ -1,6 +1,7 @@
 package com.example.demo.entity
 
 import io.r2dbc.spi.Row
+import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -11,7 +12,7 @@ data class ProductHistory(
 )
 
 
-val productHistoryRowMapper: (row: Row) -> ProductHistory = { row ->
+val productHistoryRowMapper: (row: Row, metadata: RowMetadata) -> ProductHistory = { row,_ ->
     ProductHistory(
         row["shopName"] as String,
         row["date"] as LocalDate,
