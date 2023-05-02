@@ -65,7 +65,7 @@ object SqlQueries {
                                                 limit ?""".trimIndent()
 
     private fun getAllOwners() = """select id, owner_name, description from account_owner"""
-    private fun createNewOwner() = """insert into account_owner (owner_name, description) values (?,?) RETURNING id"""
+    private fun createNewOwner() = """insert into account_owner (owner_name, description) values (UPPER(?),?) ON CONFLICT DO NOTHING RETURNING id"""
     private fun getOwnerById() =
         """select id, owner_name, description from account_owner where id = ?"""
 

@@ -820,7 +820,7 @@ ALTER TABLE public.account_owner_id_seq
 CREATE TABLE public.account_owner
 (
     id          integer DEFAULT nextval('public.account_owner_id_seq'::regclass) NOT NULL,
-    owner_name  character varying(100)                                           NOT NULL,
+    owner_name  character varying(100)                                           NOT NULL UNIQUE,
     description character varying(200)
 );
 

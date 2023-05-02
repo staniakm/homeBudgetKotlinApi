@@ -34,7 +34,8 @@ abstract class IntegrationTest {
         "assortment",
         "category",
         "media_usage",
-        "media_type"
+        "media_type",
+        "salary_type",
     )
 
     @Autowired
@@ -169,6 +170,10 @@ abstract class IntegrationTest {
             op.invoke(this)
             createAccountOwner(withId!!, withName!!, description)
         }
+    }
+
+    fun createSalaryIncomeType(id: Int = 1, name: String = "Sallary") {
+        executeInsert("insert into salary_type(id, name) values ($id, '$name')")
     }
 
     fun setup(description: String, op: () -> Unit) {

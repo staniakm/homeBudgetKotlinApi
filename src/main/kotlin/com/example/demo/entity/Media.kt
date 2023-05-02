@@ -1,7 +1,5 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
-import io.r2dbc.spi.RowMetadata
 import java.sql.ResultSet
 
 data class MediaTypeRequest(val mediaName: String)

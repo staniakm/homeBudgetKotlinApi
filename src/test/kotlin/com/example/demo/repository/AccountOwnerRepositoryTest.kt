@@ -12,7 +12,6 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
 
     @Test
     fun `should get all owners`() {
-        Charsets.ISO_8859_1
         setup("create multiple owners") {
             createAccountOwner(1, "Owner1")
             createAccountOwner(2, "owner2")
@@ -30,7 +29,20 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
     @Test
     fun `should create new account owner`() {
         val owner = accountOwnerRepository.createNewOwner("Jan", "Father")
-        owner?.name shouldBe "Jan"
+        owner?.name shouldBe "JAN"
         owner?.description shouldBe "Father"
+    }
+
+    @Test
+    fun `should return null when owner already exists`() {
+        setup("create multiple owners") {
+            createAccountOwner(1, "Owner1")
+        }
+        val owner = methodUnderTest("should return null when owner already exists") {
+            accountOwnerRepository.createNewOwner("Owner1", "Father")
+        }
+        validateResults("should return null when owner already exists", result = owner) {
+            shouldBe(null)
+        }
     }
 }

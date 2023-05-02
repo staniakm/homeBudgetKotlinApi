@@ -4,6 +4,7 @@ import com.example.demo.IntegrationTest
 import com.example.demo.entity.Account
 import com.example.demo.entity.AccountIncomeRequest
 import com.example.demo.entity.AccountOperation
+import com.example.demo.entity.IncomeType
 import io.kotest.assertions.asClue
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContainAll
@@ -238,5 +239,41 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
             AccountOperation(1, LocalDate.of(2021, 11, 20), BigDecimal("120.10"), 1, "OUTCOME"),
             AccountOperation(3, LocalDate.of(2021, 11, 1), BigDecimal("150.11"), 1, "OUTCOME"),
         )
+    }
+
+    @Test
+    fun `should get income types`() {
+        createSalaryIncomeType(1, "type1")
+        createSalaryIncomeType(2, "type2")
+
+        val incomeTypes = accountRepository.getIncomeTypes()
+
+        incomeTypes.size shouldBe 2
+        incomeTypes shouldContainAll listOf(
+            IncomeType(1, "type1"),
+            IncomeType(2, "type2")
+        )
+    }
+
+    @Test
+    fun `should return empty list if now sallary type exists`() {
+        val incomeTypes = accountRepository.getIncomeTypes()
+
+        incomeTypes.size shouldBe 0
+    }
+
+    @Test
+    fun `should increase account money amount`(){
+        createAccountOwner()
+        createAccount(amount = BigDecimal(200))
+        createAccount(accountId = 2, amount = BigDecimal(200))
+
+        accountRepository.increaseMoney(1, BigDecimal(100))
+        val account = accountRepository.findById(1)
+        account?.amount shouldBe BigDecimal("300.00")
+
+        //should not update other account
+        accountRepository.findById(2)?.amount shouldBe BigDecimal("200.00")
+
     }
 }

@@ -1,7 +1,5 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
-import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
 import java.sql.ResultSet
 
@@ -11,12 +9,6 @@ data class Shop(val shopId: Int, val name: String)
 
 data class CreateShopRequest(val name: String)
 
-val shopRowMapper: (row: Row, metadata: RowMetadata) -> Shop = { row, _ ->
-    Shop(
-        row["id"] as Int,
-        row["name"] as String,
-    )
-}
 val shopRowMapperJdbc: (row: ResultSet, _: Any?) -> Shop = { row, _ ->
     Shop(
         row.getInt("id"),
