@@ -14,6 +14,6 @@ class AutomaticInvoiceService(private val invoiceRepository: InvoiceRepository) 
     @Scheduled(initialDelay = 5000, fixedRate = 1000 * 60 * 60 * 24)
     fun createAutomaticInvoice() {
         logger.info("Execute Auto Invoice procedure")
-        invoiceRepository.createAutoInvoice().block()
+        invoiceRepository.createAutoInvoice()
     }
 }

@@ -3,8 +3,8 @@ package com.example.demo.repository
 
 object SqlQueries {
 
-    val DELETE_INVOICE: () -> String ={deleteInvoice()}
-    val DELETE_INVOICE_DETAILS: () -> String ={deleteInvoiceDetails()}
+    val DELETE_INVOICE: () -> String = { deleteInvoice() }
+    val DELETE_INVOICE_DETAILS: () -> String = { deleteInvoiceDetails() }
     val GET_INVOICE_ITEMS_BY_CATEGORY_AND_DATE: () -> String = { getInvoiceItemsByCategoryAndDate() }
     val GET_ACCOUNT_OPERATIONS: () -> String = { getAccountOperations() }
     val DECREASE_ACCOUNT_MONEY: () -> String = { decreaseAccountMoney() }
@@ -16,11 +16,11 @@ object SqlQueries {
     val CREATE_SHOP: () -> String = { createShop() }
     val DELETE_MEDIA_USAGE: () -> String = { deleteMediaUsage() }
     val GET_MEDIA_USAGE_BY_TYPE: () -> String = { getMediaUsageBYType() }
-    val GET_OWNER_BY_NAME: () -> String = { getOwnerByName() }
+    val GET_OWNER_BY_ID: () -> String = { getOwnerById() }
     val ADD_NEW_OWNER: () -> String = { createNewOwner() }
     val GET_ALL_OWNERS: () -> String = { getAllOwners() }
     val ADD_NEW_MEDIA_USAGE: () -> String = { addMediaUsage() }
-    val GET_MEDIA_READS_FOR_MONTH: () -> String = { getAllMediaReadsFromMonth() }
+    val GET_MEDIA_FOR_MONTH: () -> String = { getAllMediaReadsFromMonth() }
     val FIND_ALL_MEDIA_TYPES: () -> String = { findAllMediaTypes() }
     val FIND_MEDIA_TYPE_BY_ID: () -> String = { findMediaTypeById() }
     val FIND_MEDIA_TYPE_BY_NAME: () -> String = { findMediaTypeByName() }
@@ -42,6 +42,8 @@ object SqlQueries {
     val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
     val GET_SINGLE_BUDGET: () -> String = { getSingleBudget() }
     val GET_PRODUCT_HISTORY: () -> String = { getProductHistory() }
+    val GET_PRODUCT_BY_ID: () -> String = { getProductById() }
+    val UPDATE_PRODUCT_CATEGORY: () -> String = { updateProductCategory() }
     val GET_MONTH_BUDGET_FOR_CATEGORY: () -> String = { getMonthBudgetForCategory() }
     val GET_ACCOUNTS_SUMMARY_FOR_MONTH: () -> String = { getAccountsSummaryForMonth() }
     val GET_SHOP_LIST: () -> String = { getShopList() }
@@ -52,49 +54,50 @@ object SqlQueries {
     val GET_INCOME_TYPES: () -> String = { getIncomeTypes() }
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
+    private fun updateProductCategory(): String = "update assortment set category = ? where id = ?"
 
 
     private fun getAccountOperations() =
-        """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = $1
+        """select id, date, sum as value,account, 'OUTCOME' as type from invoice where account = ?
                                                 union 
-                                                select id, date, value, account,'INCOME' from income where account = $1
+                                                select id, date, value, account,'INCOME' from income where account = ?
                                                 order by date desc
-                                                limit $2""".trimIndent()
+                                                limit ?""".trimIndent()
 
     private fun getAllOwners() = """select id, owner_name, description from account_owner"""
-    private fun createNewOwner() = """insert into account_owner (owner_name, description) values ($1, $2)"""
-    private fun getOwnerByName() =
-        """select id, owner_name, description from account_owner where lower(owner_name)  = lower($1) order by id desc limit 1"""
+    private fun createNewOwner() = """insert into account_owner (owner_name, description) values (?,?) RETURNING id"""
+    private fun getOwnerById() =
+        """select id, owner_name, description from account_owner where id = ?"""
 
     private fun decreaseAccountMoney() = """
-        update account set money = money - $1 where id = $2
+        update account set money = money - ? where id = ?
     """.trimIndent()
 
-    private fun createNewMediaType() = """insert into media_type(name) values ($1)""".trimIndent()
-    private fun findMediaTypeByName() = """select id, name from media_type where name = $1"""
-    private fun findMediaTypeById() = """select id, name from media_type where id = $1"""
+    private fun createNewMediaType() = """insert into media_type(name) values (?)""".trimIndent()
+    private fun findMediaTypeByName() = """select id, name from media_type where name = ?"""
+    private fun findMediaTypeById() = """select id, name from media_type where id = ?"""
     private fun findAllMediaTypes() = """select id, name from media_type where del = false"""
 
 
     private fun getMediaUsageBYType() =
         """select media_usage.id, media_type.id type_id, year, month, meter_read from media_usage
         | join media_type on media_usage.media_type=media_type.id
-        |  where media_type.id = $1 order by year desc, month desc""".trimMargin()
+        |  where media_type.id = ? order by year desc, month desc""".trimMargin()
 
     private fun getAllMediaReadsFromMonth() =
-        """select id, media_type, year, month, meter_read from media_usage where year = $1 and month = $2"""
+        """select id, media_type, year, month, meter_read from media_usage where year = ? and month = ?"""
 
     private fun addMediaUsage() =
-        """insert into media_usage(media_type, meter_read, year, month) values ($1, $2, $3, $4)"""
+        """insert into media_usage(media_type, meter_read, year, month) values (?,?,?,?)"""
 
-    private fun deleteMediaUsage() = """delete from media_usage where id = $1"""
+    private fun deleteMediaUsage() = """delete from media_usage where id = ?"""
 
     private fun updateAccountWithNewAmount() = """
-        update account set money = money + $1 where del = false and id = $2 
+        update account set money = money + ? where del = false and id = ? 
     """.trimIndent()
 
     private fun addAccountIncome() = """
-        insert into income(account, value, description, date) values ($1, $2, $3, $4)
+        insert into income(account, value, description, date) values (?,?,?,?)
     """.trimIndent()
 
     private fun getIncomeTypes(): String {
@@ -102,7 +105,7 @@ object SqlQueries {
     }
 
     private fun updateSingleAccount(): String {
-        return "update account set money = $1 where del = false and id = $2"
+        return "update account set money = ? where del = false and id = ?"
     }
 
     private fun getAccountData(): String {
@@ -110,7 +113,7 @@ object SqlQueries {
     }
 
     private fun getSingleAccountData(): String {
-        return "select id, account_name, money as amount, owner from account where del = false and id = $1"
+        return "select id, account_name, money as amount, owner from account where del = false and id = ?"
     }
 
     private fun getAccountIncome(): String {
@@ -119,13 +122,13 @@ object SqlQueries {
                 from account k 
                     left join income p on p.account = k.ID 
                     where k.del = false and
-                      k.id = $3
-                      and extract(year from date) = $1 and extract(month from date) = $2""".trimIndent()
+                      k.id = ?
+                      and extract(year from date) = ? and extract(month from date) = ?""".trimIndent()
     }
 
-    private fun createShop() = """insert into shop (name) values ($1)"""
+    private fun createShop() = """insert into shop (name) values (?)"""
 
-    private fun getShopByName() = """select id, name from shop where name = $1 order by id desc limit 1"""
+    private fun getShopByName() = """select id, name from shop where name = ? order by id desc limit 1"""
 
     private fun getShopList(): String {
         return "select id, name from shop order by name"
@@ -138,15 +141,15 @@ object SqlQueries {
                     coalesce(ex.expense,0) expense,  
                     coalesce(i.income,0) income 
                 from account k 
-                    left join (select sum(sum) expense, account from invoice where del = false and extract(year from date) = $1
-							and extract(month from date) = $2 group by account) ex on ex.account = k.ID 
-                    left join (select sum(value) income, account from income where extract(year from date) = $1 and extract(month from date) = $2 group by account) i on i.account = k.ID 
+                    left join (select sum(sum) expense, account from invoice where del = false and extract(year from date) = ?
+							and extract(month from date) = ? group by account) ex on ex.account = k.ID 
+                    left join (select sum(value) income, account from income where extract(year from date) = ? and extract(month from date) = ? group by account) i on i.account = k.ID 
                 where k.del = false and id > 1
                 order by k.account_name""".trimIndent()
     }
 
     private fun updatePlanedBudget(): String {
-        return """update budget set planned = $1 where id = $2""".trimIndent()
+        return """update budget set planned = ? where id = ?""".trimIndent()
     }
 
     private fun getMonthBudgetDetails(): String {
@@ -158,7 +161,7 @@ object SqlQueries {
                     (select sum(used) spend, sum(planned) planned, year, month from budget b group by year, month) b
                     left join(select sum(value) income, extract(year from date) y , extract(month from date) m from income 
                         group by extract(year from date) , extract(month from date) ) as p on p.y = b.year and p.m = b.month
-                where b.year = $1 and b.month = $2
+                where b.year = ? and b.month = ?
                 """.trimIndent()
     }
 
@@ -174,7 +177,7 @@ object SqlQueries {
 				   (select sum(planned) from budget where month=b.month and year=b.year) monthPlanned
                 from budget b 
                    join category k on k.id = b.category
-                where b.id = $1
+                where b.id = ?
                 order by b.used desc""".trimIndent()
 
     private fun getMonthBudget(): String {
@@ -188,8 +191,8 @@ object SqlQueries {
                    b.percentage 
                 from budget b 
                    join category k on k.id = b.category 
-                where year = $1
-                   and month = $2
+                where year = ?
+                   and month = ?
                 order by b.used desc""".trimIndent()
     }
 
@@ -218,7 +221,7 @@ object SqlQueries {
                        join assortment a on a.id = aso_s.aso 
                  where aso_s.del = false 
                        and a.del = false 
-                       and s.ID = $1 
+                       and s.ID = ? 
                  order by a.name""".trimIndent()
     }
 
@@ -231,8 +234,8 @@ object SqlQueries {
                        join assortment a on a.id = aso_s.aso 
                  where aso_s.del = false 
                        and a.del = false 
-                       and s.ID = $2
-                       and a.name = $1
+                       and s.ID = ?
+                       and UPPER(a.name) = UPPER(?)
                  order by a.name""".trimIndent()
     }
 
@@ -243,8 +246,8 @@ object SqlQueries {
                  from invoice p 
                    join invoice_details ps on ps.invoice = p.ID 
                    join category k on k.id = ps.category 
-                 where extract(year from p.date) = $1 
-                   and extract(month from p.date) = $2
+                 where extract(year from p.date) = ? 
+                   and extract(month from p.date) = ?
                  group by k.name 
                  order by sum""".trimIndent()
     }
@@ -263,9 +266,9 @@ object SqlQueries {
                  where ps.del=false and ps.invoice in 
                                    (select id 
                                        from invoice p 
-                                       where p.shop = $1 
+                                       where p.shop = ? 
                                            and p.del = false
-                                           and extract(year from p.date) = $2) 
+                                           and extract(year from p.date) = ?) 
                                         group by a.id, a.name""".trimIndent()
     }
 
@@ -284,9 +287,9 @@ object SqlQueries {
 				 and ps.invoice in 
                                (select id 
                                    from invoice p 
-                                   where p.shop = $1
+                                   where p.shop = ?
                                        and p.del = false
-                                       and p.date between $2 and $3)
+                                       and p.date between ? and ?)
                                    group by a.id, a."name"
                                    """.trimIndent()
     }
@@ -297,10 +300,10 @@ object SqlQueries {
                          y.yearsum, 
                          coalesce(m.monthSummary, 0.00) monthSum 
                   from shop s 
-                  join (select shop, sum(sum) yearSum from invoice where extract(year from date)= $1 group by shop) as y 
+                  join (select shop, sum(sum) yearSum from invoice where extract(year from date)= ? group by shop) as y 
                         on y.shop = s.ID 
                   left join (select p.shop, sum(p.sum) monthSummary from invoice p 
-                  			where extract(year from p.date) = $1 and extract(month from p.date) = $2 group by shop) m on m.shop = s.ID 
+                  			where extract(year from p.date) = ? and extract(month from p.date) = ? group by shop) m on m.shop = s.ID 
                   order by s.id""".trimIndent()
 
     }
@@ -315,15 +318,15 @@ object SqlQueries {
                        join (select sum(price) price, category 
                                from invoice_details ps 
                                    join invoice p on p.ID = ps.invoice 
-                               where extract(year from p.date) = $1 
+                               where extract(year from p.date) = ? 
                                group by category) as pr on pr.category = k.id 
                        left join (select 
                                        sum(price) price, 
                                        category 
                                   from invoice_details ps 
                                        join invoice p on p.ID = ps.invoice 
-                                  where extract(year from p.date)=$1 and extract(month from p.date) = $2
-                                  group by category) as ps on ps.category = k.id where k.id = $3 
+                                  where extract(year from p.date)=? and extract(month from p.date) = ?
+                                  group by category) as ps on ps.category = k.id where k.id = ? 
                   order by name""".trimIndent()
     }
 
@@ -334,10 +337,10 @@ object SqlQueries {
                     pr.price yearSummary 
                 from category k 
                 join (select sum(ps.price) price, category from invoice_details ps 
-                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1
+                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = ?
                             group by category) as pr on pr.category = k.id 
                 left join (select sum(ps.price) price, category from invoice_details ps 
-                join invoice p on p.ID = ps.invoice where extract(year from p.date) = $1 and extract(month from p.date) = $2
+                join invoice p on p.ID = ps.invoice where extract(year from p.date) = ? and extract(month from p.date) = ?
                 group by category) as ps on ps.category = k.id 
                 order by name""".trimIndent()
     }
@@ -348,14 +351,14 @@ object SqlQueries {
                     from invoice_details ps 
                         join invoice p on p.ID = ps.invoice
                     	join assortment a on a.id = ps.assortment 
-                    where p.date between $1 and $2
-                                       and ps.category = $3
+                    where p.date between ? and ?
+                                       and ps.category = ?
                     group by a."name"
                  """.trimIndent()
     }
 
     private fun getSelectedInvoice(): String {
-        return """select id, date, invoice_number, sum, description, del, account, shop from invoice where id = $1""".trimIndent()
+        return """select id, date, invoice_number, sum, description, del, account, shop from invoice where id = ?""".trimIndent()
     }
 
     private fun getInvoices(): String {
@@ -368,7 +371,7 @@ object SqlQueries {
                    k.account_name
                 FROM invoice p
                    join account k on k.ID = p.account
-                   join shop s on s.ID = p.shop where extract(year from p.date) = $1 and extract(month from p.date) = $2  order by date desc
+                   join shop s on s.ID = p.shop where extract(year from p.date) = ? and extract(month from p.date) = ?  order by date desc
                 """.trimIndent()
     }
 
@@ -383,9 +386,9 @@ object SqlQueries {
                 FROM invoice p
                    join account a ON a.id = p.account
                    join shop s ON s.id = p.shop
-                where extract(year from p.date) = $1
-						and extract(month from p.date) = $2
-                    	and a.id = $3
+                where extract(year from p.date) = ?
+						and extract(month from p.date) = ?
+                    	and a.id = ?
                    order by date desc
                 """.trimIndent()
     }
@@ -401,19 +404,19 @@ object SqlQueries {
                          a.id itemId
                     from invoice_details ps
                         join assortment a on a.id = ps.assortment
-                        where ps.del = false and invoice = $1
+                        where ps.del = false and invoice = ?
                 """.trimIndent()
     }
 
-    private fun deleteInvoice() :String {
+    private fun deleteInvoice(): String {
         return """
-            delete from invoice where id = $1
+            delete from invoice where id = ?
         """.trimIndent()
     }
 
-    private fun deleteInvoiceDetails() :String {
+    private fun deleteInvoiceDetails(): String {
         return """
-            delete from invoice_details where invoice = $1
+            delete from invoice_details where invoice = ?
         """.trimIndent()
     }
 
@@ -450,19 +453,28 @@ object SqlQueries {
                         join invoice p ON p.id = ps.invoice
                         join shop s on s.ID = p.shop
 						join assortment a on a.id = ps.assortment
-                    where ps.assortment=$1
+                    where ps.assortment=?
                         order by p.date desc
                 """.trimIndent()
     }
 
+    private fun getProductById(): String {
+        return """
+            select a.id, a.name, c.id as categoryId, c.name as categoryName  
+            from assortment a
+                join category c on c.id = a.category
+            where a.id = ?
+        """.trimIndent()
+    }
+
     private fun createInvoice() = """
-        insert into invoice(date, invoice_number, sum, description, account, shop) values ($1, $2,$3, $4,$5,$6)
+        insert into invoice(date, invoice_number, sum, description, account, shop) values (?,?,?,?,?,?) RETURNING id
     """.trimIndent()
 
     private fun getLastInvoice() =
         """select id, date, invoice_number, sum, description, del, account, shop from invoice order by id desc limit 1""".trimIndent()
 
     private fun createInvoiceDetails() = """
-        insert into invoice_details (invoice, price, amount, unit_price, discount, assortment) values ($1,$2,$3,$4,$5,$6)
+        insert into invoice_details (invoice, price, amount, unit_price, discount, assortment) values (?,?,?,?,?,?);
     """.trimIndent()
 }

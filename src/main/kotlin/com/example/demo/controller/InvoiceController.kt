@@ -26,9 +26,9 @@ class InvoiceController(private val invoiceService: InvoiceService) {
 
     @PostMapping("")
     fun createNewInvoice(@RequestBody invoice: NewInvoiceRequest): Mono<Invoice> {
-        return invoiceService.createNewInvoiceWithItems(invoice)
+        return invoiceService.createNewInvoiceWithItems(invoice) ?: Mono.empty()
     }
 
     @DeleteMapping("/{invoiceId}")
-    fun deleteInvoice(@PathVariable invoiceId: Long)= invoiceService.deleteInvoice(invoiceId)
+    fun deleteInvoice(@PathVariable invoiceId: Long) = invoiceService.deleteInvoice(invoiceId)
 }

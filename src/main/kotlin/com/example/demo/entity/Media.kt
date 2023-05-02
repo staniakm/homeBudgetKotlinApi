@@ -2,15 +2,16 @@ package com.example.demo.entity
 
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
+import java.sql.ResultSet
 
 data class MediaTypeRequest(val mediaName: String)
 
 data class MediaType(val id: Int, val name: String)
 
-val mediaTypeMapper: (row: Row, metadata: RowMetadata) -> MediaType = { row ,_->
+val mediaTypeMapper: (row: ResultSet, _:Any?) -> MediaType = { row, _ ->
     MediaType(
-        row["id"] as Int,
-        row["name"] as String
+        row.getInt("id") as Int,
+        row.getString("name") as String
     )
 }
 
@@ -28,24 +29,24 @@ data class MediaUsage(
     }
 }
 
-val mediaUsageMapper = { row: Row, _:RowMetadata ->
+val mediaUsageMapper = { row: ResultSet, _: Any? ->
     MediaUsage(
-        row["id"] as Int,
-        row["type_id"] as Int,
-        row["year"] as Int,
-        row["month"] as Int,
-        row["meter_read"] as Double
+        row.getInt("id") as Int,
+        row.getInt("type_id") as Int,
+        row.getInt("year") as Int,
+        row.getInt("month") as Int,
+        row.getDouble("meter_read") as Double
     )
 }
 
 data class MediaItem(val id: Int, val mediaType: Int, val year: Int, val month: Int, val meterRead: Double)
 
-val mediaMapper: (row: Row, metadata:RowMetadata) -> MediaItem = { row,_ ->
+val mediaMapper: (row: ResultSet, _: Any?) -> MediaItem = { row, _ ->
     MediaItem(
-        row["id"] as Int,
-        row["media_type"] as Int,
-        row["year"] as Int,
-        row["month"] as Int,
-        row["meter_read"] as Double
+        row.getInt("id") as Int,
+        row.getInt("media_type") as Int,
+        row.getInt("year") as Int,
+        row.getInt("month") as Int,
+        row.getDouble("meter_read") as Double
     )
 }

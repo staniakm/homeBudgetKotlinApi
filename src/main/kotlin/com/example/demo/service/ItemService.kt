@@ -7,4 +7,7 @@ import org.springframework.stereotype.Service
 class ItemService(private val repository: ProductRepository) {
 
     fun getProductDetails(itemId: Long)= repository.getProductHistory(itemId)
+    fun updateCategory(id: Long, categoryId: Long): Unit {
+        return repository.updateCategory(id, categoryId)
+    }
 }

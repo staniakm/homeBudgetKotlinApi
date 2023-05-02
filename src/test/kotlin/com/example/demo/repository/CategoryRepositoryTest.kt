@@ -34,7 +34,7 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
         createInvoiceItem(6, 4, BigDecimal(60), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
 
 
-        val data = categoryRepository.getCategoriesSummary(LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val data = categoryRepository.getCategoriesSummary(LocalDate.of(2021, 11, 1))
 
         data.size shouldBe 2
         data shouldContain Category(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
@@ -62,7 +62,7 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
         createInvoiceItem(6, 4, BigDecimal(60), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
 
 
-        val data = categoryRepository.getCategory(1, LocalDate.of(2021, 11, 1)).block()!!
+        val data = categoryRepository.getCategory(1, LocalDate.of(2021, 11, 1))
 
         data shouldBe Category(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
     }
@@ -89,7 +89,7 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
         createInvoiceItem(6, 4, BigDecimal(60), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 2)
 
 
-        val data = categoryRepository.getProductsForCategoryAndMonth(1, LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val data = categoryRepository.getProductsForCategoryAndMonth(1, LocalDate.of(2021, 11, 1))
 
         data.size shouldBe 2
         data shouldContain CategoryDetails("assortment 1", BigDecimal("30.00"))

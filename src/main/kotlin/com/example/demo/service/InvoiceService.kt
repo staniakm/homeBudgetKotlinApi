@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
@@ -27,34 +28,35 @@ class InvoiceService(
     fun getAccountInvoices(accountId: Long, date: LocalDate) = invoiceRepository.getAccountInvoices(accountId, date)
 
     @Transactional
-    fun updateInvoiceAccount(invoiceId: Long, update: UpdateInvoiceAccountRequest): Mono<Invoice> {
-        return invoiceRepository.updateInvoiceAccount(invoiceId, update.newAccount)
-            .then(invoiceRepository.getInvoice(invoiceId))
+    fun updateInvoiceAccount(invoiceId: Long, update: UpdateInvoiceAccountRequest): Invoice? {
+        invoiceRepository.updateInvoiceAccount(invoiceId, update.newAccount)
+        return invoiceRepository.getInvoice(invoiceId)
     }
 
-    @Transactional
-    fun createNewInvoiceWithItems(invoice: NewInvoiceRequest): Mono<Invoice> {
+    @Transactional(transactionManager = "transactionManager")
+    fun createNewInvoiceWithItems(invoice: NewInvoiceRequest): Mono<Invoice>? {
         return invoiceRepository.createInvoice(invoice)
-            .flatMap {
+            ?.let {
                 invoiceRepository.createInvoiceItems(it.id, invoice.items)
-                    .then(accountRepository.decreaseMoney(invoice.accountId, invoice.sum))
-                    .then(invoiceRepository.recaculatInvoice(it.id))
-                    .then(invoiceRepository.getInvoice(it.id))
+                invoiceRepository.recaculatInvoice(it.id)
+                val savedInvoice = invoiceRepository.getInvoiceJdbc(it.id)
+                accountRepository.decreaseMoney(savedInvoice.account, savedInvoice.sum)
+                savedInvoice.toMono()
             }
     }
 
-    fun getInvoiceItemsByCategoryAndMonth(category: Int, year: Int, month: Int): Flux<InvoiceItem> {
+    fun getInvoiceItemsByCategoryAndMonth(category: Int, year: Int, month: Int): List<InvoiceItem> {
         return invoiceRepository.getInvoiceItemsByCategoryAndDate(category, year, month)
     }
 
-    @Transactional
-    fun deleteInvoice(invoiceId: Long): Mono<Long> {
+    @Transactional(transactionManager = "transactionManager")
+    fun deleteInvoice(invoiceId: Long): Long? {
         return invoiceRepository.getInvoice(invoiceId)
-            .flatMap {
+            ?.let {
                 invoiceRepository.deleteDetails(it.id)
-                    .then(invoiceRepository.deleteInvoice(it.id))
-                    .then(accountRepository.increaseMoney(it.account, it.sum))
-                    .then(Mono.just(invoiceId))
+                invoiceRepository.deleteInvoice(it.id)
+                accountRepository.increaseMoney(it.account, it.sum)
+                invoiceId
             }
     }
 }

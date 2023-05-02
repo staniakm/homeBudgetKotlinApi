@@ -21,9 +21,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccountOwner()
         createAccount()
 
-        val findAllAccounts = accountRepository.findAllAccounts().collectList()
+        val findAllAccounts = accountRepository.findAllAccounts()
 
-        findAllAccounts.block()?.size shouldBe 1
+        findAllAccounts.size shouldBe 1
     }
 
     @Test
@@ -32,12 +32,12 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccountOwner()
         createAccount()
 
-        val account = accountRepository.findById(1).block()!!
+        val account = accountRepository.findById(1)
 
         account.asClue {
-            it.id shouldBe 1
-            it.amount shouldBe BigDecimal("1.00")
-            it.name shouldBe "account"
+            it?.id shouldBe 1
+            it?.amount shouldBe BigDecimal("1.00")
+            it?.name shouldBe "account"
         }
     }
 
@@ -46,13 +46,13 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccountOwner()
         createAccount()
 
-        accountRepository.update(Account(1, "", BigDecimal("1.23"), 1)).block()
-        val account = accountRepository.findById(1).block()!!
+        accountRepository.update(Account(1, "", BigDecimal("1.23"), 1))
+        val account = accountRepository.findById(1)
 
         withClue("Account should be updated") {
-            account.id shouldBe 1
-            account.amount shouldBe BigDecimal("1.23")
-            account.name shouldBe "account"
+            account?.id shouldBe 1
+            account?.amount shouldBe BigDecimal("1.23")
+            account?.name shouldBe "account"
         }
     }
 
@@ -62,7 +62,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccount()
         createIncome(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
 
-        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30)).collectList().block()!!
+        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
         income.size shouldBe 1
         income[0].income shouldBe BigDecimal("112.10")
@@ -76,7 +76,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(1, BigDecimal("100.10"), LocalDate.of(2021, 11, 1))
         createIncome(1, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
 
-        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30)).collectList().block()!!
+        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
         income.size shouldBe 3
         income.sumOf { it.income } shouldBe BigDecimal("412.30")
@@ -91,7 +91,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createIncome(1, BigDecimal("100.10"), LocalDate.of(2021, 12, 1))
         createIncome(2, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
 
-        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30)).collectList().block()!!
+        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
         income.size shouldBe 1
         income[0].income shouldBe BigDecimal("112.10")
@@ -109,12 +109,12 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
                 LocalDate.of(2021, 11, 10),
                 "Income test"
             )
-        ).block()
+        )
 
-        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30)).collectList().block()!!
-        val account = accountRepository.findById(1).block()!!
+        val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
+        val account = accountRepository.findById(1)
 
-        account.amount shouldBe BigDecimal("1001.10")
+        account?.amount shouldBe BigDecimal("1001.10")
         income.size shouldBe 1
         income[0].income shouldBe BigDecimal("1000.10")
         income[0].description shouldBe "Income test"
@@ -126,13 +126,13 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccount(1, BigDecimal(120))
         createAccount(2, BigDecimal(50))
 
-        accountRepository.transferMoney(1, BigDecimal(50), 2).block()
+        accountRepository.transferMoney(1, BigDecimal(50), 2)
 
-        val accountSource = accountRepository.findById(1).block()!!
-        val accountTarget = accountRepository.findById(2).block()!!
+        val accountSource = accountRepository.findById(1)
+        val accountTarget = accountRepository.findById(2)
 
-        accountSource.amount shouldBe BigDecimal("70.00")
-        accountTarget.amount shouldBe BigDecimal("100.00")
+        accountSource?.amount shouldBe BigDecimal("70.00")
+        accountTarget?.amount shouldBe BigDecimal("100.00")
     }
 
     @Test
@@ -144,8 +144,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createInvoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
 
         val accounts =
-            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
-                .block()!!
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
 
         accounts.size shouldBe 1
         accounts[0].id shouldBe 2
@@ -167,8 +166,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts =
-            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
-                .block()!!
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
 
         accounts.size shouldBe 1
         accounts[0].id shouldBe 2
@@ -190,8 +188,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts =
-            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1)).collectList()
-                .block()!!
+            accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
 
         withClue("There should be 2 accounts") {
             accounts.size shouldBe 2
@@ -214,10 +211,10 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createAccountOwner()
         createAccount(amount = BigDecimal(200))
 
-        accountRepository.decreaseMoney(1, BigDecimal(100)).block()
-        val account = accountRepository.findById(1).block()!!
+        accountRepository.decreaseMoney(1, BigDecimal(100))
+        val account = accountRepository.findById(1)
 
-        account.amount shouldBe BigDecimal("100.00")
+        account?.amount shouldBe BigDecimal("100.00")
     }
 
     @Test
@@ -233,7 +230,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
         createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
         createInvoice(3, 1, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
-        val operations = accountRepository.getOperations(1, 10).collectList().block()!!
+        val operations = accountRepository.getOperations(1, 10)
         operations.size shouldBe 4
         operations shouldContainAll listOf(
             AccountOperation(1, LocalDate.of(2021, 11, 10), BigDecimal("100.00"), 1, "INCOME"),

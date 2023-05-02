@@ -19,10 +19,10 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
             createBudgetItem(2, 2, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
         }
         val result = methodUnderTest("fetch 1 item based on provided id") {
-            budgetRepository.getSelectedBudgetItem(1).block()!!
+            budgetRepository.getSelectedBudgetItem(1)
         }
         validateResults("validate budget item data is correct") {
-            with(result) {
+            with(result!!) {
                 budgetId shouldBe 1
                 category shouldBe "categoryName"
                 planned shouldBe BigDecimal("10.00")
@@ -49,7 +49,7 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
             createBudgetItem(2, 2, 11, 2021, BigDecimal("30"), BigDecimal("21.00"), 65)
         }
         val result = methodUnderTest("fetch budget for month based on provided date") {
-            budgetRepository.getBudgetForMonth(LocalDate.of(2021, 11, 10)).block()!!
+            budgetRepository.getBudgetForMonth(LocalDate.of(2021, 11, 10))
         }
         validateResults("result should contains 2 items", result) {
             totalPlanned shouldBe "40.00".toBigDecimal()
@@ -83,12 +83,12 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
         setup("prepare category with budget item") {
             createCategory(1, "categoryName")
             createBudgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal("10.00"), 10)
-            budgetRepository.updateBudget(UpdateBudgetDto(1, BigDecimal("200.00"))).block()
+            budgetRepository.updateBudget(UpdateBudgetDto(1, BigDecimal("200.00")))
         }
         val result = methodUnderTest {
-            budgetRepository.getSelectedBudgetItem(1).block()!!
+            budgetRepository.getSelectedBudgetItem(1)
         }
-        validateResults(result = result) {
+        with(result!!) {
             budgetId shouldBe 1
             planned shouldBe BigDecimal("200.00")
             spent shouldBe BigDecimal("10.00")

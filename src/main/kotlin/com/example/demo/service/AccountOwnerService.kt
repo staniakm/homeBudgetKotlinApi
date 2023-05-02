@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux
 
 @Service
 class AccountOwnerService(private val accountOwnerRepository: AccountOwnerRepository) {
-    fun findAllOwners(): Flux<AccountOwner> = accountOwnerRepository.findAllOwners()
+    fun findAllOwners(): List<AccountOwner> = accountOwnerRepository.findAllOwners()
 
     fun createOwner(createOwnerRequest: CreateOwnerRequest) = accountOwnerRepository.createNewOwner(createOwnerRequest.name, createOwnerRequest.description)
 

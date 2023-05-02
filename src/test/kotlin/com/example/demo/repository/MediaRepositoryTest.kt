@@ -19,7 +19,7 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMedia(2, mediaTypeId = 2, meterRead = 123.00)
 
         val mediaListItems =
-            mediaRepository.getMediaForMonth(LocalDate.now().year, LocalDate.now().monthValue).collectList().block()!!
+            mediaRepository.getMediaForMonth(LocalDate.now().year, LocalDate.now().monthValue)
 
         mediaListItems.size shouldBe 2
         mediaListItems shouldContainAll listOf(
@@ -33,8 +33,7 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMediaType(1, "POWER")
 
         val mediaReads =
-            mediaRepository.createMediaUsage(1, 123.01, LocalDate.now().year, LocalDate.now().monthValue).collectList()
-                .block()!!
+            mediaRepository.createMediaUsage(1, 123.01, LocalDate.now().year, LocalDate.now().monthValue)
 
         mediaReads.size shouldBe 1
         mediaReads shouldContainAll listOf(MediaUsage(1, 1, LocalDate.now().year, LocalDate.now().monthValue, 123.01))
@@ -47,11 +46,9 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMediaType(3, "ENERGY")
         createMedia(10, 2, meterRead = 222.11)
 
-        mediaRepository.createMediaUsage(1, 123.01, 2021, 11).collectList()
-            .block()!!
+        mediaRepository.createMediaUsage(1, 123.01, 2021, 11)
         val mediaReads =
-            mediaRepository.createMediaUsage(1, 124.01, 2021, 12).collectList()
-                .block()!!
+            mediaRepository.createMediaUsage(1, 124.01, 2021, 12)
 
         mediaReads.size shouldBe 2
         mediaReads shouldContainAll listOf(
@@ -68,7 +65,7 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMedia(3, 1, meterRead = 162.11, year = 2021, month = 11)
         createMedia(4, 1, meterRead = 182.11, year = 2021, month = 12)
 
-        val mediaUsage = mediaRepository.findByMediaType(1).collectList().block()!!
+        val mediaUsage = mediaRepository.findByMediaType(1)
 
         mediaUsage.size shouldBe 4
         mediaUsage shouldContainAll listOf(
@@ -84,9 +81,9 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMediaType(1, "POWER")
         createMedia(1, 1)
 
-        mediaRepository.deleteMediaUsageEntry(1).block()
+        mediaRepository.deleteMediaUsageEntry(1)
 
-        val media = mediaRepository.findByMediaType(1).collectList().block()!!
+        val media = mediaRepository.findByMediaType(1)
 
         media.size shouldBe 0
     }

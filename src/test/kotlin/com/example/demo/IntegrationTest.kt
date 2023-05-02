@@ -80,6 +80,19 @@ abstract class IntegrationTest {
             }
             registry.add("spring.r2dbc.username", postgreSQLContainer::getUsername)
             registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword)
+
+            registry.add("spring.datasource.url") {
+                java.lang.String.format(
+                    "jdbc:postgresql://%s:%d/%s",
+                    postgreSQLContainer.host,
+                    postgreSQLContainer.firstMappedPort,
+                    postgreSQLContainer.databaseName
+                )
+            }
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername)
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword)
+            registry.add("spring.datasource.driver-class-name") { "org.postgresql.Driver" }
+
         }
     }
 
@@ -105,9 +118,10 @@ abstract class IntegrationTest {
         invoiceId: Int = 1,
         accountId: Int = 1,
         date: LocalDate = LocalDate.now(),
-        amount: BigDecimal = BigDecimal.TEN
+        amount: BigDecimal = BigDecimal.TEN,
+        shopId: Int = 1
     ) {
-        executeInsert("insert into invoice(id, date, invoice_number, sum, description, account, shop) values ($invoiceId, '$date', '1a', $amount, '', $accountId, 1)")
+        executeInsert("insert into invoice(id, date, invoice_number, sum, description, account, shop) values ($invoiceId, '$date', '1a', $amount, '', $accountId, $shopId)")
     }
 
     fun createInvoiceItem(

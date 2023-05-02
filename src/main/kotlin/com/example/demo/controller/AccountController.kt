@@ -4,6 +4,7 @@ import com.example.demo.entity.*
 import com.example.demo.service.AccountService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
+import reactor.kotlin.core.publisher.toFlux
 
 @CrossOrigin
 @RequestMapping("/api/account")
@@ -17,19 +18,19 @@ class AccountController(private val accountService: AccountService) {
 
 
     @GetMapping("/all")
-    fun getAllAccounts(): Flux<Account> = accountService.findAll()
+    fun getAllAccounts(): Flux<Account> = accountService.findAll().toFlux()
 
     @GetMapping("/{accountId}")
     fun getAccountOperations(
         @PathVariable accountId: Long,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): Flux<ShoppingInvoice> = accountService.getAccountOperations(accountId, month)
+    ): Flux<ShoppingInvoice> = accountService.getAccountOperations(accountId, month).toFlux()
 
     @GetMapping("/{accountId}/income")
     fun getAccountIncome(
         @PathVariable accountId: Int,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): Flux<AccountIncome> = accountService.getAccountIncome(accountId, month)
+    ): Flux<AccountIncome> = accountService.getAccountIncome(accountId, month).toFlux()
 
 
     @PutMapping("/{accountId}")
@@ -41,7 +42,7 @@ class AccountController(private val accountService: AccountService) {
         @PathVariable accountId: Long,
         @RequestBody updateAccount: AccountIncomeRequest
     ): Flux<AccountIncome> {
-        return accountService.addAccountIncome(updateAccount)
+        return accountService.addAccountIncome(updateAccount).toFlux()
     }
 
     @GetMapping("/income/type")
@@ -56,7 +57,7 @@ class AccountController(private val accountService: AccountService) {
         @PathVariable accountId: Int,
         @RequestParam(name = "limit", required = false, defaultValue = "10") limit: Int
     ): Flux<AccountOperation> {
-        return accountService.getOperations(accountId, limit)
+        return accountService.getOperations(accountId, limit).toFlux()
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.demo.entity
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
+import java.sql.ResultSet
 import java.time.LocalDate
 
 data class Invoice(
@@ -16,16 +17,16 @@ data class Invoice(
     val shop: Int
 )
 
-val invoiceRowMapper: (row: Row, metadata:RowMetadata) -> Invoice = { row ,_->
+val invoiceRowMapper: (row: ResultSet, _: Any?) -> Invoice = { row, _ ->
     Invoice(
-        row["id"] as Long,
-        row["date"] as LocalDate,
-        row["invoice_number"] as String,
-        row["sum"] as BigDecimal,
-        row["description"] as String,
-        row["del"] as Boolean,
-        row["account"] as Int,
-        row["shop"] as Int
+        row.getLong("id"),
+        row.getDate("date").toLocalDate() as LocalDate,
+        row.getString("invoice_number") as String,
+        row.getBigDecimal("sum") as BigDecimal,
+        row.getString("description") as String,
+        row.getBoolean("del"),
+        row.getInt("account"),
+        row.getInt("shop")
     )
 }
 

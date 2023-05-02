@@ -3,6 +3,7 @@ package com.example.demo.entity
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
 import java.math.BigDecimal
+import java.sql.ResultSet
 
 data class ShopSummary(val shopId: Int, val name: String, val monthSum: BigDecimal, val yearSum: BigDecimal)
 
@@ -16,7 +17,18 @@ val shopRowMapper: (row: Row, metadata: RowMetadata) -> Shop = { row, _ ->
         row["name"] as String,
     )
 }
+val shopRowMapperJdbc: (row: ResultSet, _: Any?) -> Shop = { row, _ ->
+    Shop(
+        row.getInt("id"),
+        row.getString("name") as String
+    )
+}
 
-val shopSummaryRowMapper: (row: Row, metadata: RowMetadata) -> ShopSummary = { row, _ ->
-    ShopSummary(row["id"] as Int, row["name"] as String, row["monthSum"] as BigDecimal, row["yearSum"] as BigDecimal)
+val shopSummaryRowMapperJdbc: (row: ResultSet, _: Any?) -> ShopSummary = { row, _ ->
+    ShopSummary(
+        row.getInt("id"),
+        row.getString("name") as String,
+        row.getBigDecimal("monthSum") as BigDecimal,
+        row.getBigDecimal("yearSum") as BigDecimal
+    )
 }

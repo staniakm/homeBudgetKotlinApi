@@ -2,14 +2,15 @@ package com.example.demo.entity
 
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
+import java.sql.ResultSet
 
 data class AccountOwner(val id: Int, val name: String, val description: String)
 
-val accountOwnerMapper: (row: Row, metadata: RowMetadata) -> AccountOwner = {row,_->
+val accountOwnerMapper: (row: ResultSet, _: Any?) -> AccountOwner = {row,_->
     AccountOwner(
-        row["id"] as Int,
-        row["owner_name"] as String,
-        row["description"] as String
+        row.getInt("id") as Int,
+        row.getString("owner_name") as String,
+        row.getString("description") as String
     )
 }
 

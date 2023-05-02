@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import java.time.LocalDate
 
 @Service
@@ -18,20 +19,20 @@ class BudgetService(
     fun getMonthBudget(month: Long) = repository.getBudgetForMonth(clock.getDateFromMonth(month))
 
     @Transactional
-    fun updateBudget(updateBudget: UpdateBudgetDto): Mono<MonthBudgetPlanned> {
-        return repository.updateBudget(updateBudget)
-            .then(repository.getSelectedBudgetItem(updateBudget.budgetId))
+    fun updateBudget(updateBudget: UpdateBudgetDto): MonthBudgetPlanned? {
+        repository.updateBudget(updateBudget)
+        return repository.getSelectedBudgetItem(updateBudget.budgetId)
     }
 
-    fun recalculateBudgets(month: Long): Mono<MonthBudget> {
-        return repository.recalculateBudgets(clock.getDateFromMonth(month))
-            .then(getMonthBudget(month))
+    fun recalculateBudgets(month: Long): MonthBudget {
+        repository.recalculateBudgets(clock.getDateFromMonth(month))
+        return getMonthBudget(month)
     }
 
-    fun getBudgetItem(budgetId: Int): Flux<InvoiceItem> {
+    fun getBudgetItem(budgetId: Int): List<InvoiceItem> {
         return repository.getSelectedBudgetItem(budgetId)
-            .flatMapMany {
+            ?.let {
                 invoiceService.getInvoiceItemsByCategoryAndMonth(it.categoryId, it.year, it.month)
-            }
+            } ?: listOf()
     }
 }

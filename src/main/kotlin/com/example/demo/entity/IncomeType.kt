@@ -2,11 +2,12 @@ package com.example.demo.entity
 
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
+import java.sql.ResultSet
 
 data class IncomeType(val id: Int, val name: String)
 
-val incomeTypeMapper: (row: Row, metadata: RowMetadata) -> IncomeType = { row,_ ->
+val incomeTypeMapper: (row: ResultSet, _: Any?) -> IncomeType = { row,_ ->
     IncomeType(
-        row["id"] as Int, row["name"] as String
+        row.getInt("id") as Int, row.getString("name") as String
     )
 }

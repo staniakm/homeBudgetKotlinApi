@@ -1,6 +1,7 @@
 package com.example.demo.service
 
 import com.example.demo.entity.MediaRegisterRequest
+import com.example.demo.entity.MediaType
 import com.example.demo.entity.MediaTypeRequest
 import com.example.demo.entity.MediaUsageResponse
 import com.example.demo.repository.MediaRepository
@@ -17,19 +18,20 @@ class MediaService(
 ) {
     fun registerNewMediaType(request: MediaTypeRequest) = mediaTypeRepository.registerNewMediaType(request.mediaName)
     fun getAll() = mediaTypeRepository.findAll()
-    fun getMediaTypeById(id: Int) = mediaTypeRepository.findById(id)
-    fun registerNewMediaUsage(mediaRegisterRequest: MediaRegisterRequest): Flux<MediaUsageResponse> {
+    fun getMediaTypeById(id: Int): MediaType? = mediaTypeRepository.findById(id)
+    fun registerNewMediaUsage(mediaRegisterRequest: MediaRegisterRequest): List<MediaUsageResponse> {
         return getMediaTypeById(mediaRegisterRequest.mediaType)
-            .flatMapMany {
+            ?.let {
                 mediaRepository.createMediaUsage(
                     it.id,
                     mediaRegisterRequest.meterRead,
                     mediaRegisterRequest.year,
                     mediaRegisterRequest.month
                 )
-            }.map {
+            }?.map {
                 it.toResponse()
-            }
+            } ?: listOf()
+
     }
 
     fun getMediaForMonth(month: Long) = clock.getDateFromMonth(month)
@@ -37,16 +39,14 @@ class MediaService(
             mediaRepository.getMediaForMonth(it.year, it.monthValue)
         }
 
-    fun getMediaUsageByType(mediaTypeId: Int): Flux<MediaUsageResponse> {
+    fun getMediaUsageByType(mediaTypeId: Int): List<MediaUsageResponse> {
         return mediaTypeRepository.findById(mediaTypeId)
-            .flatMapMany {
-                mediaRepository.findByMediaType(it.id)
-            }.map {
-                it.toResponse()
-            }
+            ?.let {
+                mediaRepository.findByMediaType(it.id).map { it.toResponse() }
+            } ?: listOf()
     }
 
-    fun deleteMediaUsage(mediaUsageId: Int): Mono<Void> {
+    fun deleteMediaUsage(mediaUsageId: Int): Int {
         return mediaRepository.deleteMediaUsageEntry(mediaUsageId)
     }
 }

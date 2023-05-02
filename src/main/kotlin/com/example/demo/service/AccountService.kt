@@ -25,40 +25,43 @@ class AccountService(
         accountRepository.getAccountIncome(accountId, clock.getDateFromMonth(month))
 
 
-    fun updateAccount(accountId: Int, updateAccount: UpdateAccountDto): Mono<Account> {
+    fun updateAccount(accountId: Int, updateAccount: UpdateAccountDto): Account? {
         if (accountId != updateAccount.id) {
             throw IllegalArgumentException("Invalid requested id")
         }
 
-        val account: Mono<Account> = getAccount(accountId)
-            .map {
+        val account: Account? = getAccount(accountId)
+            ?.let {
                 val newName = updateAccount.name.ifBlank { it.name }
                 it.copy(amount = updateAccount.newMoneyAmount, name = newName)
             }
         return account
-            .flatMap { accountRepository.update(it) }
-            .then(account)
+            ?.let {
+                accountRepository.update(it)
+                it
+            }
     }
 
-    fun getAccount(id: Int) =
-        accountRepository.findById(id)
+    fun getAccount(id: Int): Account? = accountRepository.findById(id)
 
     fun getIncomeTypes() = accountRepository.getIncomeTypes()
-    fun addAccountIncome(updateAccount: AccountIncomeRequest): Flux<AccountIncome> {
-        return accountRepository.addIncome(updateAccount)
-            .thenMany(getAccountIncome(updateAccount.accountId, 0))
+    fun addAccountIncome(updateAccount: AccountIncomeRequest): List<AccountIncome> {
+        accountRepository.addIncome(updateAccount)
+        return getAccountIncome(updateAccount.accountId, 0)
     }
 
-    fun transferMoney(accountId: Int, request: TransferMoneyRequest): Mono<Account> {
+    fun transferMoney(accountId: Int, request: TransferMoneyRequest): Account? {
         return accountRepository.findById(accountId)
-            .flatMap {
+            ?.let {
                 accountRepository.findById(request.targetAccount)
-            }.flatMap {
-                accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
-            }.then(accountRepository.findById(request.targetAccount))
+                    ?.let {
+                        accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
+                        accountRepository.findById(request.targetAccount)
+                    }
+            }
     }
 
-    fun getOperations(accountId: Int, limit: Int): Flux<AccountOperation> {
+    fun getOperations(accountId: Int, limit: Int): List<AccountOperation> {
         return accountRepository.getOperations(accountId, limit)
     }
 }

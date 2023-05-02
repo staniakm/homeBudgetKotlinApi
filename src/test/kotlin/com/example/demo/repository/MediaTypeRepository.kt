@@ -4,6 +4,7 @@ import com.example.demo.IntegrationTest
 import com.example.demo.entity.MediaType
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -13,20 +14,21 @@ class MediaTypeRepositoryTest(@Autowired private val mediaTypeRepository: MediaT
 
     @Test
     fun `should create new media type`() {
-        val mediaType = mediaTypeRepository.registerNewMediaType("Water").block()!!
+        val mediaType = mediaTypeRepository.registerNewMediaType("Water")
 
-        mediaType.id shouldBe 1
-        mediaType.name shouldBe "WATER"
+        mediaType shouldNotBe null
+        mediaType?.id shouldBe 1
+        mediaType?.name shouldBe "WATER"
     }
 
     @Test
     fun `should fetch existing media type by id`() {
         createMediaType(2, "POWER")
 
-        val mediaType = mediaTypeRepository.findById(2).block()!!
+        val mediaType = mediaTypeRepository.findById(2)
 
-        mediaType.id shouldBe 2
-        mediaType.name shouldBe "POWER"
+        mediaType?.id shouldBe 2
+        mediaType?.name shouldBe "POWER"
     }
 
     @Test
@@ -35,7 +37,7 @@ class MediaTypeRepositoryTest(@Autowired private val mediaTypeRepository: MediaT
         createMediaType(2, "POWER")
         createMediaType(3, "GAS")
 
-        val mediaTypes = mediaTypeRepository.findAll().collectList().block()!!
+        val mediaTypes = mediaTypeRepository.findAll()
 
         mediaTypes.size shouldBe 3
         mediaTypes shouldContainAll listOf(
