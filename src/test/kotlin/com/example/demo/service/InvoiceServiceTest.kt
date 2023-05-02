@@ -41,15 +41,16 @@ class InvoiceServiceTest(
                 ),
                 NewInvoiceItemRequest(
                     ShopItem(2, "item2"), BigDecimal("10.1"),
-                    BigDecimal("2"), BigDecimal.ZERO, BigDecimal("20.2")                )
+                    BigDecimal("2"), BigDecimal.ZERO, BigDecimal("20.2")
+                )
             ), BigDecimal.ONE, "", ""
         )
         //when
-        val invoice: Invoice = invoiceService.createNewInvoiceWithItems(request)!!.block()!!
+        val invoice: Invoice? = invoiceService.createNewInvoiceWithItems(request)
         //then
-        invoice.id shouldBe 1
-        invoice.sum shouldBeEqualComparingTo BigDecimal("21.00")
-        invoice.del shouldBe false
+        invoice?.id shouldBe 1
+        invoice?.sum shouldBe BigDecimal("21.00")
+        invoice?.del shouldBe false
         //and
         val invoiceDetails: List<InvoiceItem> = invoiceService.getInvoiceDetails(1)
         invoiceDetails.size shouldBe 2
@@ -80,7 +81,7 @@ class InvoiceServiceTest(
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
         //when delete invoice
-        val invoiceId: Long ?= invoiceService.deleteInvoice(1)
+        val invoiceId: Long? = invoiceService.deleteInvoice(1)
 
         //then should return id
         invoiceId shouldBe 1

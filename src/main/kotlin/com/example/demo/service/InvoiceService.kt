@@ -8,8 +8,6 @@ import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
@@ -33,14 +31,14 @@ class InvoiceService(
     }
 
     @Transactional(transactionManager = "transactionManager")
-    fun createNewInvoiceWithItems(invoice: NewInvoiceRequest): Mono<Invoice>? {
+    fun createNewInvoiceWithItems(invoice: NewInvoiceRequest): Invoice? {
         return invoiceRepository.createInvoice(invoice)
             ?.let {
                 invoiceRepository.createInvoiceItems(it.id, invoice.items)
                 invoiceRepository.recaculatInvoice(it.id)
                 val savedInvoice = invoiceRepository.getInvoiceJdbc(it.id)
                 accountRepository.decreaseMoney(savedInvoice.account, savedInvoice.sum)
-                savedInvoice.toMono()
+                savedInvoice
             }
     }
 
