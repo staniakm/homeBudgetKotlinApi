@@ -1,11 +1,11 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
+import java.sql.ResultSet
 
 data class IncomeType(val id: Int, val name: String)
 
-val incomeTypeMapper: (row: Row) -> IncomeType = { row ->
+val incomeTypeMapper: (row: ResultSet, _: Any?) -> IncomeType = { row,_ ->
     IncomeType(
-        row["id"] as Int, row["name"] as String
+        row.getInt("id"), row.getString("name") as String
     )
 }

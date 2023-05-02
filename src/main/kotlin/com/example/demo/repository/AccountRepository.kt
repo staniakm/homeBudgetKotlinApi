@@ -11,88 +11,91 @@ import com.example.demo.repository.SqlQueries.UPDATE_ACCOUNT_WITH_NEW_AMOUNT
 import com.example.demo.repository.SqlQueries.UPDATE_SINGLE_ACCOUNT_DATA
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.math.BigDecimal
+import java.sql.Date
 import java.time.LocalDate
 
 @Repository
 class AccountRepository(private val helper: RepositoryHelper) {
-    fun getAccountsSummaryForMonthSkipDefaultAccount(date: LocalDate): Flux<MonthAccountSummary> {
-        return helper.getList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, monthAccountRowMapper) {
-            bind("$1", date.year)
-                .bind("$2", date.monthValue)
+    fun getAccountsSummaryForMonthSkipDefaultAccount(date: LocalDate): List<MonthAccountSummary> {
+        return helper
+            .jdbcQueryGetList(GET_ACCOUNTS_SUMMARY_FOR_MONTH, {
+                setInt(1, date.year)
+                setInt(2, date.monthValue)
+                setInt(3, date.year)
+                setInt(4, date.monthValue)
+            }, monthAccountRowMapper)
+    }
+
+    fun findAllAccounts(): List<Account> = helper
+        .jdbcQueryGetList(GET_ACCOUNT_DATA, {}, accountRowMapper)
+
+    fun findById(id: Int): Account? =
+        helper.jdbcQueryGetFirst(GET_SINGLE_ACCOUNT_DATA, { setInt(1, id) }, accountRowMapper)
+
+    fun update(account: Account): Int {
+        return helper.updateJdbc(UPDATE_SINGLE_ACCOUNT_DATA) {
+            setBigDecimal(1, account.amount)
+            setInt(2, account.id)
         }
     }
 
-    fun findAllAccounts() = helper.getList(GET_ACCOUNT_DATA, accountRowMapper)
-
-    fun findById(id: Int) = helper.findFirstOrNull(GET_SINGLE_ACCOUNT_DATA, accountRowMapper) {
-        bind("$1", id)
+    fun getAccountIncome(accountId: Int, dateFromMonth: LocalDate): List<AccountIncome> {
+        return helper.jdbcQueryGetList(GET_ACCOUNT_INCOME, {
+            setInt(1, accountId)
+            setInt(2, dateFromMonth.year)
+            setInt(3, dateFromMonth.monthValue)
+        }, accountIncomeRowMapper)
     }
 
-    fun update(account: Account): Mono<Void> {
-        return helper.executeUpdate(UPDATE_SINGLE_ACCOUNT_DATA) {
-            bind("$1", account.amount)
-                .bind("$2", account.id)
-        }
+    fun getIncomeTypes(): List<IncomeType> {
+        return helper.jdbcQueryGetList(GET_INCOME_TYPES, {}, incomeTypeMapper)
     }
 
-    fun getAccountIncome(accountId: Int, dateFromMonth: LocalDate): Flux<AccountIncome> {
-        return helper.getList(GET_ACCOUNT_INCOME, accountIncomeRowMapper) {
-            bind("$1", dateFromMonth.year)
-                .bind("$2", dateFromMonth.monthValue)
-                .bind("$3", accountId)
-        }
-    }
-
-    fun getIncomeTypes(): Flux<IncomeType> {
-        return helper.getList(GET_INCOME_TYPES, incomeTypeMapper)
-    }
-
-    @Transactional
-    fun addIncome(updateAccount: AccountIncomeRequest): Mono<Void> {
-        return helper.executeUpdate(ADD_ACCOUNT_INCOME) {
-            bind("$1", updateAccount.accountId)
-                .bind("$2", updateAccount.value)
-                .bind("$3", updateAccount.incomeDescription)
-                .bind("$4", updateAccount.date)
-        }.then(
-            helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
-                bind("$1", updateAccount.value)
-                    .bind("$2", updateAccount.accountId)
+    @Transactional(transactionManager = "transactionManager")
+    fun addIncome(updateAccount: AccountIncomeRequest): Int {
+        return helper.updateJdbc(ADD_ACCOUNT_INCOME) {
+            setInt(1, updateAccount.accountId)
+            setBigDecimal(2, updateAccount.value)
+            setString(3, updateAccount.incomeDescription)
+            setDate(4, Date.valueOf(updateAccount.date))
+        }.also {
+            helper.updateJdbc(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+                setBigDecimal(1, updateAccount.value)
+                setInt(2, updateAccount.accountId)
             }
-        )
+        }
     }
 
-    @Transactional
-    fun transferMoney(accountId: Int, value: BigDecimal, targetAccount: Int): Mono<Void> {
-        return helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
-            bind("$1", value.multiply(BigDecimal.valueOf(-1)))
-                .bind("$2", accountId)
-        }.then(
-            helper.executeUpdate(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
-                bind("$1", value)
-                    .bind("$2", targetAccount)
+    @Transactional(transactionManager = "transactionManager")
+    fun transferMoney(accountId: Int, value: BigDecimal, targetAccount: Int): Int {
+        return helper.updateJdbc(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+            setBigDecimal(1, value.multiply(BigDecimal.valueOf(-1)))
+            setInt(2, accountId)
+        }.also {
+            helper.updateJdbc(UPDATE_ACCOUNT_WITH_NEW_AMOUNT) {
+                setBigDecimal(1, value)
+                setInt(2, targetAccount)
             }
-        )
-    }
-
-    fun decreaseMoney(id: Int, sum: BigDecimal): Mono<Void> {
-        return helper.executeUpdate(SqlQueries.DECREASE_ACCOUNT_MONEY) {
-            bind("$1", sum)
-                .bind("$2", id)
         }
     }
 
-    fun increaseMoney(id: Int, sum: BigDecimal): Mono<Void> {
-        return decreaseMoney(id, sum.multiply(BigDecimal("-1")))
+    fun decreaseMoney(id: Int, sum: BigDecimal): Unit {
+        helper.updateJdbc(SqlQueries.DECREASE_ACCOUNT_MONEY) {
+            setBigDecimal(1, sum)
+            setInt(2, id)
+        }
     }
 
-    fun getOperations(accountId: Int, limit: Int): Flux<AccountOperation> {
-        return helper.getList(SqlQueries.GET_ACCOUNT_OPERATIONS, operationMapper) {
-            bind("$1", accountId)
-                .bind("$2", limit)
-        }
+    fun increaseMoney(accountId: Int, sum: BigDecimal): Unit {
+        decreaseMoney(accountId, sum.multiply(BigDecimal("-1")))
+    }
+
+    fun getOperations(accountId: Int, limit: Int): List<AccountOperation> {
+        return helper.jdbcQueryGetList(SqlQueries.GET_ACCOUNT_OPERATIONS, {
+            setInt(1, accountId)
+            setInt(2, accountId)
+            setInt(3, limit)
+        }, operationMapper)
     }
 }

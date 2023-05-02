@@ -2,17 +2,16 @@ package com.example.demo.controller
 
 import com.example.demo.entity.*
 import com.example.demo.service.MediaService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/media")
 class MediaController(private val mediaService: MediaService) {
 
     @PostMapping("/type")
-    fun createMediaType(@RequestBody request: MediaTypeRequest): Mono<MediaType> {
-        return mediaService.registerNewMediaType(request)
+    fun createMediaType(@RequestBody request: MediaTypeRequest): ResponseEntity<MediaType> {
+        return ResponseEntity.ok(mediaService.registerNewMediaType(request))
     }
 
     @GetMapping("/type/all")
@@ -22,21 +21,22 @@ class MediaController(private val mediaService: MediaService) {
     fun getMediaTypeById(@PathVariable id: Int) = mediaService.getMediaTypeById(id)
 
     @GetMapping("/usage")
-    fun getMediaUsageForMonth(@RequestParam("month", defaultValue = "0") month: Long): Flux<MediaItem> {
-        return mediaService.getMediaForMonth(month)
+    fun getMediaUsageForMonth(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<List<MediaItem>> {
+        return ResponseEntity.ok(mediaService.getMediaForMonth(month))
     }
 
     @GetMapping("/usage/{mediaTypeId}")
     fun getMediaUsageByType(@PathVariable mediaTypeId: Int) = mediaService.getMediaUsageByType(mediaTypeId)
 
     @PostMapping("/usage")
-    fun registerNewMediaUsage(@RequestBody mediaRegisterRequest: MediaRegisterRequest): Flux<MediaUsageResponse> {
-        return mediaService.registerNewMediaUsage(mediaRegisterRequest)
+    fun registerNewMediaUsage(@RequestBody mediaRegisterRequest: MediaRegisterRequest):ResponseEntity<List<MediaUsageResponse>> {
+        return ResponseEntity.ok(mediaService.registerNewMediaUsage(mediaRegisterRequest))
     }
 
     @DeleteMapping("/usage/{mediaUsageId}")
-    fun deleteMediaUsage(@PathVariable mediaUsageId: Int):Mono<Void> {
-        return mediaService.deleteMediaUsage(mediaUsageId)
+    fun deleteMediaUsage(@PathVariable mediaUsageId: Int): ResponseEntity<Unit> {
+        mediaService.deleteMediaUsage(mediaUsageId)
+        return ResponseEntity.ok().build()
     }
 
 }

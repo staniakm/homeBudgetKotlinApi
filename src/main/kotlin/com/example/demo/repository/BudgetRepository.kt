@@ -6,8 +6,6 @@ import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -17,63 +15,69 @@ class BudgetRepository(private val helper: RepositoryHelper) {
 
     fun getBudgetForMonth(date: LocalDate) = getBudgetCalculations(date, getMonthBudgets(date))
 
-    fun getSelectedBudgetItem(budgetId: Int): Mono<MonthBudgetPlanned> {
-        return helper.findOne(GET_SINGLE_BUDGET, monthSingleBudgetMapper) {
-            bind("$1", budgetId)
+    fun getSelectedBudgetItem(budgetId: Int): MonthBudgetPlanned? {
+        return helper.jdbcQueryGetFirst(GET_SINGLE_BUDGET, {
+            setInt(1, budgetId)
+        }, monthSingleBudgetMapper)
+    }
+
+    fun updateBudget(updateBudget: UpdateBudgetDto): Int {
+        return helper.updateJdbc(UPDATE_MONTH_BUDGE_DETAILS) {
+            setBigDecimal(1, updateBudget.planned)
+            setInt(2, updateBudget.budgetId)
+        }.also {
+            recalculateBudget(updateBudget.budgetId)
         }
     }
 
-    fun updateBudget(updateBudget: UpdateBudgetDto): Mono<Void> {
-        return helper.executeUpdate(UPDATE_MONTH_BUDGE_DETAILS) {
-            bind("$1", updateBudget.planned)
-                .bind("$2", updateBudget.budgetId)
-        }.then(recalculateBudget(updateBudget.budgetId))
-    }
-
-    private fun recalculateBudget(budgetId: Int): Mono<Void> {
-        return helper.callProcedure("call RecalculateSelectedBudget ($1)") {
-            bind("$1", budgetId)
+    fun recalculateBudgets(dateFromMonth: LocalDate): Unit {
+        return helper.callProcedureJdbc("call recalculatebudgets (?)") {
+            setDate(1, java.sql.Date.valueOf(dateFromMonth))
         }
     }
 
-    private fun getBudgetCalculations(date: LocalDate, budgets: Flux<BudgetItem>): Mono<MonthBudget> {
-        return getBudgetItem(date).zipWith(budgets.collectList())
-            .map { t -> t.t1.copy(date = date.toString().substring(0, 7), budgets = t.t2) }
+    fun copyBudgetsOrCreateNew(date: LocalDate): Unit {
+        return helper.callProcedureJdbc("call copybudgetfromlastmonthorcreatezero (?)") {
+            setDate(1, java.sql.Date.valueOf(date))
+        }
     }
 
-    private fun getBudgetItem(date: LocalDate): Mono<MonthBudget> {
-        return helper.findOne(GET_MONTH_BUDGE_DETAILS, monthBudgetMapper) {
-            bind("$1", date.year)
-                .bind("$2", date.monthValue)
-        }.switchIfEmpty(getRecalculatedBudget(date))
+    private fun recalculateBudget(budgetId: Int): Unit {
+        return helper.callProcedureJdbc("call RecalculateSelectedBudget (?)") {
+            setInt(1, budgetId)
+        }
     }
 
-    private fun getRecalculatedBudget(date: LocalDate): Mono<out MonthBudget> {
+    private fun getBudgetCalculations(date: LocalDate, budgets: List<BudgetItem>): MonthBudget {
+        return getBudgetItem(date).copy(
+            date = date.toString().substring(0, 7),
+            budgets = budgets
+        )
+    }
+
+    private fun getBudgetItem(date: LocalDate): MonthBudget {
+        return helper.jdbcQueryGetFirst(GET_MONTH_BUDGE_DETAILS, {
+            setInt(1, date.year)
+            setInt(2, date.monthValue)
+        }, monthBudgetMapper) ?: getRecalculatedBudget(date)
+    }
+
+    private fun getRecalculatedBudget(date: LocalDate): MonthBudget {
         return copyBudgetsOrCreateNew(date)
-            .flatMap {
-                helper.findOne(GET_MONTH_BUDGE_DETAILS, monthBudgetMapper) {
-                    bind("$1", date.year)
-                        .bind("$2", date.monthValue)
-                }
-            }.defaultIfEmpty(MonthBudget(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO))
+            .let {
+                helper.jdbcQueryGetFirst(GET_MONTH_BUDGE_DETAILS, {
+                    setInt(1, date.year)
+                    setInt(2, date.monthValue)
+                }, monthBudgetMapper) ?: MonthBudget(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
+            }
     }
 
-    private fun getMonthBudgets(date: LocalDate): Flux<BudgetItem> {
-        return helper.getList(GET_MONTH_BUDGET, budgetItemMapper) {
-            bind("$1", date.year)
-                .bind("$2", date.monthValue)
-        }
+    private fun getMonthBudgets(date: LocalDate): List<BudgetItem> {
+        return helper.jdbcQueryGetList(GET_MONTH_BUDGET, {
+            setInt(1, date.year)
+            setInt(2, date.monthValue)
+        }, budgetItemMapper)
     }
 
-    fun recalculateBudgets(dateFromMonth: LocalDate): Mono<Void> {
-        return helper.callProcedure("call recalculatebudget ($1)") {
-            bind("$1", dateFromMonth)
-        }
-    }
 
-    fun copyBudgetsOrCreateNew(date: LocalDate): Mono<Void> {
-        return helper.callProcedure("call copybudgetfromlastmonthorcreatezero ($1)") {
-            bind("$1", date)
-        }
-    }
 }

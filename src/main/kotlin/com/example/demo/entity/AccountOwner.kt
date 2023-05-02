@@ -1,14 +1,14 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
+import java.sql.ResultSet
 
 data class AccountOwner(val id: Int, val name: String, val description: String)
 
-val accountOwnerMapper: (row: Row) -> AccountOwner = {
+val accountOwnerMapper: (row: ResultSet, _: Any?) -> AccountOwner = {row,_->
     AccountOwner(
-        it["id"] as Int,
-        it["owner_name"] as String,
-        it["description"] as String
+        row.getInt("id"),
+        row.getString("owner_name") as String,
+        row.getString("description") as String
     )
 }
 

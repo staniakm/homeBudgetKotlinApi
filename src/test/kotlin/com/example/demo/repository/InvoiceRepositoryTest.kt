@@ -33,7 +33,7 @@ class InvoiceRepositoryTest(
         createInvoice(invoiceId = 3, date = LocalDate.of(2021, 11, 3), amount = BigDecimal("30.03"))
         createInvoice(invoiceId = 4, date = LocalDate.of(2021, 12, 3))
 
-        val invoices = invoiceRepository.getInvoicesForMonth(LocalDate.of(2021, 11, 30)).collectList().block()!!
+        val invoices = invoiceRepository.getInvoicesForMonth(LocalDate.of(2021, 11, 30))
 
         invoices.size shouldBe 3
         invoices shouldContainAll listOf(
@@ -83,7 +83,7 @@ class InvoiceRepositoryTest(
             3
         )
 
-        val invoiceDetails = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
+        val invoiceDetails = invoiceRepository.getInvoiceDetails(1)
 
         invoiceDetails.size shouldBe 3
         invoiceDetails shouldContain InvoiceItem(
@@ -119,7 +119,7 @@ class InvoiceRepositoryTest(
     fun `should fetch selected invoice`() {
         createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
 
-        val invoice = invoiceRepository.getInvoice(1).block()!!
+        val invoice = invoiceRepository.getInvoice(1)
 
         invoice shouldBe Invoice(1, LocalDate.of(2021, 11, 1), "1a", "10.01".toBigDecimal(), "", false, 1, 1)
     }
@@ -132,7 +132,7 @@ class InvoiceRepositoryTest(
         createInvoice(invoiceId = 2, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"))
         createInvoice(invoiceId = 3, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"), accountId = 2)
 
-        val invoices = invoiceRepository.getAccountInvoices(1, LocalDate.of(2021, 11, 1)).collectList().block()!!
+        val invoices = invoiceRepository.getAccountInvoices(1, LocalDate.of(2021, 11, 1))
 
         invoices.size shouldBe 2
         invoices shouldContainAll listOf(
@@ -146,10 +146,10 @@ class InvoiceRepositoryTest(
         createAccount(2, name = "account 2", amount = "100.00".toBigDecimal())
         createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.00"))
 
-        invoiceRepository.updateInvoiceAccount(1, 2).block()
-        val invoice = invoiceRepository.getInvoice(1).block()!!
+        invoiceRepository.updateInvoiceAccount(1, 2)
+        val invoice = invoiceRepository.getInvoice(1)
 
-        invoice.account shouldBe 2
+        invoice?.account shouldBe 2
     }
 
     @Test
@@ -158,11 +158,9 @@ class InvoiceRepositoryTest(
         val request = NewInvoiceRequest(
             1, 1, LocalDate.of(2022, 1, 1), listOf(), BigDecimal.TEN, "invoiceNumber", ""
         )
-        invoiceRepository.createInvoice(request).block()
+        val invoice = invoiceRepository.createInvoice(request)
 
-        val invoices = invoiceRepository.getLastInsertedInvoice().block()!!
-
-        invoices shouldBe Invoice(1, LocalDate.of(2022, 1, 1), "invoiceNumber", BigDecimal("10.00"), "", false, 1, 1)
+        invoice shouldBe Invoice(1, LocalDate.of(2022, 1, 1), "invoiceNumber", BigDecimal("10.00"), "", false, 1, 1)
     }
 
     @Test
@@ -186,11 +184,10 @@ class InvoiceRepositoryTest(
             BigDecimal("5")
         )
 
-        val ids = invoiceRepository.createInvoiceItems(1, listOf(item1, item2)).collectList().block()!!
+        invoiceRepository.createInvoiceItems(1, listOf(item1, item2))
 
-        ids shouldContainAll listOf(1, 2)
-
-        val items = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
+        //then
+        val items = invoiceRepository.getInvoiceDetails(1)
         items.size shouldBe 2
         items shouldContainAll listOf(
             InvoiceItem(
@@ -223,12 +220,12 @@ class InvoiceRepositoryTest(
         createInvoiceItem(1, 1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1)
         createInvoiceItem(2, 1, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
 
-        invoiceRepository.recaculatInvoice(1).block()
+        invoiceRepository.recaculatInvoice(1)
 
-        val invoice = invoiceRepository.getInvoice(1).block()!!
-        invoice.sum shouldBe BigDecimal("30.00")
+        val invoice = invoiceRepository.getInvoice(1)
+        invoice?.sum shouldBe BigDecimal("30.00")
 
-        val items = invoiceRepository.getInvoiceDetails(1).collectList().block()!!
+        val items = invoiceRepository.getInvoiceDetails(1)
         items.size shouldBe 2
         items.map { it.totalPrice } shouldContainAll listOf(BigDecimal("19.00"), BigDecimal("11.00"))
     }
@@ -239,9 +236,9 @@ class InvoiceRepositoryTest(
         createAccount(accountId = 3)
         createShop(shopId = 8)
         //when
-        invoiceRepository.createAutoInvoice().block()
+        invoiceRepository.createAutoInvoice()
         //then
-        val invoice = invoiceRepository.getInvoice(1).block()
+        val invoice = invoiceRepository.getInvoice(1)
         invoice shouldNotBe null
         invoice?.let {
             it.sum shouldBeEqualComparingTo BigDecimal.ZERO
@@ -262,9 +259,9 @@ class InvoiceRepositoryTest(
         createAutoinvoiceEntry(asoId = 1, price = BigDecimal("1.2"), quantity = BigDecimal.ONE)
         createAutoinvoiceEntry(asoId = 2, price = BigDecimal("8.9"), quantity = BigDecimal.ONE)
         //when call auto invoice procedure
-        invoiceRepository.createAutoInvoice().block()
+        invoiceRepository.createAutoInvoice()
         //then invoice created
-        val invoice = invoiceRepository.getInvoice(1).block()
+        val invoice = invoiceRepository.getInvoice(1)
         invoice shouldNotBe null
         invoice?.let {
             it.sum shouldBeEqualComparingTo BigDecimal("10.1")
@@ -273,9 +270,65 @@ class InvoiceRepositoryTest(
             it.invoiceNumber shouldStartWith "Rachunki"
         }
         //and account money amount decreased
-        val account = accountRepository.findById(3).block()!!
+        val account = accountRepository.findById(3)
         with(account) {
-            this.amount shouldBeEqualComparingTo BigDecimal("89.9")
+            this?.amount?.shouldBeEqualComparingTo(BigDecimal("89.9"))
         }
+    }
+
+    @Test
+    fun `should create batch invoice details`() {
+        //given
+        createCategory(1, "Cat1")
+        createCategory(2, "Cat2")
+        createAssortment(1, "aso1", 2)
+        createAssortment(2, "aso2", 2)
+        createShopItem(1, 1)
+        createShopItem(1, 2)
+        createInvoice(invoiceId = 10, amount = BigDecimal.ZERO)
+        //when
+        val items = invoiceRepository.createInvoiceItems(
+            10,
+            listOf(
+                NewInvoiceItemRequest(
+                    ShopItem(1, "aso1"),
+                    BigDecimal("10.00"),
+                    BigDecimal("0.5"),
+                    BigDecimal.ZERO,
+                    BigDecimal("5.00")
+                ),
+                NewInvoiceItemRequest(
+                    ShopItem(2, "aso2"),
+                    unitPrice = BigDecimal("10.00"),
+                    amount = BigDecimal("1.5"),
+                    discount = BigDecimal.ZERO,
+                    totalPrice = BigDecimal("15.00")
+                )
+            )
+        )
+        //then
+        val invoiceDetails = invoiceRepository.getInvoiceDetails(10)
+        invoiceDetails.size shouldBe 2
+        invoiceDetails shouldContainAll listOf(
+            InvoiceItem(
+                1,
+                "aso1",
+                BigDecimal("0.500"),
+                BigDecimal("10.00"),
+                BigDecimal("0.00"),
+                BigDecimal("5.00"),
+                1
+            ),
+            InvoiceItem(
+                2,
+                "aso2",
+                BigDecimal("1.500"),
+                BigDecimal("10.00"),
+                BigDecimal("0.00"),
+                BigDecimal("15.00"),
+                2
+            )
+        )
+
     }
 }

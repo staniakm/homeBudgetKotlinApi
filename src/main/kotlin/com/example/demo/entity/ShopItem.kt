@@ -1,14 +1,14 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
+import java.sql.ResultSet
 
 
 data class ShopItem(val itemId: Int, val name: String)
 
-val shopItemRowMapper: (row: Row) -> ShopItem = { row ->
+val shopItemRowMapperJdbc: (row: ResultSet, _: Any?) -> ShopItem = { row, _ ->
     ShopItem(
-        row["id"] as  Int,
-        row["name"] as  String,
+        row.getInt("id"),
+        row.getString("name")
     )
 }
 

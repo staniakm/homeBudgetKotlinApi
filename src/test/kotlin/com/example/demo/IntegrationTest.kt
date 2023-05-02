@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -34,22 +34,23 @@ abstract class IntegrationTest {
         "assortment",
         "category",
         "media_usage",
-        "media_type"
+        "media_type",
+        "salary_type",
     )
 
     @Autowired
-    private lateinit var client: DatabaseClient
+    private lateinit var client: JdbcTemplate
 
     @AfterEach
     internal fun tearDown() {
         tables.forEach { tableName ->
-            client.sql("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;").then().block()
+            client.update("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;")
         }
     }
 
     companion object {
         @JvmStatic
-        val postgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:13-alpine"))
+        val postgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:15-alpine"))
             .withDatabaseName("test")
             .withUsername("user")
             .withPassword("password")
@@ -70,21 +71,23 @@ abstract class IntegrationTest {
             registry.add("spring.liquibase.user", postgreSQLContainer::getUsername)
             registry.add("spring.liquibase.password", postgreSQLContainer::getPassword)
 
-            registry.add("spring.r2dbc.url") {
+            registry.add("spring.datasource.url") {
                 java.lang.String.format(
-                    "r2dbc:pool:postgresql://%s:%d/%s",
+                    "jdbc:postgresql://%s:%d/%s",
                     postgreSQLContainer.host,
                     postgreSQLContainer.firstMappedPort,
                     postgreSQLContainer.databaseName
                 )
             }
-            registry.add("spring.r2dbc.username", postgreSQLContainer::getUsername)
-            registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword)
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername)
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword)
+            registry.add("spring.datasource.driver-class-name") { "org.postgresql.Driver" }
+
         }
     }
 
     fun executeInsert(query: String) {
-        client.sql(query).then().block()
+        client.update(query)
     }
 
     fun createShop(shopId: Int = 1, shopName: String = "ShopName") {
@@ -105,9 +108,10 @@ abstract class IntegrationTest {
         invoiceId: Int = 1,
         accountId: Int = 1,
         date: LocalDate = LocalDate.now(),
-        amount: BigDecimal = BigDecimal.TEN
+        amount: BigDecimal = BigDecimal.TEN,
+        shopId: Int = 1
     ) {
-        executeInsert("insert into invoice(id, date, invoice_number, sum, description, account, shop) values ($invoiceId, '$date', '1a', $amount, '', $accountId, 1)")
+        executeInsert("insert into invoice(id, date, invoice_number, sum, description, account, shop) values ($invoiceId, '$date', '1a', $amount, '', $accountId, $shopId)")
     }
 
     fun createInvoiceItem(
@@ -155,6 +159,10 @@ abstract class IntegrationTest {
             op.invoke(this)
             createAccountOwner(withId!!, withName!!, description)
         }
+    }
+
+    fun createSalaryIncomeType(id: Int = 1, name: String = "Sallary") {
+        executeInsert("insert into salary_type(id, name) values ($id, '$name')")
     }
 
     fun setup(description: String, op: () -> Unit) {

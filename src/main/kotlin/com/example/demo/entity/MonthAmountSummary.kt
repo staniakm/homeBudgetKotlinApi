@@ -1,7 +1,7 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
 import java.math.BigDecimal
+import java.sql.ResultSet
 import java.time.LocalDate
 
 data class MonthAccountSummary(
@@ -12,22 +12,17 @@ data class MonthAccountSummary(
     val income: BigDecimal
 )
 
-val monthAccountRowMapper: (row: Row) -> MonthAccountSummary = { row ->
+val monthAccountRowMapper: (row: ResultSet, _: Any?) -> MonthAccountSummary = { row, _ ->
     MonthAccountSummary(
-        row["id"] as Int,
-        row["account_name"] as String,
-        row["money"] as BigDecimal,
-        row["expense"] as BigDecimal,
-        row["income"] as BigDecimal
+        row.getInt("id") as Int,
+        row.getString("account_name") as String,
+        row.getBigDecimal("money") as BigDecimal,
+        row.getBigDecimal("expense") as BigDecimal,
+        row.getBigDecimal("income") as BigDecimal
     )
 }
 
-data class Account(
-    val id: Int,
-    val name: String,
-    val amount: BigDecimal,
-    val owner: Int
-)
+data class Account(val id: Int, val name: String, val amount: BigDecimal, val owner: Int)
 
 data class AccountIncomeRequest(
     val accountId: Int,
@@ -38,12 +33,12 @@ data class AccountIncomeRequest(
 
 data class UpdateAccountDto(val id: Int, val name: String, val newMoneyAmount: BigDecimal)
 
-val accountRowMapper: (row: Row) -> Account = { row ->
+val accountRowMapper: (row: ResultSet, _: Any?) -> Account = { row, _ ->
     Account(
-        row["id"] as Int,
-        row["account_name"] as String,
-        row["amount"] as BigDecimal,
-        row["owner"] as Int
+        row.getInt("id") as Int,
+        row.getString("account_name") as String,
+        row.getBigDecimal("amount") as BigDecimal,
+        row.getInt("owner") as Int
     )
 }
 
@@ -55,12 +50,12 @@ data class AccountIncome(
     val description: String
 )
 
-val accountIncomeRowMapper: (row: Row) -> AccountIncome = { row ->
+val accountIncomeRowMapper: (row: ResultSet, _: Any?) -> AccountIncome = { row, _ ->
     AccountIncome(
-        row["id"] as Int,
-        row["name"] as String,
-        row["income"] as BigDecimal,
-        row["date"] as LocalDate,
-        row["description"] as String,
+        row.getInt("id") as Int,
+        row.getString("name") as String,
+        row.getBigDecimal("income") as BigDecimal,
+        row.getDate("date").toLocalDate() as LocalDate,
+        row.getString("description") as String,
     )
 }

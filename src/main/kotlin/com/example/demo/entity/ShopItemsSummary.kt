@@ -1,7 +1,7 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
 import java.math.BigDecimal
+import java.sql.ResultSet
 
 data class ShopItemsSummary(
     val itemId: Int, val productName: String, val quantity: BigDecimal,
@@ -9,14 +9,14 @@ data class ShopItemsSummary(
     val totalDiscount: BigDecimal, val totalSpend: BigDecimal
 )
 
-val shopItemSummaryRowMapper: (row: Row) -> ShopItemsSummary = { row ->
+val shopItemSummaryRowMapperJdbc: (row: ResultSet, _: Any?) -> ShopItemsSummary = { row, _ ->
     ShopItemsSummary(
-        row["id"] as Int,
-        row["name"] as String,
-        row["quantity"] as BigDecimal,
-        row["min_price_for_unit"] as BigDecimal,
-        row["max_price_for_unit"] as BigDecimal,
-        row["discount_sum"] as BigDecimal,
-        row["total_spend"] as BigDecimal
+        row.getInt("id") as Int,
+        row.getString("name") as String,
+        row.getBigDecimal("quantity") as BigDecimal,
+        row.getBigDecimal("min_price_for_unit") as BigDecimal,
+        row.getBigDecimal("max_price_for_unit") as BigDecimal,
+        row.getBigDecimal("discount_sum") as BigDecimal,
+        row.getBigDecimal("total_spend") as BigDecimal
     )
 }

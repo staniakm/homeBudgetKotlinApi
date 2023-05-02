@@ -2,8 +2,8 @@ package com.example.demo.controller
 
 import com.example.demo.entity.*
 import com.example.demo.service.AccountService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Flux
 
 @CrossOrigin
 @RequestMapping("/api/account")
@@ -17,19 +17,19 @@ class AccountController(private val accountService: AccountService) {
 
 
     @GetMapping("/all")
-    fun getAllAccounts(): Flux<Account> = accountService.findAll()
+    fun getAllAccounts(): ResponseEntity<List<Account>> = ResponseEntity.ok(accountService.findAll())
 
     @GetMapping("/{accountId}")
     fun getAccountOperations(
         @PathVariable accountId: Long,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): Flux<ShoppingInvoice> = accountService.getAccountOperations(accountId, month)
+    ): ResponseEntity<List<ShoppingInvoice>> = ResponseEntity.ok(accountService.getAccountOperations(accountId, month))
 
     @GetMapping("/{accountId}/income")
     fun getAccountIncome(
         @PathVariable accountId: Int,
         @RequestParam("month", required = false, defaultValue = "0") month: Long
-    ): Flux<AccountIncome> = accountService.getAccountIncome(accountId, month)
+    ): ResponseEntity<List<AccountIncome>> = ResponseEntity.ok(accountService.getAccountIncome(accountId, month))
 
 
     @PutMapping("/{accountId}")
@@ -40,8 +40,8 @@ class AccountController(private val accountService: AccountService) {
     fun addAccountIncome(
         @PathVariable accountId: Long,
         @RequestBody updateAccount: AccountIncomeRequest
-    ): Flux<AccountIncome> {
-        return accountService.addAccountIncome(updateAccount)
+    ): ResponseEntity<List<AccountIncome>> {
+        return ResponseEntity.ok(accountService.addAccountIncome(updateAccount))
     }
 
     @GetMapping("/income/type")
@@ -55,8 +55,8 @@ class AccountController(private val accountService: AccountService) {
     fun getLastOperations(
         @PathVariable accountId: Int,
         @RequestParam(name = "limit", required = false, defaultValue = "10") limit: Int
-    ): Flux<AccountOperation> {
-        return accountService.getOperations(accountId, limit)
+    ): ResponseEntity<List<AccountOperation>> {
+        return ResponseEntity.ok(accountService.getOperations(accountId, limit))
     }
 
 }

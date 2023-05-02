@@ -16,13 +16,13 @@ AS
     begin
         if exists(select 1
                   from assortment
-                  where name = product) then
+                  where UPPER(name) = UPPER(product)) then
             begin
                 --pobieramy id asortymentu
                 select id
                 into asoId
                 from assortment
-                where name = product
+                where UPPER(name) = UPPER(product)
                 limit 1;
                 --jeśli asortyment oznaczony jako usunięty - podnosimy
                 if exists(select 1
@@ -820,7 +820,7 @@ ALTER TABLE public.account_owner_id_seq
 CREATE TABLE public.account_owner
 (
     id          integer DEFAULT nextval('public.account_owner_id_seq'::regclass) NOT NULL,
-    owner_name  character varying(100)                                           NOT NULL,
+    owner_name  character varying(100)                                           NOT NULL UNIQUE,
     description character varying(200)
 );
 

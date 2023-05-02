@@ -6,8 +6,6 @@ import com.example.demo.service.CategoryService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @RestController
 @CrossOrigin
@@ -15,7 +13,7 @@ import reactor.core.publisher.Mono
 class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping
-    fun getCategoriesSummary(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<Flux<Category>> {
+    fun getCategoriesSummary(@RequestParam("month", defaultValue = "0") month: Long): ResponseEntity<List<Category>> {
         return ResponseEntity(categoryService.getCategoriesSummary(month), HttpStatus.OK)
     }
 
@@ -24,7 +22,7 @@ class CategoryController(private val categoryService: CategoryService) {
     fun getCategory(
         @PathVariable("id") categoryId: Long,
         @RequestParam("month", defaultValue = "0") month: Long
-    ): ResponseEntity<Mono<Category>> {
+    ): ResponseEntity<Category> {
         return ResponseEntity(categoryService.getCategory(categoryId, month), HttpStatus.OK)
     }
 
@@ -32,7 +30,7 @@ class CategoryController(private val categoryService: CategoryService) {
     fun getCategoryDetails(
         @PathVariable("id") categoryId: Long,
         @RequestParam("month", defaultValue = "0") month: Long = 0
-    ): ResponseEntity<Flux<CategoryDetails>> {
+    ): ResponseEntity<List<CategoryDetails>> {
         return ResponseEntity(categoryService.getCategoryDetails(categoryId, month), HttpStatus.OK)
     }
 }

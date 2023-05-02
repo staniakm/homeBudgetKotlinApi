@@ -1,7 +1,7 @@
 package com.example.demo.entity
 
-import io.r2dbc.spi.Row
 import java.math.BigDecimal
+import java.sql.ResultSet
 
 
 data class MonthBudget(
@@ -9,11 +9,11 @@ data class MonthBudget(
     val totalEarned: BigDecimal, val date: String = "", val budgets: List<BudgetItem> = listOf()
 )
 
-val monthBudgetMapper: (row: Row) -> MonthBudget = { row ->
+val monthBudgetMapper: (row: ResultSet, _: Any?) -> MonthBudget = { row, _ ->
     MonthBudget(
-        row["outcome"] as BigDecimal,
-        row["planned"] as BigDecimal,
-        row["income"] as BigDecimal,
+        row.getBigDecimal("outcome") as BigDecimal,
+        row.getBigDecimal("planned") as BigDecimal,
+        row.getBigDecimal("income") as BigDecimal,
     )
 }
 
@@ -41,28 +41,28 @@ data class MonthBudgetPlanned(
 
 data class UpdateBudgetDto(val budgetId: Int, var planned: BigDecimal)
 
-val budgetItemMapper: (row: Row) -> BudgetItem = { row ->
+val budgetItemMapper: (row: ResultSet, _: Any?) -> BudgetItem = { row, _ ->
     BudgetItem(
-        row["id"] as Int,
-        row["category"] as String,
-        row["month"] as Int,
-        row["year"] as Int,
-        row["spent"] as BigDecimal,
-        row["planned"] as BigDecimal,
-        row["percentage"] as Int,
+        row.getInt("id") as Int,
+        row.getString("category") as String,
+        row.getInt("month") as Int,
+        row.getInt("year") as Int,
+        row.getBigDecimal("spent") as BigDecimal,
+        row.getBigDecimal("planned") as BigDecimal,
+        row.getInt("percentage") as Int,
     )
 }
 
-val monthSingleBudgetMapper: (row: Row) -> MonthBudgetPlanned = { row ->
+val monthSingleBudgetMapper: (row: ResultSet, _: Any?) -> MonthBudgetPlanned = { row, _ ->
     MonthBudgetPlanned(
-        row["id"] as Int,
-        row["month"] as Int,
-        row["year"] as Int,
-        row["categoryId"] as Int,
-        row["category"] as String,
-        row["spent"] as BigDecimal,
-        row["planned"] as BigDecimal,
-        row["monthPlanned"] as BigDecimal,
-        row["percentage"] as Int,
+        row.getInt("id") as Int,
+        row.getInt("month") as Int,
+        row.getInt("year") as Int,
+        row.getInt("categoryId") as Int,
+        row.getString("category") as String,
+        row.getBigDecimal("spent") as BigDecimal,
+        row.getBigDecimal("planned") as BigDecimal,
+        row.getBigDecimal("monthPlanned") as BigDecimal,
+        row.getInt("percentage") as Int,
     )
 }
