@@ -1,17 +1,12 @@
 package com.example.demo.service
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.*
-import com.example.demo.repository.AccountRepository
-import com.example.demo.repository.InvoiceRepository
+import com.example.demo.entity.CreateShopRequest
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import reactor.core.publisher.Flux
-import java.math.BigDecimal
-import java.time.LocalDate
 
 class ShopServiceTest(
     @Autowired val shopService: ShopService

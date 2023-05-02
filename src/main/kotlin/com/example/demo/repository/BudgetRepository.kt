@@ -6,8 +6,6 @@ import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -29,6 +27,18 @@ class BudgetRepository(private val helper: RepositoryHelper) {
             setInt(2, updateBudget.budgetId)
         }.also {
             recalculateBudget(updateBudget.budgetId)
+        }
+    }
+
+    fun recalculateBudgets(dateFromMonth: LocalDate): Unit {
+        return helper.callProcedureJdbc("call recalculatebudgets (?)") {
+            setDate(1, java.sql.Date.valueOf(dateFromMonth))
+        }
+    }
+
+    fun copyBudgetsOrCreateNew(date: LocalDate): Unit {
+        return helper.callProcedureJdbc("call copybudgetfromlastmonthorcreatezero (?)") {
+            setDate(1, java.sql.Date.valueOf(date))
         }
     }
 
@@ -69,15 +79,5 @@ class BudgetRepository(private val helper: RepositoryHelper) {
         }, budgetItemMapper)
     }
 
-    fun recalculateBudgets(dateFromMonth: LocalDate): Unit {
-        return helper.callProcedureJdbc("call recalculatebudgets (?)") {
-            setDate(1, java.sql.Date.valueOf(dateFromMonth))
-        }
-    }
 
-    fun copyBudgetsOrCreateNew(date: LocalDate): Unit {
-        return helper.callProcedureJdbc("call copybudgetfromlastmonthorcreatezero (?)") {
-            setDate(1, java.sql.Date.valueOf(date))
-        }
-    }
 }
