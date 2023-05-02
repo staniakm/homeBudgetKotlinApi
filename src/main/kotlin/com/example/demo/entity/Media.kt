@@ -6,9 +6,9 @@ data class MediaTypeRequest(val mediaName: String)
 
 data class MediaType(val id: Int, val name: String)
 
-val mediaTypeMapper: (row: ResultSet, _:Any?) -> MediaType = { row, _ ->
+val mediaTypeMapper: (row: ResultSet, _: Any?) -> MediaType = { row, _ ->
     MediaType(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("name") as String
     )
 }
@@ -29,11 +29,11 @@ data class MediaUsage(
 
 val mediaUsageMapper = { row: ResultSet, _: Any? ->
     MediaUsage(
-        row.getInt("id") as Int,
-        row.getInt("type_id") as Int,
-        row.getInt("year") as Int,
-        row.getInt("month") as Int,
-        row.getDouble("meter_read") as Double
+        row.getInt("id"),
+        row.getInt("type_id"),
+        row.getInt("year"),
+        row.getInt("month"),
+        row.getDouble("meter_read")
     )
 }
 
@@ -41,10 +41,10 @@ data class MediaItem(val id: Int, val mediaType: Int, val year: Int, val month: 
 
 val mediaMapper: (row: ResultSet, _: Any?) -> MediaItem = { row, _ ->
     MediaItem(
-        row.getInt("id") as Int,
-        row.getInt("media_type") as Int,
-        row.getInt("year") as Int,
-        row.getInt("month") as Int,
-        row.getDouble("meter_read") as Double
+        row.getInt("id"),
+        row.getInt("media_type"),
+        row.getInt("year"),
+        row.getInt("month"),
+        row.getDouble("meter_read")
     )
 }

@@ -10,7 +10,7 @@ data class Category(
 
 val categoryRowMapper: (row: ResultSet, _: Any?) -> Category = { row, _ ->
     Category(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("name") as String,
         row.getBigDecimal("monthSummary") as BigDecimal,
         row.getBigDecimal("yearSummary") as BigDecimal,

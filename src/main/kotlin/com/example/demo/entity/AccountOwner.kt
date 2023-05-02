@@ -6,7 +6,7 @@ data class AccountOwner(val id: Int, val name: String, val description: String)
 
 val accountOwnerMapper: (row: ResultSet, _: Any?) -> AccountOwner = {row,_->
     AccountOwner(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("owner_name") as String,
         row.getString("description") as String
     )
