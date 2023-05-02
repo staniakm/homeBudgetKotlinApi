@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -39,12 +39,12 @@ abstract class IntegrationTest {
     )
 
     @Autowired
-    private lateinit var client: DatabaseClient
+    private lateinit var client: JdbcTemplate
 
     @AfterEach
     internal fun tearDown() {
         tables.forEach { tableName ->
-            client.sql("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;").then().block()
+            client.update("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;")
         }
     }
 
@@ -71,17 +71,6 @@ abstract class IntegrationTest {
             registry.add("spring.liquibase.user", postgreSQLContainer::getUsername)
             registry.add("spring.liquibase.password", postgreSQLContainer::getPassword)
 
-            registry.add("spring.r2dbc.url") {
-                java.lang.String.format(
-                    "r2dbc:pool:postgresql://%s:%d/%s",
-                    postgreSQLContainer.host,
-                    postgreSQLContainer.firstMappedPort,
-                    postgreSQLContainer.databaseName
-                )
-            }
-            registry.add("spring.r2dbc.username", postgreSQLContainer::getUsername)
-            registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword)
-
             registry.add("spring.datasource.url") {
                 java.lang.String.format(
                     "jdbc:postgresql://%s:%d/%s",
@@ -98,7 +87,7 @@ abstract class IntegrationTest {
     }
 
     fun executeInsert(query: String) {
-        client.sql(query).then().block()
+        client.update(query)
     }
 
     fun createShop(shopId: Int = 1, shopName: String = "ShopName") {
