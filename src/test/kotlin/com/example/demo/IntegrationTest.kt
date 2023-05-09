@@ -3,11 +3,14 @@ package com.example.demo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
@@ -15,7 +18,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.logging.Logger
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @ActiveProfiles("test")
 abstract class IntegrationTest {
@@ -40,6 +43,9 @@ abstract class IntegrationTest {
 
     @Autowired
     private lateinit var client: JdbcTemplate
+
+    @Autowired
+    lateinit var restTemplate: TestRestTemplate
 
     @AfterEach
     internal fun tearDown() {
