@@ -14,7 +14,7 @@ import java.time.LocalDate
 class InvoiceService(
     private val invoiceRepository: InvoiceRepository,
     private val accountRepository: AccountRepository,
-    private val clock: ClockProvider
+    private val clock: ClockProviderInterface
 ) {
 
     fun getInvoiceListForMonth(monthValue: Long) =

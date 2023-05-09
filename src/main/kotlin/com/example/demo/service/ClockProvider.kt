@@ -8,17 +8,23 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @Component
-class ClockProvider {
+class ClockProvider: ClockProviderInterface {
 
-    fun getTime(): LocalDateTime {
+    override fun getTime(): LocalDateTime {
         return LocalDateTime.ofInstant(Instant.now(), ZoneId.of("GMT+2"))
     }
 
-    fun getDate(): LocalDate {
+    override fun getDate(): LocalDate {
         return LocalDate.now()
     }
 
-    val getDateFromMonth: (Long) -> LocalDate = { month ->
+    override val getDateFromMonth: (Long) -> LocalDate = { month ->
         getDate()
             .plusMonths(month)
     }}
+
+interface ClockProviderInterface {
+    fun getTime(): LocalDateTime
+    fun getDate(): LocalDate
+    val getDateFromMonth: (Long) -> LocalDate
+}

@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service
 class AccountService(
     private val accountRepository: AccountRepository,
     private val invoiceService: InvoiceService,
-    private val clock: ClockProvider
+    private val clock: ClockProviderInterface
 ) {
 
-    fun getAccountsSummaryForMonth(month: Long) =
-        accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(clock.getDateFromMonth(month))
+    fun getAccountsSummaryForMonth(month: Long): List<MonthAccountSummary> {
+        val date = clock.getDateFromMonth(month)
+        return accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(date)
+    }
 
     fun findAll() = accountRepository.findAllAccounts()
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class MediaService(
     private val mediaTypeRepository: MediaTypeRepository,
     private val mediaRepository: MediaRepository,
-    private val clock: ClockProvider
+    private val clock: ClockProviderInterface
 ) {
     fun registerNewMediaType(request: MediaTypeRequest) = mediaTypeRepository.registerNewMediaType(request.mediaName)
     fun getAll() = mediaTypeRepository.findAll()

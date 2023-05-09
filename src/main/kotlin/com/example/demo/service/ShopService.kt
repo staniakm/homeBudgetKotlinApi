@@ -5,7 +5,7 @@ import com.example.demo.repository.ShopRepository
 import org.springframework.stereotype.Service
 
 @Service
-class ShopService(private val repository: ShopRepository, private val clock: ClockProvider) {
+class ShopService(private val repository: ShopRepository, private val clock: ClockProviderInterface) {
 
     fun getShopsSummaryForMonth(month: Long) =
         repository.getAllShopsMonthSummary(clock.getDateFromMonth(month))

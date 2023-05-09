@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 class BudgetService(
     private val repository: BudgetRepository,
     private val invoiceService: InvoiceService,
-    private val clock: ClockProvider
+    private val clock: ClockProviderInterface
 ) {
 
     fun getMonthBudget(month: Long) = repository.getBudgetForMonth(clock.getDateFromMonth(month))
