@@ -1,6 +1,5 @@
 package com.example.demo.service
 
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.LocalDate

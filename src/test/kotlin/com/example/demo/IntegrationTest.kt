@@ -1,16 +1,15 @@
 package com.example.demo
 
+import com.example.demo.config.TestConfig
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
@@ -18,7 +17,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.logging.Logger
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [TestConfig::class])
 @Testcontainers
 @ActiveProfiles("test")
 abstract class IntegrationTest {
@@ -47,12 +46,17 @@ abstract class IntegrationTest {
     @Autowired
     lateinit var restTemplate: TestRestTemplate
 
+    @Autowired
+    lateinit var clockProvider: FakeClockProvider
+
     @AfterEach
     internal fun tearDown() {
         tables.forEach { tableName ->
             client.update("truncate $tableName CASCADE; alter sequence ${tableName}_id_seq restart with 1;")
         }
+        clockProvider.resetTime()
     }
+
 
     companion object {
         @JvmStatic
