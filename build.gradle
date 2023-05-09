@@ -33,7 +33,7 @@ dependencies {
 }
 
 jib {
-	var tag = "latest"
+	var tag = "${version}"
 	from {
 		image = "gcr.io/distroless/java17-debian11"
 	}
