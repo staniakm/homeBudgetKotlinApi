@@ -14,7 +14,7 @@ data class MonthAccountSummary(
 
 val monthAccountRowMapper: (row: ResultSet, _: Any?) -> MonthAccountSummary = { row, _ ->
     MonthAccountSummary(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("account_name") as String,
         row.getBigDecimal("money") as BigDecimal,
         row.getBigDecimal("expense") as BigDecimal,
@@ -35,10 +35,10 @@ data class UpdateAccountDto(val id: Int, val name: String, val newMoneyAmount: B
 
 val accountRowMapper: (row: ResultSet, _: Any?) -> Account = { row, _ ->
     Account(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("account_name") as String,
         row.getBigDecimal("amount") as BigDecimal,
-        row.getInt("owner") as Int
+        row.getInt("owner")
     )
 }
 
@@ -52,7 +52,7 @@ data class AccountIncome(
 
 val accountIncomeRowMapper: (row: ResultSet, _: Any?) -> AccountIncome = { row, _ ->
     AccountIncome(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("name") as String,
         row.getBigDecimal("income") as BigDecimal,
         row.getDate("date").toLocalDate() as LocalDate,

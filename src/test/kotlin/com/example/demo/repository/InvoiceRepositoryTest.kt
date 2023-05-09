@@ -287,7 +287,7 @@ class InvoiceRepositoryTest(
         createShopItem(1, 2)
         createInvoice(invoiceId = 10, amount = BigDecimal.ZERO)
         //when
-        val items = invoiceRepository.createInvoiceItems(
+        invoiceRepository.createInvoiceItems(
             10,
             listOf(
                 NewInvoiceItemRequest(

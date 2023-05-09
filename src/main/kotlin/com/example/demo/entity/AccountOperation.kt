@@ -14,10 +14,10 @@ data class AccountOperation(
 
 val operationMapper: (row: ResultSet, _: Any?) -> AccountOperation = { row ,_->
     AccountOperation(
-        row.getLong("id") as Long,
+        row.getLong("id") ,
         row.getDate("date").toLocalDate() as LocalDate,
         row.getBigDecimal("value") as BigDecimal,
-        row.getInt("account") as Int,
+        row.getInt("account"),
         row.getString("type") as String
     )
 }

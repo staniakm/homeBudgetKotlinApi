@@ -129,7 +129,7 @@ class InvoiceServiceTest(
         existingInvoice?.id shouldBe 1
         //expected invoice details exists in database
         val itemsCount = invoiceRepository.getInvoiceDetails(1)
-        itemsCount?.size shouldBe 1
+        itemsCount.size shouldBe 1
         //when delete invoice
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
         //then should return id

@@ -43,26 +43,26 @@ data class UpdateBudgetDto(val budgetId: Int, var planned: BigDecimal)
 
 val budgetItemMapper: (row: ResultSet, _: Any?) -> BudgetItem = { row, _ ->
     BudgetItem(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("category") as String,
-        row.getInt("month") as Int,
-        row.getInt("year") as Int,
+        row.getInt("month"),
+        row.getInt("year"),
         row.getBigDecimal("spent") as BigDecimal,
         row.getBigDecimal("planned") as BigDecimal,
-        row.getInt("percentage") as Int,
+        row.getInt("percentage"),
     )
 }
 
 val monthSingleBudgetMapper: (row: ResultSet, _: Any?) -> MonthBudgetPlanned = { row, _ ->
     MonthBudgetPlanned(
-        row.getInt("id") as Int,
-        row.getInt("month") as Int,
-        row.getInt("year") as Int,
-        row.getInt("categoryId") as Int,
+        row.getInt("id"),
+        row.getInt("month"),
+        row.getInt("year"),
+        row.getInt("categoryId"),
         row.getString("category") as String,
         row.getBigDecimal("spent") as BigDecimal,
         row.getBigDecimal("planned") as BigDecimal,
         row.getBigDecimal("monthPlanned") as BigDecimal,
-        row.getInt("percentage") as Int,
+        row.getInt("percentage"),
     )
 }

@@ -10,12 +10,12 @@ data class InvoiceItem(
 
 val invoiceItemRowMapper: (row: ResultSet, _: Any?) -> InvoiceItem = { row ,_->
     InvoiceItem(
-        row.getLong("id") as Long,
+        row.getLong("id") ,
         row.getString("name") as String,
         row.getBigDecimal("amount") as BigDecimal,
         row.getBigDecimal("unit_price") as BigDecimal,
         row.getBigDecimal("discount") as BigDecimal,
         row.getBigDecimal("price") as BigDecimal,
-        row.getInt("itemId") as Int,
+        row.getInt("itemId"),
     )
 }

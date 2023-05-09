@@ -11,7 +11,7 @@ data class ShopItemsSummary(
 
 val shopItemSummaryRowMapperJdbc: (row: ResultSet, _: Any?) -> ShopItemsSummary = { row, _ ->
     ShopItemsSummary(
-        row.getInt("id") as Int,
+        row.getInt("id"),
         row.getString("name") as String,
         row.getBigDecimal("quantity") as BigDecimal,
         row.getBigDecimal("min_price_for_unit") as BigDecimal,

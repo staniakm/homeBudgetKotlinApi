@@ -15,7 +15,7 @@ data class ShoppingInvoice(
 
 val shoppingListRowMapper: (row: ResultSet, _: Any?) -> ShoppingInvoice = { row,_ ->
     ShoppingInvoice(
-        row.getLong("id") as Long,
+        row.getLong("id"),
         row.getString("shopName") as String,
         row.getDate("date").toLocalDate() as LocalDate,
         row.getBigDecimal("sum") as BigDecimal,
