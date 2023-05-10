@@ -4,9 +4,12 @@ import com.example.demo.IntegrationTest
 import com.example.demo.entity.Account
 import com.example.demo.entity.MonthAccountSummary
 import com.example.demo.entity.ShoppingInvoice
+import com.example.demo.entity.UpdateAccountDto
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -188,5 +191,58 @@ class AccountControllerTest : IntegrationTest() {
             this.map { it.price } shouldContainAll listOf(BigDecimal("100.00"), BigDecimal("100.99"))
             this.map { it.account } shouldContainAll listOf("account1", "account1")
         }
+    }
+
+    @Test
+    fun `should return bad request response if update account request contains invalid id`() {
+        setup("create sample data") {
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+        }
+        val updateAccount =
+            methodUnderTest("should return bad request response if update account request contains invalid id") {
+                restTemplate.exchange(
+                    "/api/account/2",
+                    HttpMethod.PUT,
+                    HttpEntity(
+                        UpdateAccountDto(
+                            3,
+                            "new name",
+                            BigDecimal("100.00"),
+                        )
+                    ),
+                    Void::class.java
+                )
+            }
+
+        updateAccount.statusCode shouldBe HttpStatus.BAD_REQUEST
+    }
+
+    @Test
+    fun `should update account data`() {
+        setup("create sample data") {
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("200.00"), "account1")
+        }
+        val updateAccount =
+            methodUnderTest("should update account data") {
+                restTemplate.exchange(
+                    "/api/account/1",
+                    HttpMethod.PUT,
+                    HttpEntity(
+                        UpdateAccountDto(
+                            1,
+                            "new name",
+                            BigDecimal("100.00"),
+                        )
+                    ),
+                    Void::class.java
+                )
+            }
+
+        updateAccount.statusCode shouldBe HttpStatus.OK
+        val account = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java).body!!.toList().first()
+        account.name shouldBe "new name"
+        account.amount shouldBe BigDecimal("100.00")
     }
 }

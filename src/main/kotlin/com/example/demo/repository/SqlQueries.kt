@@ -105,7 +105,7 @@ object SqlQueries {
     }
 
     private fun updateSingleAccount(): String {
-        return "update account set money = ? where del = false and id = ?"
+        return "update account set money = ?, account_name = ? where del = false and id = ?"
     }
 
     private fun getAccountData(): String {

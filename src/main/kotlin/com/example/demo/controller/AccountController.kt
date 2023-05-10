@@ -33,7 +33,7 @@ class AccountController(private val accountService: AccountService) {
 
 
     @PutMapping("/{accountId}")
-    fun updateAccountMoneyAmount(@PathVariable accountId: Int, @RequestBody updateAccount: UpdateAccountDto) =
+    fun updateAccountData(@PathVariable accountId: Int, @RequestBody updateAccount: UpdateAccountDto) =
         accountService.updateAccount(accountId, updateAccount)
 
     @PostMapping("/{accountId}")

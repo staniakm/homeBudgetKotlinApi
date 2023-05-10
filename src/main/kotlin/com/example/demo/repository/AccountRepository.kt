@@ -36,7 +36,8 @@ class AccountRepository(private val helper: RepositoryHelper) {
     fun update(account: Account): Int {
         return helper.updateJdbc(UPDATE_SINGLE_ACCOUNT_DATA) {
             setBigDecimal(1, account.amount)
-            setInt(2, account.id)
+            setString(2, account.name)
+            setInt(3, account.id)
         }
     }
 
