@@ -3,6 +3,7 @@ package com.example.demo.controller
 import com.example.demo.IntegrationTest
 import com.example.demo.entity.Account
 import com.example.demo.entity.MonthAccountSummary
+import com.example.demo.entity.ShoppingInvoice
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -60,7 +61,7 @@ class AccountControllerTest : IntegrationTest() {
     }
 
     @Test
-    fun `should return empty list when account summary exists bot not for selected month`() {
+    fun `should return empty list when account summary exists but not for selected month`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         setup("create multiple accounts") {
             createShop(1, "shop1")
@@ -139,6 +140,53 @@ class AccountControllerTest : IntegrationTest() {
                 this.expense shouldBe BigDecimal("100.00")
                 this.moneyAmount shouldBe BigDecimal("11.21")
             }
+        }
+    }
+
+    @Test
+    fun `should return empty list of invoices if for selected account when no invoices exists`() {
+        setup("create sample data") {
+            clockProvider.setTime("2022-05-20T00:00:00.00Z")
+            createShop(1, "shop1")
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+            createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+            createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+        }
+        val findAllInvoices =
+            methodUnderTest("should return empty list of invoices if for selected account when no invoices exists") {
+                restTemplate.getForEntity("/api/account/1?month=-1", Array<ShoppingInvoice>::class.java)
+            }
+
+        findAllInvoices.statusCode shouldBe HttpStatus.OK
+        findAllInvoices.body!!.size shouldBe 0
+    }
+
+    @Test
+    fun `should return list of account invoices for selected month`() {
+        setup("create sample data") {
+            clockProvider.setTime("2022-05-20T00:00:00.00Z")
+            createShop(1, "shop1")
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+            createAccount(2, BigDecimal("10.00"), "account2")
+            createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+            createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+            createInvoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("200.99"), 1)
+            createInvoice(4, 2, LocalDate.of(2022, 5, 5), BigDecimal("200.99"), 1)
+        }
+        val findAllInvoices =
+            methodUnderTest("should return list of account invoices for selected month") {
+                restTemplate.getForEntity("/api/account/1?month=0", Array<ShoppingInvoice>::class.java)
+            }
+        findAllInvoices.statusCode shouldBe HttpStatus.OK
+        findAllInvoices.body!!.size shouldBe 2
+        with(findAllInvoices.body!!.asList()) {
+            this.map { it.listId } shouldContainAll listOf(1, 2)
+            this.map { it.name } shouldContainAll listOf("shop1", "shop1")
+            this.map { it.date } shouldContainAll listOf(LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 5))
+            this.map { it.price } shouldContainAll listOf(BigDecimal("100.00"), BigDecimal("100.99"))
+            this.map { it.account } shouldContainAll listOf("account1", "account1")
         }
     }
 }
