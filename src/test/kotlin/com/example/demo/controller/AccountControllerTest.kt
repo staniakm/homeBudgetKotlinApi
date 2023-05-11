@@ -1,10 +1,7 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.Account
-import com.example.demo.entity.MonthAccountSummary
-import com.example.demo.entity.ShoppingInvoice
-import com.example.demo.entity.UpdateAccountDto
+import com.example.demo.entity.*
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -244,5 +241,49 @@ class AccountControllerTest : IntegrationTest() {
         val account = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java).body!!.toList().first()
         account.name shouldBe "new name"
         account.amount shouldBe BigDecimal("100.00")
+    }
+
+    @Test
+    fun `should fetch empty list when no income exists for selected account and month`() {
+        setup("create sample data") {
+            clockProvider.setTime("2022-05-20T00:00:00.00Z")
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+            createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 4, 10))
+            createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 3, 5))
+        }
+        val findAllIncomes =
+            methodUnderTest("should fetch empty list when no income exists for selected account and month") {
+                restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java)
+            }
+
+        findAllIncomes.statusCode shouldBe HttpStatus.OK
+        findAllIncomes.body!!.size shouldBe 0
+    }
+
+    @Test
+    fun `should fetch account incomes for selected account and month`() {
+        setup("create sample data") {
+            clockProvider.setTime("2022-05-20T00:00:00.00Z")
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+            createAccount(2, BigDecimal("100.00"), "account1")
+            createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
+            createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
+            createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 5))
+            createIncome(2, BigDecimal("200.99"), LocalDate.of(2022, 5, 5))
+        }
+        val findAllIncomes =
+            methodUnderTest("should fetch account incomes for selected account and month") {
+                restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java)
+            }
+
+        findAllIncomes.statusCode shouldBe HttpStatus.OK
+        findAllIncomes.body!!.size shouldBe 2
+        with(findAllIncomes.body!!.asList()) {
+            this.map { it.id } shouldContainAll listOf(1)
+            this.map { it.income } shouldContainAll listOf(BigDecimal("100.00"), BigDecimal("100.99"))
+            this.map { it.date } shouldContainAll listOf(LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 5))
+        }
     }
 }
