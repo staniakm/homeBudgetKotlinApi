@@ -43,17 +43,17 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
     }
 
     @Test
-    fun `should set new money value for selected account`() {
+    fun `should set new money value and name for selected account`() {
         createAccountOwner()
         createAccount()
 
-        accountRepository.update(Account(1, "", BigDecimal("1.23"), 1))
+        accountRepository.update(Account(1, "new name", BigDecimal("1.23"), 1))
         val account = accountRepository.findById(1)
 
         withClue("Account should be updated") {
             account?.id shouldBe 1
             account?.amount shouldBe BigDecimal("1.23")
-            account?.name shouldBe "account"
+            account?.name shouldBe "new name"
         }
     }
 
