@@ -286,4 +286,70 @@ class AccountControllerTest : IntegrationTest() {
             this.map { it.date } shouldContainAll listOf(LocalDate.of(2022, 5, 10), LocalDate.of(2022, 5, 5))
         }
     }
+
+    @Test
+    fun `should add new account income`() {
+        setup("create sample data") {
+            clockProvider.setTime("2022-05-20T00:00:00.00Z")
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("100.00"), "account1")
+        }
+        val addIncome =
+            methodUnderTest("should add new account income") {
+                restTemplate.postForEntity(
+                    "/api/account/1",
+                    AccountIncomeRequest(1,
+                        BigDecimal("100.00"),
+                        LocalDate.of(2022, 5, 10),
+                        "income1"
+                    ),
+                    Void::class.java
+                )
+            }
+
+        addIncome.statusCode shouldBe HttpStatus.OK
+        val account = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java).body!!.toList().first()
+        account.amount shouldBe BigDecimal("200.00")
+        val incomes = restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java).body!!.toList()
+        incomes.size shouldBe 1
+        with(incomes.first ()){
+            this.id shouldBe 1
+            this.income shouldBe BigDecimal("100.00")
+            this.date shouldBe LocalDate.of(2022, 5, 10)
+            this.description shouldBe "income1"
+        }
+    }
+
+    @Test
+    fun `should fetch list of income types`() {
+        setup("create sample data") {
+            createIncomeType(1, "type1")
+            createIncomeType(2, "type2")
+        }
+        //should fetch income types
+        val findAllIncomeTypes =
+            methodUnderTest("should fetch list of income types") {
+                restTemplate.getForEntity("/api/account/income/type", Array<IncomeType>::class.java)
+            }
+
+        findAllIncomeTypes.statusCode shouldBe HttpStatus.OK
+        findAllIncomeTypes.body!!.size shouldBe 2
+        with(findAllIncomeTypes.body!!.asList()) {
+            this shouldContainAll listOf(
+                IncomeType(1, "type1"),
+                IncomeType(2, "type2")
+            )
+        }
+    }
+
+    @Test
+    fun `should return empty list if no income type exist`() {
+        val findAllIncomeTypes =
+            methodUnderTest("should return empty list if no income type exist") {
+                restTemplate.getForEntity("/api/account/income/type", Array<IncomeType>::class.java)
+            }
+
+        findAllIncomeTypes.statusCode shouldBe HttpStatus.OK
+        findAllIncomeTypes.body!!.size shouldBe 0
+    }
 }
