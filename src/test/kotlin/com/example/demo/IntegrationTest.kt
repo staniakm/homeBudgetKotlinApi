@@ -97,6 +97,7 @@ abstract class IntegrationTest {
     }
 
     fun executeInsert(query: String) {
+        Logger.getLogger("[TEST LOGGER]").info("Executing query: $query")
         client.update(query)
     }
 
@@ -154,6 +155,10 @@ abstract class IntegrationTest {
 
     fun createAccount(accountId: Int = 1, amount: BigDecimal = BigDecimal.ONE, name: String = "account") {
         executeInsert("insert into account (id, account_name,description, money, owner) values ($accountId, '$name','desc',$amount, 1)")
+    }
+
+    fun createIncomeType(id: Int = 1, name: String = "Income") {
+        executeInsert("insert into salary_type(id, name) values ($id, '$name')")
     }
 
     fun createAccountOwner(id: Int = 1, name: String = "Owner name", description: String = "") {
