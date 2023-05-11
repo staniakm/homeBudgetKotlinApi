@@ -47,6 +47,7 @@ class AccountController(private val accountService: AccountService) {
     @GetMapping("/income/type")
     fun getIncomeTypes(): ResponseEntity<List<IncomeType>> = ResponseEntity.ok(accountService.getIncomeTypes())
 
+    @Deprecated("Should be replaced with POST operation")
     @PutMapping("/{accountId}/transfer")
     fun transferMoney(@PathVariable accountId: Int, @RequestBody request: TransferMoneyRequest) =
         accountService.transferMoney(accountId, request)

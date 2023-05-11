@@ -298,7 +298,8 @@ class AccountControllerTest : IntegrationTest() {
             methodUnderTest("should add new account income") {
                 restTemplate.postForEntity(
                     "/api/account/1",
-                    AccountIncomeRequest(1,
+                    AccountIncomeRequest(
+                        1,
                         BigDecimal("100.00"),
                         LocalDate.of(2022, 5, 10),
                         "income1"
@@ -310,9 +311,10 @@ class AccountControllerTest : IntegrationTest() {
         addIncome.statusCode shouldBe HttpStatus.OK
         val account = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java).body!!.toList().first()
         account.amount shouldBe BigDecimal("200.00")
-        val incomes = restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java).body!!.toList()
+        val incomes =
+            restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java).body!!.toList()
         incomes.size shouldBe 1
-        with(incomes.first ()){
+        with(incomes.first()) {
             this.id shouldBe 1
             this.income shouldBe BigDecimal("100.00")
             this.date shouldBe LocalDate.of(2022, 5, 10)
@@ -351,5 +353,28 @@ class AccountControllerTest : IntegrationTest() {
 
         findAllIncomeTypes.statusCode shouldBe HttpStatus.OK
         findAllIncomeTypes.body!!.size shouldBe 0
+    }
+
+    @Test
+    fun `should transfer money from one account to another`() {
+        setup("create sample data") {
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("150.00"), "account1")
+            createAccount(2, BigDecimal("110.00"), "account2")
+        }
+        methodUnderTest("should transfer money from one account to another") {
+            restTemplate.put(
+                "/api/account/1/transfer",
+                TransferMoneyRequest(1, BigDecimal("50.00"), 2)
+            )
+        }
+
+        val accounts = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java).body!!.toList()
+        with(accounts.first { it.id == 1 }) {
+            this.amount shouldBe BigDecimal("100.00")
+        }
+        with(accounts.first { it.id == 2 }) {
+            this.amount shouldBe BigDecimal("160.00")
+        }
     }
 }
