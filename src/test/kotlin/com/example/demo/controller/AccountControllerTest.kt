@@ -377,4 +377,28 @@ class AccountControllerTest : IntegrationTest() {
             this.amount shouldBe BigDecimal("160.00")
         }
     }
+
+    @Test
+    fun `should post request for transfer money between accounts and return updated source account`() {
+        setup("create sample data") {
+            createAccountOwner(1, "owner1")
+            createAccount(1, BigDecimal("150.00"), "account1")
+            createAccount(2, BigDecimal("110.00"), "account2")
+        }
+        val transferMoney =
+            methodUnderTest("should post request for transfer money between accounts and return updated source account") {
+                restTemplate.postForEntity(
+                    "/api/account/transfer",
+                    TransferMoneyRequest(1, BigDecimal("50.00"), 2),
+                    Account::class.java
+                )
+            }
+
+        transferMoney.statusCode shouldBe HttpStatus.OK
+        with(transferMoney.body!!) {
+            this.id shouldBe 1
+            this.name shouldBe "account1"
+            this.amount shouldBe BigDecimal("100.00")
+        }
+    }
 }

@@ -50,15 +50,27 @@ class AccountService(
         return getAccountIncome(updateAccount.accountId, 0)
     }
 
+    @Deprecated("Should be replaced with new method")
     fun transferMoney(accountId: Int, request: TransferMoneyRequest): Account? {
         return accountRepository.findById(accountId)
-            ?.let {
+            ?.let {sourceAccount->
                 accountRepository.findById(request.targetAccount)
                     ?.let {
                         accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
                         accountRepository.findById(request.targetAccount)
                     }
             }
+    }
+
+    fun transferMoney(request: TransferMoneyRequest): Account? {
+        return accountRepository.findById(request.accountId)
+                ?.let {sourceAccount->
+                    accountRepository.findById(request.targetAccount)
+                            ?.let {
+                                accountRepository.transferMoney(sourceAccount.id, request.value, request.targetAccount)
+                                accountRepository.findById(sourceAccount.id)
+                            }
+                }
     }
 
     fun getOperations(accountId: Int, limit: Int): List<AccountOperation> {

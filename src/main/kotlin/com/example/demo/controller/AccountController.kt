@@ -52,6 +52,11 @@ class AccountController(private val accountService: AccountService) {
     fun transferMoney(@PathVariable accountId: Int, @RequestBody request: TransferMoneyRequest) =
         accountService.transferMoney(accountId, request)
 
+    @PostMapping("/transfer")
+    fun transferMoneyBetweenAccounts(@RequestBody request: TransferMoneyRequest) =
+            accountService.transferMoney(request)
+
+
     @GetMapping("/{accountId}/operations")
     fun getLastOperations(
         @PathVariable accountId: Int,
