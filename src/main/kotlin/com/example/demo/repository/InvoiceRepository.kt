@@ -7,8 +7,10 @@ import com.example.demo.repository.SqlQueries.GET_INVOICE
 import com.example.demo.repository.SqlQueries.GET_INVOICE_DATA
 import com.example.demo.repository.SqlQueries.GET_INVOICE_DETAILS
 import org.slf4j.LoggerFactory
+import org.springframework.jdbc.core.SqlParameter
 import org.springframework.stereotype.Service
 import java.sql.Date
+import java.sql.Types
 import java.time.LocalDate
 
 
@@ -51,7 +53,10 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     }
 
     fun updateInvoiceAccount(invoiceId: Long, accountId: Int): Unit {
-        return helper.callProcedureJdbc("call changeinvoiceaccount (?, ?)") {
+        return helper.callProcedureJdbc(
+            "call changeinvoiceaccount (?, ?)",
+            listOf(SqlParameter("invoice_id", Types.INTEGER), SqlParameter("new_account_id", Types.INTEGER))
+        ) {
             setInt(1, invoiceId.toInt())
             setInt(2, accountId)
         }
@@ -78,7 +83,7 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     }
 
     fun recaculatInvoice(id: Long): Unit {
-        helper.callProcedureJdbc("call recalculateinvoice (?)") {
+        helper.callProcedureJdbc("call recalculateinvoice (?)", listOf(SqlParameter("start_date", Types.DATE))) {
             setLong(1, id)
         }
     }
@@ -93,7 +98,7 @@ class InvoiceRepository(private val helper: RepositoryHelper) {
     }
 
     fun createAutoInvoice(): Unit {
-        return helper.callProcedureJdbc("call autoinvoice ()") {
+        return helper.callProcedureJdbc("call autoinvoice ()", listOf()) {
         }
     }
 

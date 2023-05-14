@@ -9,8 +9,10 @@ import com.example.demo.repository.SqlQueries.GET_SHOP_LIST
 import com.example.demo.repository.SqlQueries.GET_SHOP_LIST_SUMMARY
 import com.example.demo.repository.SqlQueries.GET_SHOP_MONTH_ITEMS
 import com.example.demo.repository.SqlQueries.GET_SHOP_YEAR_ITEMS
+import org.springframework.jdbc.core.SqlParameter
 import org.springframework.stereotype.Repository
 import java.sql.Date
+import java.sql.Types
 import java.time.LocalDate
 
 @Repository
@@ -56,7 +58,11 @@ class ShopRepository(private val helper: RepositoryHelper) {
     }
 
     fun createShopItem(shopId: Int, name: String): ShopItem {
-        helper.callProcedureJdbc("CALL addasotoshop(?, ?)") {
+        val params = listOf(
+            SqlParameter("product", Types.VARCHAR),
+            SqlParameter("shopid", Types.INTEGER)
+        )
+        helper.callProcedureJdbc("CALL addasotoshop(?, ?)", params) {
             setString(1, name.uppercase())
             setInt(2, shopId)
         }

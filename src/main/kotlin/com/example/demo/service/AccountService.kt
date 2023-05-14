@@ -54,7 +54,7 @@ class AccountService(
     @Deprecated("Should be replaced with new method")
     fun transferMoney(accountId: Int, request: TransferMoneyRequest): Account? {
         return accountRepository.findById(accountId)
-            ?.let {sourceAccount->
+            ?.let {
                 accountRepository.findById(request.targetAccount)
                     ?.let {
                         accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)

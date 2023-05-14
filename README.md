@@ -21,6 +21,6 @@ At this moment [desktop application](https://github.com/staniakm/HomeBudgetApp) 
  - run docker-compose.yml
 
 #### Copy docker jib image to another machine
-- run in cmd `save home-budget-api:<version> | ssh <user>@<host>> docker load`
+- run in cmd `docker save home-budget-api:<version> | ssh <user>@<host>> docker load`
 - update docker-compose.yml with new image version on remote machine
 - restart docker container on remote machine

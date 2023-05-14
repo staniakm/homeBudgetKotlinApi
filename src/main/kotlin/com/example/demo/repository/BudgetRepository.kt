@@ -5,8 +5,10 @@ import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGET
 import com.example.demo.repository.SqlQueries.GET_MONTH_BUDGE_DETAILS
 import com.example.demo.repository.SqlQueries.GET_SINGLE_BUDGET
 import com.example.demo.repository.SqlQueries.UPDATE_MONTH_BUDGE_DETAILS
+import org.springframework.jdbc.core.SqlParameter
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
+import java.sql.Types
 import java.time.LocalDate
 
 
@@ -31,19 +33,22 @@ class BudgetRepository(private val helper: RepositoryHelper) {
     }
 
     fun recalculateBudgets(dateFromMonth: LocalDate): Unit {
-        return helper.callProcedureJdbc("call recalculatebudgets (?)") {
+        val params = listOf(
+            SqlParameter("recalculation_date", Types.DATE),
+        )
+        return helper.callProcedureJdbc("call recalculatebudget(?)", params) {
             setDate(1, java.sql.Date.valueOf(dateFromMonth))
         }
     }
 
     fun copyBudgetsOrCreateNew(date: LocalDate): Unit {
-        return helper.callProcedureJdbc("call copybudgetfromlastmonthorcreatezero (?)") {
+        return helper.callProcedureJdbc("call copybudgetfromlastmonthorcreatezero (?)", listOf(SqlParameter("budget_date", Types.DATE))) {
             setDate(1, java.sql.Date.valueOf(date))
         }
     }
 
     private fun recalculateBudget(budgetId: Int): Unit {
-        return helper.callProcedureJdbc("call RecalculateSelectedBudget (?)") {
+        return helper.callProcedureJdbc("call RecalculateSelectedBudget (?)", listOf(SqlParameter("selectedbudget", Types.INTEGER))) {
             setInt(1, budgetId)
         }
     }

@@ -78,14 +78,19 @@ class RepositoryHelper(val jdbcTemplate: JdbcTemplate) {
         return key?.toLong()
     }
 
+    fun callProcedureJdbc(query: String, params: List<SqlParameter>, function: CallableStatement.() -> Unit) {
+        jdbcTemplate.call(
+            {
+                it.prepareCall(query).apply(function)
+            }, params
+        )
+    }
+
     fun callProcedureJdbc(query: String, function: CallableStatement.() -> Unit) {
         jdbcTemplate.call(
             {
                 it.prepareCall(query).apply(function)
-            }, listOf(
-                SqlParameter("product", java.sql.Types.VARCHAR),
-                SqlParameter("shopid", java.sql.Types.INTEGER)
-            )
+            }, listOf()
         )
     }
 }
