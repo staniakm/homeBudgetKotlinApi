@@ -3,6 +3,7 @@ package com.example.demo.service
 import com.example.demo.entity.*
 import com.example.demo.repository.AccountRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AccountService(
@@ -61,7 +62,7 @@ class AccountService(
                     }
             }
     }
-
+    @Transactional(transactionManager = "transactionManager")
     fun transferMoney(request: TransferMoneyRequest): Account? {
         return accountRepository.findById(request.accountId)
                 ?.let {sourceAccount->
