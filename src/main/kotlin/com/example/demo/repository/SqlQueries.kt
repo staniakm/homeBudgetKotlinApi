@@ -206,9 +206,9 @@ object SqlQueries {
                       b.percentage 
                   from budget b 
                       join category k ON k.id = b.category
-                  where year = $1 
-                       and month = $2 
-                       and k.name = $3
+                  where year = ? 
+                       and month = ? 
+                       and k.name = ?
                    order by spent desc""".trimIndent()
     }
 
@@ -433,8 +433,8 @@ object SqlQueries {
                      from invoice i
                             join invoice_details id on i.id = id.invoice
                             join assortment a on id.assortment = a.id
-                            where extract('YEAR' from i.date) = $1 and  extract('MONTH' from i.date) = $2
-                                and id.category =$3
+                            where extract('YEAR' from i.date) = ? and  extract('MONTH' from i.date) = ?
+                                and id.category =?
                             order by  a.name
         """.trimIndent()
     }
