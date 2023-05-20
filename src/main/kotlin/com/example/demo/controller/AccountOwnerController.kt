@@ -1,7 +1,9 @@
 package com.example.demo.controller
 
+import com.example.demo.entity.AccountOwner
 import com.example.demo.entity.CreateOwnerRequest
 import com.example.demo.service.AccountOwnerService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -12,6 +14,10 @@ class AccountOwnerController(private val accountOwnerService: AccountOwnerServic
     fun getAllOwners() = accountOwnerService.findAllOwners()
 
     @PostMapping("/")
-    fun createOwner(@RequestBody accountOwnerRequest: CreateOwnerRequest) =
-        accountOwnerService.createOwner(accountOwnerRequest)
+    fun createOwner(@RequestBody accountOwnerRequest: CreateOwnerRequest): ResponseEntity<AccountOwner> {
+        return accountOwnerService.createOwner(accountOwnerRequest)?.let {
+            ResponseEntity.ok(it)
+        } ?: ResponseEntity.badRequest().build()
+    }
+
 }
