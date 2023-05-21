@@ -334,14 +334,14 @@ object SqlQueries {
         return """select k.id id, 
                     k."name", 
                     coalesce(ps.price,0.00) monthSummary, 
-                    pr.price yearSummary 
+                    coalesce(pr.price,0.00) yearSummary 
                 from category k 
-                join (select sum(ps.price) price, category from invoice_details ps 
+                left join (select sum(ps.price) price, category from invoice_details ps 
                             join invoice p on p.ID = ps.invoice where extract(year from p.date) = ?
                             group by category) as pr on pr.category = k.id 
                 left join (select sum(ps.price) price, category from invoice_details ps 
-                join invoice p on p.ID = ps.invoice where extract(year from p.date) = ? and extract(month from p.date) = ?
-                group by category) as ps on ps.category = k.id 
+                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = ? and extract(month from p.date) = ?
+                            group by category) as ps on ps.category = k.id 
                 order by name""".trimIndent()
     }
 
