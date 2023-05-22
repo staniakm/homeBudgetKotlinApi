@@ -23,5 +23,4 @@ class CategoryService(private val repository: CategoryRepository, private val cl
     fun getCategoryDetails(id: Long, month: Long) =
         repository.getProductsForCategoryAndMonth(id, clock.getDateFromMonth(month))
 
-    fun getCategoryDetails(id: Long, date: LocalDate) = repository.getProductsForCategoryAndMonth(id, date)
 }

@@ -347,13 +347,14 @@ object SqlQueries {
 
     private fun getCategoryDetails(): String {
         return """select sum(ps.price) sum,
+                        a.id,            
                     	a.name
                     from invoice_details ps 
                         join invoice p on p.ID = ps.invoice
                     	join assortment a on a.id = ps.assortment 
                     where p.date between ? and ?
                                        and ps.category = ?
-                    group by a."name"
+                    group by a.id, a."name"
                  """.trimIndent()
     }
 

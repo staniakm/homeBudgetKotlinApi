@@ -92,7 +92,7 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
         val data = categoryRepository.getProductsForCategoryAndMonth(1, LocalDate.of(2021, 11, 1))
 
         data.size shouldBe 2
-        data shouldContain CategoryDetails("assortment 1", BigDecimal("30.00"))
-        data shouldContain CategoryDetails("assortment 2", BigDecimal("100.00"))
+        data shouldContain CategoryDetails(1,"assortment 1", BigDecimal("30.00"))
+        data shouldContain CategoryDetails(2,"assortment 2", BigDecimal("100.00"))
     }
 }
