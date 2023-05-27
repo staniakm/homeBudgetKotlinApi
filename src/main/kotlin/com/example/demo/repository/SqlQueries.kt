@@ -37,6 +37,7 @@ object SqlQueries {
     val GET_MONTH_SUMMARY_CHART_DATA: () -> String = { getMonthSummary() }
     val GET_SHOP_ITEMS: () -> String = { getShopItems() }
     val GET_MONTH_BUDGET: () -> String = { getMonthBudget() }
+    val GET_CATEGORY_SUMMARY_BY_ID_AND_MONTH: () -> String = { getCategorySymmaryByIdAndMonth() }
     val GET_CATEGORY_BY_ID: () -> String = { getCategoryById() }
     val GET_MONTH_BUDGE_DETAILS: () -> String = { getMonthBudgetDetails() }
     val UPDATE_MONTH_BUDGE_DETAILS: () -> String = { updatePlanedBudget() }
@@ -54,6 +55,11 @@ object SqlQueries {
     val GET_INCOME_TYPES: () -> String = { getIncomeTypes() }
     val ADD_ACCOUNT_INCOME: () -> String = { addAccountIncome() }
     val UPDATE_ACCOUNT_WITH_NEW_AMOUNT = { updateAccountWithNewAmount() }
+    val GET_SINGLE_ASSORTMENT_BY_ID = { getSingleAssortmentById() }
+    val UPDATE_ASSORTMENT_CATEGORY = { updateAssortmentCategory() }
+
+    private fun getSingleAssortmentById() = """select id, name, category from assortment where id = ?"""
+    private fun updateAssortmentCategory() = """update assortment set category = ? where id = ?"""
     private fun updateProductCategory(): String = "update assortment set category = ? where id = ?"
 
 
@@ -65,9 +71,10 @@ object SqlQueries {
                                                 limit ?""".trimIndent()
 
     private fun getAllOwners() = """select id, owner_name, description from account_owner"""
-    private fun createNewOwner() = """insert into account_owner (owner_name, description) values (UPPER(?),?) ON CONFLICT DO NOTHING RETURNING id"""
-    private fun getOwnerById() =
-        """select id, owner_name, description from account_owner where id = ?"""
+    private fun createNewOwner() =
+        """insert into account_owner (owner_name, description) values (UPPER(?),?) ON CONFLICT DO NOTHING RETURNING id"""
+
+    private fun getOwnerById() = """select id, owner_name, description from account_owner where id = ?"""
 
     private fun decreaseAccountMoney() = """
         update account set money = money - ? where id = ?
@@ -87,8 +94,7 @@ object SqlQueries {
     private fun getAllMediaReadsFromMonth() =
         """select id, media_type, year, month, meter_read from media_usage where year = ? and month = ?"""
 
-    private fun addMediaUsage() =
-        """insert into media_usage(media_type, meter_read, year, month) values (?,?,?,?)"""
+    private fun addMediaUsage() = """insert into media_usage(media_type, meter_read, year, month) values (?,?,?,?)"""
 
     private fun deleteMediaUsage() = """delete from media_usage where id = ?"""
 
@@ -309,6 +315,12 @@ object SqlQueries {
     }
 
     private fun getCategoryById(): String {
+        return """
+            select id, name from category where id = ?
+        """.trimIndent()
+    }
+
+    private fun getCategorySymmaryByIdAndMonth(): String {
         return """select 
                       k.id id, 
                       name, 

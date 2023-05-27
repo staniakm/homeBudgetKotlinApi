@@ -1,7 +1,7 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.Category
+import com.example.demo.entity.CategorySummary
 import com.example.demo.entity.CategoryDetails
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class CategoryControllerTest : IntegrationTest() {
+class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return empty list when no categories exists`() {
         // when
         val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<Category>::class.java)
+            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
         }
 
         //then
@@ -31,7 +31,7 @@ class CategoryControllerTest : IntegrationTest() {
         createCategory(3, "category3")
         // when
         val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<Category>::class.java)
+            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
         }
 
         //then
@@ -78,7 +78,7 @@ class CategoryControllerTest : IntegrationTest() {
 
         //when
         val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<Category>::class.java)
+            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
         }
 
         // then
@@ -125,7 +125,7 @@ class CategoryControllerTest : IntegrationTest() {
 
         // when
         val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category?month=-1", Array<Category>::class.java)
+            restTemplate.getForEntity("/api/category?month=-1", Array<CategorySummary>::class.java)
         }
 
         // then
@@ -172,7 +172,7 @@ class CategoryControllerTest : IntegrationTest() {
 
         // when
         val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category?month=-1&skipZero=true", Array<Category>::class.java)
+            restTemplate.getForEntity("/api/category?month=-1&skipZero=true", Array<CategorySummary>::class.java)
         }
 
         // then
@@ -215,7 +215,7 @@ class CategoryControllerTest : IntegrationTest() {
 
         // when
         val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/4?month=-1", Category::class.java)
+            restTemplate.getForEntity("/api/category/4?month=-1", CategorySummary::class.java)
         }
 
         // then
@@ -248,7 +248,7 @@ class CategoryControllerTest : IntegrationTest() {
 
         // when
         val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/1?month=-1", Category::class.java)
+            restTemplate.getForEntity("/api/category/1?month=-1", CategorySummary::class.java)
         }
 
         // then

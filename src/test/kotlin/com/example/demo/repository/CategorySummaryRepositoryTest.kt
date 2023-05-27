@@ -1,7 +1,7 @@
 package com.example.demo.repository
 
 import com.example.demo.IntegrationTest
-import com.example.demo.entity.Category
+import com.example.demo.entity.CategorySummary
 import com.example.demo.entity.CategoryDetails
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class CategoryRepositoryTest(@Autowired private val categoryRepository: CategoryRepository) : IntegrationTest() {
+class CategorySummaryRepositoryTest(@Autowired private val categoryRepository: CategoryRepository) : IntegrationTest() {
 
 
     @Test
@@ -37,8 +37,8 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
         val data = categoryRepository.getCategoriesSummary(LocalDate.of(2021, 11, 1))
 
         data.size shouldBe 2
-        data shouldContain Category(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
-        data shouldContain Category(2, "category 2", BigDecimal("40.00"), BigDecimal("60.00"))
+        data shouldContain CategorySummary(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
+        data shouldContain CategorySummary(2, "category 2", BigDecimal("40.00"), BigDecimal("60.00"))
     }
 
     @Test
@@ -64,7 +64,7 @@ class CategoryRepositoryTest(@Autowired private val categoryRepository: Category
 
         val data = categoryRepository.getCategory(1, LocalDate.of(2021, 11, 1))
 
-        data shouldBe Category(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
+        data shouldBe CategorySummary(1, "category 1", BigDecimal("90.00"), BigDecimal("150.00"))
     }
 
     @Test

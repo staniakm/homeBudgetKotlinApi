@@ -1,11 +1,8 @@
 package com.example.demo.repository
 
-import com.example.demo.entity.Category
-import com.example.demo.entity.CategoryDetails
-import com.example.demo.entity.categoryDetailsRowMapper
-import com.example.demo.entity.categoryRowMapper
-import com.example.demo.repository.SqlQueries.GET_CATEGORY_BY_ID
+import com.example.demo.entity.*
 import com.example.demo.repository.SqlQueries.GET_CATEGORY_DETAILS
+import com.example.demo.repository.SqlQueries.GET_CATEGORY_SUMMARY_BY_ID_AND_MONTH
 import com.example.demo.repository.SqlQueries.GET_CATEGORY_SUMMARY_LIST
 import org.springframework.stereotype.Repository
 import java.sql.Date
@@ -14,16 +11,16 @@ import java.time.LocalDate
 @Repository
 class CategoryRepository(private val helper: RepositoryHelper) {
 
-    fun getCategoriesSummary(date: LocalDate): List<Category> {
+    fun getCategoriesSummary(date: LocalDate): List<CategorySummary> {
         return helper.jdbcQueryGetList(GET_CATEGORY_SUMMARY_LIST, {
             setInt(1, date.year)
             setInt(2, date.year)
             setInt(3, date.monthValue)
-        }, categoryRowMapper)
+        }, categorySummaryRowMapper)
     }
 
-    fun getCategory(id: Long, date: LocalDate): Category? {
-        return getCategoryById(id, date)
+    fun getCategory(id: Long, date: LocalDate): CategorySummary? {
+        return getCategorySummaryByIdAndMonth(id, date)
     }
 
     fun getProductsForCategoryAndMonth(categoryId: Long, date: LocalDate): List<CategoryDetails> {
@@ -34,12 +31,18 @@ class CategoryRepository(private val helper: RepositoryHelper) {
         }, categoryDetailsRowMapper)
     }
 
-    private fun getCategoryById(id: Long, date: LocalDate): Category? {
-        return helper.jdbcQueryGetFirst(GET_CATEGORY_BY_ID, {
+    private fun getCategorySummaryByIdAndMonth(id: Long, date: LocalDate): CategorySummary? {
+        return helper.jdbcQueryGetFirst(GET_CATEGORY_SUMMARY_BY_ID_AND_MONTH, {
             setInt(1, date.year)
             setInt(2, date.year)
             setInt(3, date.monthValue)
             setLong(4, id)
-        }, categoryRowMapper)
+        }, categorySummaryRowMapper)
+    }
+
+    fun getCategoryById(categoryId: Long): Category? {
+        return helper.jdbcQueryGetFirst(SqlQueries.GET_CATEGORY_BY_ID, {
+            setInt(1, categoryId.toInt())
+        }, categorySingleItemMapper)
     }
 }
