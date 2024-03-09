@@ -63,12 +63,12 @@ class ShopRepository(private val helper: RepositoryHelper) {
             SqlParameter("shopid", Types.INTEGER)
         )
         helper.callProcedureJdbc("CALL addasotoshop(?, ?)", params) {
-            setString(1, name.uppercase())
+            setString(1, name.uppercase().trim())
             setInt(2, shopId)
         }
         return helper.jdbcQueryGetFirst(GET_SHOP_ITEM_BY_NAME, {
             setInt(1, shopId)
-            setString(2, name.uppercase())
+            setString(2, name.uppercase().trim())
         }, shopItemRowMapperJdbc)!!
     }
 }
