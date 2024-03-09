@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository
 import java.sql.Date
 import java.sql.Types
 import java.time.LocalDate
+import java.util.*
 
 @Repository
 class ShopRepository(private val helper: RepositoryHelper) {
@@ -50,7 +51,8 @@ class ShopRepository(private val helper: RepositoryHelper) {
     fun getAllShops(): List<Shop> = helper.jdbcQueryGetList(GET_SHOP_LIST, {}, shopRowMapperJdbc)
     fun createShop(shopName: String): Shop {
         helper.updateJdbc(CREATE_SHOP) {
-            setString(1, shopName)
+            setString(1,
+                shopName.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
         }
         return helper.jdbcQueryGetFirst(GET_SHOP_BY_NAME, {
             setString(1, shopName)
