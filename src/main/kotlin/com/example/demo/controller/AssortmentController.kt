@@ -12,7 +12,7 @@ class AssortmentController(private val assortmentService: AssortmentService) {
 
     @GetMapping
     fun getAssortmentList():ResponseEntity<List<AssortmentResponse>>{
-
+        return ResponseEntity.ok(listOf())
     }
 
     @GetMapping("/{id}")
@@ -34,3 +34,5 @@ class AssortmentController(private val assortmentService: AssortmentService) {
 
 data class AssortmentChangeCategoryRequest(val id: Long, val categoryId: Long)
 data class AssortmentDetailsResponse(val id: Long, val name: String, val categoryId: Long)
+
+data class AssortmentResponse(val id: Long)
