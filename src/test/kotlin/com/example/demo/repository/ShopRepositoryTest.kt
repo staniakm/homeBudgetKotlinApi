@@ -31,12 +31,12 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
         val shop = shopRepository.createShop("shopName")
 
         shop.shopId shouldBe 1
-        shop.name shouldBe "shopName"
+        shop.name shouldBe "Shopname"
 
         val shop2 = shopRepository.createShop("shopName2")
 
         shop2.shopId shouldBe 2
-        shop2.name shouldBe "shopName2"
+        shop2.name shouldBe "Shopname2"
     }
 
     @Test

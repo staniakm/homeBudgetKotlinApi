@@ -27,6 +27,6 @@ class ShopServiceTest(
         val shop = shopService.createShop(request)
         //then
         shop.shopId shouldBe 1
-        shop.name shouldBeEqualComparingTo  "SHOP_NAME"
+        shop.name shouldBeEqualComparingTo  "Shop_name"
     }
 }
