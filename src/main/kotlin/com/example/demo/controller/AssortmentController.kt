@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/assortment")
 class AssortmentController(private val assortmentService: AssortmentService) {
 
+
+    @GetMapping
+    fun getAssortmentList():ResponseEntity<List<AssortmentResponse>>{
+
+    }
+
     @GetMapping("/{id}")
     fun getAssortmentDetails(@PathVariable("id") id: Long): ResponseEntity<AssortmentDetailsResponse> {
         return assortmentService.getAssortmentDetails(id)?.let { ResponseEntity.ok(it.toResponse()) }

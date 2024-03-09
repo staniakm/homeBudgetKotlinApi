@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.12'
+version = '0.0.13'
 sourceCompatibility = '17'
 
 repositories {
