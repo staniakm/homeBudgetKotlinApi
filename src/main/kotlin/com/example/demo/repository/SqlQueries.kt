@@ -447,7 +447,7 @@ object SqlQueries {
                             join invoice_details id on i.id = id.invoice
                             join assortment a on id.assortment = a.id
                             where extract('YEAR' from i.date) = ? and  extract('MONTH' from i.date) = ?
-                                and id.category =?
+                                and a.id = ?
                             order by  a.name
         """.trimIndent()
     }
