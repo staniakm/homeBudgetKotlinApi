@@ -373,7 +373,7 @@ object SqlQueries {
                         join invoice p on p.ID = ps.invoice
                     	join assortment a on a.id = ps.assortment 
                     where p.date between ? and ?
-                                       and ps.category = ?
+                                       and a.category = ?
                     group by a.id, a."name"
                  """.trimIndent()
     }
