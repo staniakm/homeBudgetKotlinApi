@@ -327,19 +327,22 @@ object SqlQueries {
                       coalesce(ps.price,0.00) monthSummary, 
                       pr.price yearSummary 
                   from category k 
-                       join (select sum(price) price, category 
+                       join (select sum(price) price, assortment.category as category
                                from invoice_details ps 
-                                   join invoice p on p.ID = ps.invoice 
+                                   	join invoice p on p.ID = ps.invoice 
+							 		join assortment ON assortment.id = ps.assortment
                                where extract(year from p.date) = ? 
-                               group by category) as pr on pr.category = k.id 
+                               group by assortment.category) as pr on pr.category = k.id 
                        left join (select 
                                        sum(price) price, 
-                                       category 
+                                       assortment.category as category 
                                   from invoice_details ps 
-                                       join invoice p on p.ID = ps.invoice 
+                                       	join invoice p on p.ID = ps.invoice 
+								  		join assortment ON assortment.id = ps.assortment
                                   where extract(year from p.date)=? and extract(month from p.date) = ?
-                                  group by category) as ps on ps.category = k.id where k.id = ? 
-                  order by name""".trimIndent()
+                                  group by assortment.category) as ps on ps.category = k.id where k.id = ? 
+                  order by name
+				  """.trimIndent()
     }
 
     private fun getCategoryList(): String {
@@ -348,12 +351,17 @@ object SqlQueries {
                     coalesce(ps.price,0.00) monthSummary, 
                     coalesce(pr.price,0.00) yearSummary 
                 from category k 
-                left join (select sum(ps.price) price, category from invoice_details ps 
-                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = ?
-                            group by category) as pr on pr.category = k.id 
-                left join (select sum(ps.price) price, category from invoice_details ps 
-                            join invoice p on p.ID = ps.invoice where extract(year from p.date) = ? and extract(month from p.date) = ?
-                            group by category) as ps on ps.category = k.id 
+                left join (select sum(ps.price) price, aso.category from invoice_details ps 
+                            join invoice p on p.ID = ps.invoice 
+						   	join assortment aso on aso.id = ps.assortment
+						   where extract(year from p.date) = ?
+                            group by aso.category) as pr on pr.category = k.id 
+                left join (select sum(ps.price) price, aso.category 
+						   from invoice_details ps 
+                            join invoice p on p.ID = ps.invoice 
+						   	join assortment aso on aso.id = ps.assortment
+						   where extract(year from p.date) = ? and extract(month from p.date) = ?
+                            group by aso.category) as ps on ps.category = k.id 
                 order by name""".trimIndent()
     }
 

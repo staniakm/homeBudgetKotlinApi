@@ -20,6 +20,7 @@ class CategorySummaryRepositoryTest(@Autowired private val categoryRepository: C
         createCategory(1, "category 1")
         createCategory(2, "category 2")
         createAssortment(1, "assortment 1", 1)
+        createAssortment(2, "assortment 2", 2)
         createShop()
         createInvoice(1, 1, LocalDate.of(2021, 10, 11))
         createInvoice(2, 1, LocalDate.of(2021, 11, 11))
@@ -27,9 +28,9 @@ class CategorySummaryRepositoryTest(@Autowired private val categoryRepository: C
         createInvoice(4, 1, LocalDate.of(2021, 11, 11))
 
         createInvoiceItem(1, 1, BigDecimal(10), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(2, 1, BigDecimal(20), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 1)
+        createInvoiceItem(2, 1, BigDecimal(20), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 2)
         createInvoiceItem(3, 2, BigDecimal(30), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(4, 2, BigDecimal(40), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 1)
+        createInvoiceItem(4, 2, BigDecimal(40), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 2)
         createInvoiceItem(5, 3, BigDecimal(50), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
         createInvoiceItem(6, 4, BigDecimal(60), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
 
@@ -48,6 +49,7 @@ class CategorySummaryRepositoryTest(@Autowired private val categoryRepository: C
         createCategory(1, "category 1")
         createCategory(2, "category 2")
         createAssortment(1, "assortment 1", 1)
+        createAssortment(2, "assortment 2", 2)
         createShop()
         createInvoice(1, 1, LocalDate.of(2021, 10, 11))
         createInvoice(2, 1, LocalDate.of(2021, 11, 11))
@@ -55,9 +57,9 @@ class CategorySummaryRepositoryTest(@Autowired private val categoryRepository: C
         createInvoice(4, 1, LocalDate.of(2021, 11, 11))
 
         createInvoiceItem(1, 1, BigDecimal(10), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(2, 1, BigDecimal(20), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 1)
+        createInvoiceItem(2, 1, BigDecimal(20), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 2)
         createInvoiceItem(3, 2, BigDecimal(30), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(4, 2, BigDecimal(40), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 1)
+        createInvoiceItem(4, 2, BigDecimal(40), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 2, 2)
         createInvoiceItem(5, 3, BigDecimal(50), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
         createInvoiceItem(6, 4, BigDecimal(60), BigDecimal(1), BigDecimal(1), BigDecimal.ZERO, 1, 1)
 
