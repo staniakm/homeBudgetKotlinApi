@@ -100,5 +100,6 @@ Testing best practices:
 - Never run risky Git commands (for example: `reset --hard`, `clean -fd`, `rebase`, `cherry-pick`, `revert`, `push --force`, `checkout` that overwrites changes).
 - Never fetch/pull remote changes (`git fetch`, `git pull`).
 - Never delete files (neither via Git nor shell).
+- Exception: for test-maintenance refactors, file rename/move is allowed only inside `src/test/**` (for example to align file names with test class names), as long as no test content is intentionally removed.
 - Allowed Git operation: only local staging of new files (`git add <new-files>`).
 - Do not commit, push, or rewrite history without a separate explicit user decision.

@@ -12,15 +12,13 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
 
     @Test
     fun `should get all owners`() {
-        setup("create multiple owners") {
-            createAccountOwner(1, "Owner1")
-            createAccountOwner(2, "owner2")
-            createAccountOwner(3, "owner3")
-        }
-        val findAllAccounts = methodUnderTest("should fetch existing owners") {
-            accountOwnerRepository.findAllOwners()
-        }
-        validateResults("result should contains all saved owners", result = findAllAccounts) {
+        createAccountOwner(1, "Owner1")
+        createAccountOwner(2, "owner2")
+        createAccountOwner(3, "owner3")
+
+        val findAllAccounts = accountOwnerRepository.findAllOwners()
+
+        with(findAllAccounts) {
             size shouldBe 3
             map { it.name } shouldContainAll listOf("Owner1", "owner2", "owner3")
         }
@@ -35,14 +33,10 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
 
     @Test
     fun `should return null when owner already exists`() {
-        setup("create multiple owners") {
-            createAccountOwner(1, "Owner1")
-        }
-        val owner = methodUnderTest("should return null when owner already exists") {
-            accountOwnerRepository.createNewOwner("Owner1", "Father")
-        }
-        validateResults("should return null when owner already exists", result = owner) {
-            shouldBe(null)
-        }
+        createAccountOwner(1, "Owner1")
+
+        val owner = accountOwnerRepository.createNewOwner("Owner1", "Father")
+
+        owner shouldBe null
     }
 }
