@@ -260,6 +260,24 @@ class CategorySummaryControllerTest : IntegrationTest() {
     }
 
     @Test
+    fun `should return category summary response for default month parameter`() {
+        clockProvider.setTime("2022-05-01T00:00:00.00Z")
+        createShop()
+        createAccountOwner(1, "owner1")
+        createAccount(1, BigDecimal.TEN)
+        createCategory(1, "category1")
+        createAssortment(1, "assortment1", 1)
+        createInvoice(1, 1, LocalDate.of(2022, 5, 1), BigDecimal("10.10"), 1)
+        createInvoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+
+        val category = restTemplate.getForEntity("/api/category/1", CategorySummary::class.java)
+
+        category.statusCode.is2xxSuccessful
+        category.body!!.id shouldBe 1
+        category.body!!.monthSummary shouldBe "10.10".toBigDecimal()
+    }
+
+    @Test
     fun `should get category details for selected month`() {
         // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
@@ -335,6 +353,24 @@ class CategorySummaryControllerTest : IntegrationTest() {
             )
         }
 
+    }
+
+    @Test
+    fun `should get category details for default month parameter`() {
+        clockProvider.setTime("2022-05-01T00:00:00.00Z")
+        createShop()
+        createAccountOwner(1, "owner1")
+        createAccount(1, BigDecimal.TEN)
+        createCategory(1, "category1")
+        createAssortment(1, "assortment1", 1)
+        createInvoice(1, 1, LocalDate.of(2022, 5, 5), BigDecimal("10.10"), 1)
+        createInvoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+
+        val details = restTemplate.getForEntity("/api/category/1/details", Array<CategoryDetails>::class.java)
+
+        details.statusCode.is2xxSuccessful
+        details.body!!.size shouldBe 1
+        details.body!!.first().assortmentId shouldBe 1
     }
 
 }

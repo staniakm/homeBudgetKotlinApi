@@ -95,4 +95,21 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
             percentage shouldBe 5
         }
     }
+
+    @Test
+    fun `should recalculate budgets for month without errors`() {
+        methodUnderTest {
+            budgetRepository.recalculateBudgets(LocalDate.of(2022, 5, 1))
+        }
+    }
+
+    @Test
+    fun `should return zeroed budget details for month without data`() {
+        val result = budgetRepository.getBudgetForMonth(LocalDate.of(2022, 5, 10))
+
+        result.date shouldBe "2022-05"
+        result.totalPlanned shouldBe BigDecimal.ZERO
+        result.totalSpend shouldBe BigDecimal.ZERO
+        result.totalEarned shouldBe BigDecimal.ZERO
+    }
 }

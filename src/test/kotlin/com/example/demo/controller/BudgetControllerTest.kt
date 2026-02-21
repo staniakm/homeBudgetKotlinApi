@@ -84,4 +84,5 @@ class BudgetControllerTest : IntegrationTest() {
         monthBudget.statusCode shouldBe HttpStatus.OK
         monthBudget.body?.budgets?.first { it.budgetId == 1 }?.planned shouldBe BigDecimal("250.00")
     }
+
 }

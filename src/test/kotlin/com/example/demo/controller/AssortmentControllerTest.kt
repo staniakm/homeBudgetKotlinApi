@@ -8,6 +8,16 @@ import org.springframework.http.HttpStatus
 class AssortmentControllerTest : IntegrationTest() {
 
     @Test
+    fun `should return empty assortment list`() {
+        val response = restTemplate.getForEntity("/api/assortment", Array<AssortmentResponse>::class.java)
+
+        response.statusCode shouldBe HttpStatus.OK
+        response.body?.size shouldBe 0
+
+        AssortmentResponse(1).id shouldBe 1
+    }
+
+    @Test
     fun `should return assortment details`() {
         // given
         createCategory(1, "cat1")

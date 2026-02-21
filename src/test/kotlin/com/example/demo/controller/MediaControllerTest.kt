@@ -15,6 +15,21 @@ import org.springframework.http.HttpStatus
 class MediaControllerTest : IntegrationTest() {
 
     @Test
+    fun `should return all media types`() {
+        createMediaType(1, "POWER")
+        createMediaType(2, "WATER")
+
+        val response = restTemplate.getForEntity("/api/media/type/all", Array<MediaType>::class.java)
+
+        response.statusCode shouldBe HttpStatus.OK
+        response.body?.size shouldBe 2
+        response.body!!.toList() shouldContainAll listOf(
+            MediaType(1, "POWER"),
+            MediaType(2, "WATER")
+        )
+    }
+
+    @Test
     fun `should create media type and fetch by id`() {
         val created = restTemplate.postForEntity(
             "/api/media/type",

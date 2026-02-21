@@ -51,17 +51,6 @@ class AccountService(
         return getAccountIncome(updateAccount.accountId, 0)
     }
 
-    @Deprecated("Should be replaced with new method")
-    fun transferMoney(accountId: Int, request: TransferMoneyRequest): Account? {
-        return accountRepository.findById(accountId)
-            ?.let {
-                accountRepository.findById(request.targetAccount)
-                    ?.let {
-                        accountRepository.transferMoney(request.accountId, request.value, request.targetAccount)
-                        accountRepository.findById(request.targetAccount)
-                    }
-            }
-    }
     @Transactional(transactionManager = "transactionManager")
     fun transferMoney(request: TransferMoneyRequest): Account? {
         return accountRepository.findById(request.accountId)
