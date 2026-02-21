@@ -50,7 +50,7 @@ class AccountController(private val accountService: AccountService) {
     @Deprecated("Should be replaced with POST operation")
     @PutMapping("/{accountId}/transfer")
     fun transferMoney(@PathVariable accountId: Int, @RequestBody request: TransferMoneyRequest) =
-        accountService.transferMoney(accountId, request)
+        accountService.transferMoney(request.copy(accountId = accountId))
 
     @PostMapping("/transfer")
     fun transferMoneyBetweenAccounts(@RequestBody request: TransferMoneyRequest) =

@@ -15,7 +15,7 @@ import java.sql.Statement
 class RepositoryHelper(val jdbcTemplate: JdbcTemplate) {
     fun batchCreateInvoiceItems(invoiceId: Long, items: List<NewInvoiceItemRequest>) {
         jdbcTemplate.batchUpdate(CREATE_INVOICE_DETAILS.invoke(), items.map { item ->
-            arrayOf(invoiceId, item.totalPrice, item.amount, item.unitPrice, item.discount, item.shopItem.itemId)
+            arrayOf<Any>(invoiceId, item.totalPrice, item.amount, item.unitPrice, item.discount, item.shopItem.itemId)
         })
     }
 
