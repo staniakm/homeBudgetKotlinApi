@@ -71,7 +71,7 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
     }
 
     @Test
-    fun `should update planed for selected budget`() {
+    fun `should update planned for selected budget`() {
         createCategory(1, "categoryName")
         createBudgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal("10.00"), 10)
         budgetRepository.updateBudget(UpdateBudgetDto(1, BigDecimal("200.00")))

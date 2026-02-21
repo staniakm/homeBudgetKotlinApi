@@ -256,7 +256,7 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
     }
 
     @Test
-    fun `should return empty list if now sallary type exists`() {
+    fun `should return empty list if no salary type exists`() {
         val incomeTypes = accountRepository.getIncomeTypes()
 
         incomeTypes.size shouldBe 0

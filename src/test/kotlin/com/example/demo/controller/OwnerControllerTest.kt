@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 class OwnerControllerTest : IntegrationTest() {
 
     @Test
-    fun `should get empty list while fetching all owners and no owners exists`() {
+    fun `should get empty list while fetching all owners when no owners exist`() {
         val findAllOwners = restTemplate.getForEntity("/api/owner/", Array<AccountOwner>::class.java)
 
         findAllOwners.statusCode.is2xxSuccessful

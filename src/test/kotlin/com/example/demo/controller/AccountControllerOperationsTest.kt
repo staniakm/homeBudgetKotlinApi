@@ -1,11 +1,12 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
+import com.example.demo.givenOwnerAndPrimaryAccount
+import com.example.demo.givenOwnerWithTwoAccounts
 import com.example.demo.entity.*
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -14,7 +15,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch empty list when no income exists for selected account and month`() {
-        givenOwnerAndAccount()
+        givenOwnerAndPrimaryAccount()
         createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 4, 10))
         createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 3, 5))
 
@@ -26,7 +27,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch account incomes for selected account and month`() {
-        givenOwnerAndAccount()
+        givenOwnerAndPrimaryAccount()
         createAccount(2, BigDecimal("100.00"), "account1")
         createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
         createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
@@ -46,7 +47,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should add new account income`() {
-        givenOwnerAndAccount()
+        givenOwnerAndPrimaryAccount()
 
         val addIncome = restTemplate.postForEntity(
             "/api/account/1",
@@ -89,7 +90,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should transfer money from one account to another`() {
-        createOwnerWithTwoAccounts()
+        givenOwnerWithTwoAccounts()
 
         restTemplate.put("/api/account/1/transfer", TransferMoneyRequest(1, BigDecimal("50.00"), 2))
 
@@ -100,7 +101,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should post request for transfer money between accounts and return updated source account`() {
-        createOwnerWithTwoAccounts()
+        givenOwnerWithTwoAccounts()
 
         val transferMoney = restTemplate.postForEntity(
             "/api/account/transfer",
@@ -217,15 +218,4 @@ class AccountControllerOperationsTest : IntegrationTest() {
         }
     }
 
-    private fun givenOwnerAndAccount() {
-        clockProvider.setTime("2022-05-20T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-    }
-
-    private fun createOwnerWithTwoAccounts() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("150.00"), "account1")
-        createAccount(2, BigDecimal("110.00"), "account2")
-    }
 }

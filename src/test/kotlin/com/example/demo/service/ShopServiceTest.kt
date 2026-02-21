@@ -12,7 +12,7 @@ class ShopServiceTest(
 ) : IntegrationTest() {
 
     @Test
-    fun `should create new shop and return its id nad name`() {
+    fun `should create new shop and return its id and name`() {
         val request = CreateShopRequest("shop_name")
         val shop = shopService.createShop(request)
         shop.shopId shouldBe 1
