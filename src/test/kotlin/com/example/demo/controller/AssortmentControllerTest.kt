@@ -2,7 +2,6 @@ package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 
@@ -103,24 +102,6 @@ class AssortmentControllerTest : IntegrationTest() {
         )
 
         newAssortment.statusCode shouldBe HttpStatus.BAD_REQUEST
-    }
-
-    @Test
-    @Disabled("Not implemented yet")
-    fun `should merge two assortments into one with recalculation of expenses`() {
-
-    }
-
-    @Test
-    @Disabled("Not implemented yet")
-    fun `should return bad request when destination assortment not exists`() {
-
-    }
-
-    @Test
-    @Disabled("Not implemented yet")
-    fun `should return bad request when source assortment not exists`() {
-
     }
 
 }
