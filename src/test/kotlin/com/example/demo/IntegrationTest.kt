@@ -22,8 +22,6 @@ import java.util.logging.Logger
 @ActiveProfiles("test")
 abstract class IntegrationTest {
 
-    val logger = Logger.getLogger("[TEST LOGGER]")
-
     val tables = listOf(
         "automatic_invoice_products",
         "income",
@@ -178,27 +176,6 @@ abstract class IntegrationTest {
 
     fun createSalaryIncomeType(id: Int = 1, name: String = "Sallary") {
         executeInsert("insert into salary_type(id, name) values ($id, '$name')")
-    }
-
-    fun setup(description: String, op: () -> Unit) {
-        logger.info(description)
-        op.invoke()
-        logger.info("Setup data created")
-    }
-
-    fun <T> methodUnderTest(description: String = "", op: () -> T): T {
-        if (description.isNotBlank()) logger.info(description)
-        return op.invoke()
-    }
-
-    fun validateResults(description: String = "", op: () -> Unit) {
-        if (description.isNotBlank()) logger.info(description)
-        op.invoke()
-    }
-
-    fun <T> validateResults(description: String = "", result: T, op: T.() -> Unit) {
-        if (description.isNotBlank()) logger.info(description)
-        op.invoke(result)
     }
 
     fun createBudgetItem(

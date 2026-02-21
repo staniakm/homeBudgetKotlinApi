@@ -13,28 +13,19 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return empty list when no categories exists`() {
-        // when
-        val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
-        }
+        val findAllCategories = restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
 
-        //then
         findAllCategories.statusCode.is2xxSuccessful
         findAllCategories.body!!.size shouldBe 0
     }
 
     @Test
     fun `should return list of categories with zero outcome when no invoices exists`() {
-        // given
         createCategory(1, "category1")
         createCategory(2, "category2")
         createCategory(3, "category3")
-        // when
-        val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
-        }
+        val findAllCategories = restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
 
-        //then
         findAllCategories.statusCode.is2xxSuccessful
         findAllCategories.body!!.size shouldBe 3
         with(findAllCategories.body!!.asList()) {
@@ -55,7 +46,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories with calculated outcome for default month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -76,12 +66,8 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        //when
-        val findAllCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
-        }
+        val findAllCategories = restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
 
-        // then
         findAllCategories.statusCode.is2xxSuccessful
         findAllCategories.body!!.size shouldBe 3
         with(findAllCategories.body!!.asList()) {
@@ -102,7 +88,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories with calculated month summary for selected month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -123,12 +108,8 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category?month=-1", Array<CategorySummary>::class.java)
-        }
+        val allCategories = restTemplate.getForEntity("/api/category?month=-1", Array<CategorySummary>::class.java)
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body!!.size shouldBe 3
         with(allCategories.body!!.asList()) {
@@ -149,7 +130,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list fo categories skipping categories without outcome in selected month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -170,12 +150,11 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category?month=-1&skipZero=true", Array<CategorySummary>::class.java)
-        }
+        val allCategories = restTemplate.getForEntity(
+            "/api/category?month=-1&skipZero=true",
+            Array<CategorySummary>::class.java
+        )
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body!!.size shouldBe 2
         with(allCategories.body!!.asList()) {
@@ -192,7 +171,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return empty response when category by id for selected month does not exist`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -213,19 +191,14 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/4?month=-1", CategorySummary::class.java)
-        }
+        val allCategories = restTemplate.getForEntity("/api/category/4?month=-1", CategorySummary::class.java)
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body shouldBe null
     }
 
     @Test
     fun `should return category summary response for selected month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -246,12 +219,8 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/1?month=-1", CategorySummary::class.java)
-        }
+        val allCategories = restTemplate.getForEntity("/api/category/1?month=-1", CategorySummary::class.java)
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body!!.id shouldBe 1
         allCategories.body!!.name shouldBe "category1"
@@ -279,7 +248,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should get category details for selected month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -300,12 +268,11 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/1/details?month=-1", Array<CategoryDetails>::class.java)
-        }
+        val allCategories = restTemplate.getForEntity(
+            "/api/category/1/details?month=-1",
+            Array<CategoryDetails>::class.java
+        )
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body!!.size shouldBe 1
         with(allCategories.body!!.toList()) {
@@ -317,7 +284,6 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should get list of category details for selected month`() {
-        // given
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
         createShop()
         createAccountOwner(1, "owner1")
@@ -338,12 +304,11 @@ class CategorySummaryControllerTest : IntegrationTest() {
         createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
         createInvoiceItem(5, 2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 3)
 
-        // when
-        val allCategories = methodUnderTest("should fetch existing categories") {
-            restTemplate.getForEntity("/api/category/2/details?month=-1", Array<CategoryDetails>::class.java)
-        }
+        val allCategories = restTemplate.getForEntity(
+            "/api/category/2/details?month=-1",
+            Array<CategoryDetails>::class.java
+        )
 
-        // then
         allCategories.statusCode.is2xxSuccessful
         allCategories.body!!.size shouldBe 2
         with(allCategories.body!!.asList()) {

@@ -27,7 +27,6 @@ class InvoiceServiceTest(
 
     @Test
     fun `should create new invoice with item`() {
-        //given input data
         createCategory(1, "")
         createAssortment(1, "", 1)
         createAssortment(2, "aso2", 1)
@@ -45,13 +44,10 @@ class InvoiceServiceTest(
                 )
             ), BigDecimal.ONE, "", ""
         )
-        //when
         val invoice: Invoice? = invoiceService.createNewInvoiceWithItems(request)
-        //then
         invoice?.id shouldBe 1
         invoice?.sum shouldBe BigDecimal("21.00")
         invoice?.del shouldBe false
-        //and
         val invoiceDetails: List<InvoiceItem> = invoiceService.getInvoiceDetails(1)
         invoiceDetails.size shouldBe 2
         invoiceDetails.map { it.itemId } shouldBe listOf(1, 2)
@@ -63,27 +59,18 @@ class InvoiceServiceTest(
 
     @Test
     fun `should return null when no invoice exists`() {
-        //expect
         val invoice = invoiceRepository.getInvoice(1)
         invoice shouldBe null
-        //when delete invoice
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
-
-        //then should return id
         invoiceId shouldBe null
     }
 
     @Test
     fun `should delete existing invoice`() {
-        //given prepare initial data
         createInvoice(1)
-        //expect invoice exists in database
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
-        //when delete invoice
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
-
-        //then should return id
         invoiceId shouldBe 1
         val deletedInvoice: Invoice? = invoiceRepository.getInvoice(1)
         deletedInvoice shouldBe null
@@ -91,53 +78,38 @@ class InvoiceServiceTest(
 
     @Test
     fun `should delete existing invoice with details`() {
-        //given prepare initial data
         createCategory(1, "")
         createAssortment(1, "", 1)
         createShopItem(1, 1)
         createInvoice(1)
         createInvoiceItem(1, 1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ZERO, 1, 1)
-        //expect invoice exists in database
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
-        //expecet invoice details exists in database
         val itemsCount = invoiceRepository.getInvoiceDetails(1)
         itemsCount.size shouldBe 1
-        //when delete invoice
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
-
-        //then should return id
         invoiceId shouldBe 1
-        //and invoice should be deleted
         val deletedInvoice: Invoice? = invoiceRepository.getInvoice(1)
         deletedInvoice shouldBe null
-        //and invoice items should be deleted
         invoiceRepository.getInvoiceDetails(1) shouldBe emptyList()
     }
 
 
     @Test
     fun `should delete existing invoice with details and update account money amount`() {
-        //given prepare initial data
         createCategory(1, "")
         createAssortment(1, "", 1)
         createShopItem(1, 1)
         createInvoice(1)
         createInvoiceItem(1, 1, BigDecimal("10.0"), BigDecimal("2"), BigDecimal("5"), BigDecimal.ZERO, 1, 1)
-        //expect invoice exists in database
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
-        //expected invoice details exists in database
         val itemsCount = invoiceRepository.getInvoiceDetails(1)
         itemsCount.size shouldBe 1
-        //when delete invoice
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
-        //then should return id
         invoiceId shouldBe 1
-        //and invoice should be deleted
         val deletedInvoice: Invoice? = invoiceRepository.getInvoice(1)
         deletedInvoice shouldBe null
-        //and account money amount should be updated
         val account = accountRepository.findById(1)
         account?.amount?.shouldBeEqualComparingTo(BigDecimal("11.0"))
     }

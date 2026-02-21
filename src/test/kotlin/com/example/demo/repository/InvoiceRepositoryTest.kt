@@ -186,7 +186,6 @@ class InvoiceRepositoryTest(
 
         invoiceRepository.createInvoiceItems(1, listOf(item1, item2))
 
-        //then
         val items = invoiceRepository.getInvoiceDetails(1)
         items.size shouldBe 2
         items shouldContainAll listOf(
@@ -232,12 +231,9 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should create automatic invoice with zero sum when no automatic entries exists`() {
-        //given
         createAccount(accountId = 3)
         createShop(shopId = 8)
-        //when
         invoiceRepository.createAutoInvoice()
-        //then
         val invoice = invoiceRepository.getInvoice(1)
         invoice shouldNotBe null
         invoice?.let {
@@ -250,7 +246,6 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should create automatic invoice`() {
-        //given create initial state
         createAccount(accountId = 3, amount = BigDecimal("100"))
         createShop(shopId = 8)
         createCategory(2, "Cat2")
@@ -258,9 +253,7 @@ class InvoiceRepositoryTest(
         createAssortment(2, "aso2", 2)
         createAutoinvoiceEntry(asoId = 1, price = BigDecimal("1.2"), quantity = BigDecimal.ONE)
         createAutoinvoiceEntry(asoId = 2, price = BigDecimal("8.9"), quantity = BigDecimal.ONE)
-        //when call auto invoice procedure
         invoiceRepository.createAutoInvoice()
-        //then invoice created
         val invoice = invoiceRepository.getInvoice(1)
         invoice shouldNotBe null
         invoice?.let {
@@ -269,7 +262,6 @@ class InvoiceRepositoryTest(
             it.shop shouldBe 8
             it.invoiceNumber shouldStartWith "Rachunki"
         }
-        //and account money amount decreased
         val account = accountRepository.findById(3)
         with(account) {
             this?.amount?.shouldBeEqualComparingTo(BigDecimal("89.9"))
@@ -278,7 +270,6 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should create batch invoice details`() {
-        //given
         createCategory(1, "Cat1")
         createCategory(2, "Cat2")
         createAssortment(1, "aso1", 2)
@@ -286,7 +277,6 @@ class InvoiceRepositoryTest(
         createShopItem(1, 1)
         createShopItem(1, 2)
         createInvoice(invoiceId = 10, amount = BigDecimal.ZERO)
-        //when
         invoiceRepository.createInvoiceItems(
             10,
             listOf(
@@ -306,7 +296,6 @@ class InvoiceRepositoryTest(
                 )
             )
         )
-        //then
         val invoiceDetails = invoiceRepository.getInvoiceDetails(10)
         invoiceDetails.size shouldBe 2
         invoiceDetails shouldContainAll listOf(
