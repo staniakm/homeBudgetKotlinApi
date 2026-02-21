@@ -7,7 +7,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
-import java.time.LocalDate
 
 class ChartControllerTest : IntegrationTest() {
 
@@ -21,7 +20,7 @@ class ChartControllerTest : IntegrationTest() {
 
     @Test
     fun `should return chart summary for selected month`() {
-        val now = LocalDate.now()
+        val now = clockProvider.getDate()
         createAccountOwner(1, "owner1")
         createAccount(1, BigDecimal("100.00"), "account1")
         createShop(1, "shop1")

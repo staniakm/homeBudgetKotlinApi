@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
-import java.time.LocalDate
 
 class InvoiceServiceTest(
     @Autowired private val invoiceService: InvoiceService,
@@ -33,7 +32,7 @@ class InvoiceServiceTest(
         createShopItem(1, 1)
         createShopItem(1, 2)
         val request = NewInvoiceRequest(
-            1, 1, LocalDate.now(), listOf(
+            1, 1, clockProvider.getDate(), listOf(
                 NewInvoiceItemRequest(
                     ShopItem(1, "item"), BigDecimal.ONE,
                     BigDecimal.ONE, BigDecimal("0.20"), BigDecimal.ONE

@@ -6,6 +6,7 @@ import java.time.LocalDate
 abstract class TestDataFixtures {
 
     protected abstract fun executeInsert(query: String)
+    protected abstract fun currentDate(): LocalDate
 
     fun createShop(shopId: Int = 1, shopName: String = "ShopName") {
         executeInsert("insert into shop (id, name) values ($shopId, '$shopName')")
@@ -24,7 +25,7 @@ abstract class TestDataFixtures {
     fun createInvoice(
         invoiceId: Int = 1,
         accountId: Int = 1,
-        date: LocalDate = LocalDate.now(),
+        date: LocalDate = currentDate(),
         amount: BigDecimal = BigDecimal.TEN,
         shopId: Int = 1
     ) {
@@ -89,8 +90,8 @@ abstract class TestDataFixtures {
     fun createBudgetItem(
         id: Int = 1,
         categoryId: Int = 1,
-        month: Int = LocalDate.now().monthValue,
-        year: Int = LocalDate.now().year,
+        month: Int = currentDate().monthValue,
+        year: Int = currentDate().year,
         planned: BigDecimal = BigDecimal.ZERO,
         used: BigDecimal = BigDecimal.ZERO,
         percentage: Int = 0
@@ -108,8 +109,8 @@ abstract class TestDataFixtures {
     fun createMedia(
         id: Int = 1,
         mediaTypeId: Int = 1,
-        year: Int = LocalDate.now().year,
-        month: Int = LocalDate.now().monthValue,
+        year: Int = currentDate().year,
+        month: Int = currentDate().monthValue,
         meterRead: Double = 0.0
     ) {
         executeInsert("insert into media_usage(id, media_type, year, month, meter_read) values ($id, $mediaTypeId, $year, $month, $meterRead)")

@@ -7,7 +7,6 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalDate
 
 class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepository) : IntegrationTest() {
 
@@ -18,13 +17,15 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
         createMedia(id = 1, mediaTypeId = 1, meterRead = 11.00)
         createMedia(2, mediaTypeId = 2, meterRead = 123.00)
 
+        val now = clockProvider.getDate()
+
         val mediaListItems =
-            mediaRepository.getMediaForMonth(LocalDate.now().year, LocalDate.now().monthValue)
+            mediaRepository.getMediaForMonth(now.year, now.monthValue)
 
         mediaListItems.size shouldBe 2
         mediaListItems shouldContainAll listOf(
-            MediaItem(1, 1, LocalDate.now().year, LocalDate.now().monthValue, 11.00),
-            MediaItem(2, 2, LocalDate.now().year, LocalDate.now().monthValue, 123.00)
+            MediaItem(1, 1, now.year, now.monthValue, 11.00),
+            MediaItem(2, 2, now.year, now.monthValue, 123.00)
         )
     }
 
@@ -32,11 +33,13 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
     fun `should register new media usage and return all media usage for type`() {
         createMediaType(1, "POWER")
 
+        val now = clockProvider.getDate()
+
         val mediaReads =
-            mediaRepository.createMediaUsage(1, 123.01, LocalDate.now().year, LocalDate.now().monthValue)
+            mediaRepository.createMediaUsage(1, 123.01, now.year, now.monthValue)
 
         mediaReads.size shouldBe 1
-        mediaReads shouldContainAll listOf(MediaUsage(1, 1, LocalDate.now().year, LocalDate.now().monthValue, 123.01))
+        mediaReads shouldContainAll listOf(MediaUsage(1, 1, now.year, now.monthValue, 123.01))
     }
 
     @Test

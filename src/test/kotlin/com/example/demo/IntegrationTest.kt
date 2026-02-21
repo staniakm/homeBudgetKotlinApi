@@ -15,6 +15,7 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import java.time.LocalDate
 import java.util.logging.Logger
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [TestConfig::class])
@@ -82,4 +83,6 @@ abstract class IntegrationTest : TestDataFixtures() {
         Logger.getLogger("[TEST LOGGER]").info("Executing query: $query")
         client.update(query)
     }
+
+    override fun currentDate(): LocalDate = clockProvider.getDate()
 }
