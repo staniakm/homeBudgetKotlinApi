@@ -6,12 +6,14 @@ import com.example.demo.entity.MonthBudget
 import com.example.demo.entity.MonthBudgetPlanned
 import com.example.demo.repository.BudgetRepository
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import java.math.BigDecimal
 import java.time.LocalDate
 
+@Tag("unit")
 class BudgetServiceTest {
 
     @Test

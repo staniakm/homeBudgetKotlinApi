@@ -8,7 +8,7 @@ Rest api build with Koltin and Spring Boot. Is used as bridge between postgres d
 At this moment [desktop application](https://github.com/staniakm/HomeBudgetApp) is used to fill data in database.    
 
 
-##How to run
+## How to run
 ### Run with local database installed
 #### Run application code from IDE
  - provide credentials to database in application.properties file
@@ -24,3 +24,19 @@ At this moment [desktop application](https://github.com/staniakm/HomeBudgetApp) 
 - run in cmd `docker save home-budget-api:<version> | ssh <user>@<host>> docker load`
 - update docker-compose.yml with new image version on remote machine
 - restart docker container on remote machine
+
+## Running tests locally
+
+- Run fast unit tests only:
+  - `./gradlew unitTest`
+  - On Windows: `./gradlew.bat unitTest`
+
+- Run full quality gate (integration tests + coverage verification + disabled-test check):
+  - `./gradlew check`
+  - On Windows: `./gradlew.bat check`
+
+- Generate and inspect coverage reports:
+  - `./gradlew test jacocoTestReport`
+  - JaCoCo HTML report: `build/reports/jacoco/test/html/index.html`
+  - JaCoCo XML report: `build/reports/jacoco/test/jacocoTestReport.xml`
+  - Test report: `build/reports/tests/test/index.html`

@@ -3,11 +3,13 @@ package com.example.demo.controller
 import com.example.demo.entity.MonthBudget
 import com.example.demo.service.BudgetService
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import java.math.BigDecimal
 
+@Tag("unit")
 class BudgetControllerUnitTest {
 
     @Test

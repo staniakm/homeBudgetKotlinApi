@@ -7,10 +7,12 @@ import com.example.demo.entity.MediaUsage
 import com.example.demo.repository.MediaRepository
 import com.example.demo.repository.MediaTypeRepository
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
+@Tag("unit")
 class MediaServiceTest {
 
     @Test

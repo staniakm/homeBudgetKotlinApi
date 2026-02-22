@@ -1,11 +1,13 @@
 package com.example.demo.service
 
 import com.example.demo.repository.InvoiceRepository
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
+@Tag("unit")
 class AutomaticInvoiceServiceTest {
 
     @Test

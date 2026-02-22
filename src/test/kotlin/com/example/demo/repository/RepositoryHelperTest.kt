@@ -1,6 +1,7 @@
 package com.example.demo.repository
 
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.doAnswer
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.SqlParameter
 import java.sql.CallableStatement
 import java.sql.Connection
 
+@Tag("unit")
 class RepositoryHelperTest {
 
     @Test

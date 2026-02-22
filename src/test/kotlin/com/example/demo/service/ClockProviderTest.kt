@@ -1,8 +1,10 @@
 package com.example.demo.service
 
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Tag("unit")
 class ClockProviderTest {
 
     private val clock = ClockProvider()

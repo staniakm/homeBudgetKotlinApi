@@ -4,10 +4,12 @@ import com.example.demo.entity.Assortment
 import com.example.demo.entity.Category
 import com.example.demo.repository.AssortmentRepository
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
+@Tag("unit")
 class AssortmentServiceTest {
 
     @Test
