@@ -72,3 +72,47 @@ tasks.named('jacocoTestReport') {
 		html.required = true
 	}
 }
+
+tasks.register('forbidDisabledTests') {
+	group = 'verification'
+	description = 'Fails build when @Disabled is used in tests'
+	doLast {
+		def disabledPattern = ~/(^|\s)@Disabled(\s*\(|\b)/
+		def offenders = fileTree('src/test').matching {
+			include '**/*.kt', '**/*.java'
+		}.files.findAll { it.text =~ disabledPattern }
+
+		if (!offenders.isEmpty()) {
+			def files = offenders.collect { project.relativePath(it) }.sort().join('\n - ')
+			throw new GradleException("@Disabled is not allowed in tests.\n - ${files}")
+		}
+	}
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+	dependsOn tasks.named('test')
+	violationRules {
+		rule {
+			element = 'BUNDLE'
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.95
+			}
+		}
+		rule {
+			element = 'PACKAGE'
+			includes = ['com.example.demo.controller', 'com.example.demo.repository', 'com.example.demo.service']
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.90
+			}
+		}
+	}
+}
+
+tasks.named('check') {
+	dependsOn tasks.named('forbidDisabledTests')
+	dependsOn tasks.named('jacocoTestCoverageVerification')
+}
