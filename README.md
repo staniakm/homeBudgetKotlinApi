@@ -7,6 +7,11 @@ Rest api build with Koltin and Spring Boot. Is used as bridge between postgres d
 
 At this moment [desktop application](https://github.com/staniakm/HomeBudgetApp) is used to fill data in database.    
 
+## Requirements
+
+- Java 21
+- Gradle Wrapper (`./gradlew` / `./gradlew.bat`)
+
 
 ## How to run
 ### Run with local database installed

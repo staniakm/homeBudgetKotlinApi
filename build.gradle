@@ -45,7 +45,7 @@ dependencies {
 jib {
 	def tag = "${version}"
 	from {
-		image = "gcr.io/distroless/java17-debian12"
+		image = "gcr.io/distroless/java21-debian12"
 	}
 	to {
 		image = "${rootProject.name}:${tag}"

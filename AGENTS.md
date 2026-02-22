@@ -54,7 +54,7 @@ Practical conventions:
 
 Requirements:
 
-- Java 17
+- Java 21
 - Gradle Wrapper (use `./gradlew` / `./gradlew.bat`)
 
 Most common commands:
@@ -66,7 +66,7 @@ Most common commands:
 Docker/Jib:
 
 - Image build is configured via `com.google.cloud.tools.jib` plugin.
-- Base image: distroless Java 17.
+- Base image: distroless Java 21.
 
 ## 5) Tests
 
