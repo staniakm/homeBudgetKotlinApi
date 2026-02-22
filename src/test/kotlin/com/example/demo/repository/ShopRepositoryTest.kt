@@ -41,13 +41,20 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should get shop items`() {
-        testDataBuilder.shop()
-        testDataBuilder.category(1)
-        testDataBuilder.assortment(1, "aso1", 1)
-        testDataBuilder.assortment(2, "aso2", 1)
-        testDataBuilder.assortment(3, "aso2", 1)
-        testDataBuilder.shopItem(1, 1)
-        testDataBuilder.shopItem(1, 2)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 1, assortmentName = "aso1")
+        testDataBuilder.givenShopWithAssortment(
+            assortmentId = 2,
+            assortmentName = "aso2",
+            createShop = false,
+            createCategory = false
+        )
+        testDataBuilder.givenShopWithAssortment(
+            assortmentId = 3,
+            assortmentName = "aso2",
+            createShop = false,
+            createCategory = false,
+            linkToShop = false
+        )
 
         val items = shopRepository.getShopItems(1)
 
@@ -60,11 +67,21 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should create shop item`() {
-        testDataBuilder.shop()
-        testDataBuilder.category(1)
-        testDataBuilder.assortment(1, "aso1", 1)
-        testDataBuilder.assortment(2, "aso2", 1)
-        testDataBuilder.assortment(3, "aso3", 1)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 1, assortmentName = "aso1", linkToShop = false)
+        testDataBuilder.givenShopWithAssortment(
+            assortmentId = 2,
+            assortmentName = "aso2",
+            createShop = false,
+            createCategory = false,
+            linkToShop = false
+        )
+        testDataBuilder.givenShopWithAssortment(
+            assortmentId = 3,
+            assortmentName = "aso3",
+            createShop = false,
+            createCategory = false,
+            linkToShop = false
+        )
 
         val item = shopRepository.createShopItem(1, "aso2")
 
@@ -79,16 +96,10 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should fetch shop year items summary`() {
-        testDataBuilder.shop()
-        testDataBuilder.accountOwner(1)
-        testDataBuilder.account(1)
-        testDataBuilder.category(1)
-        testDataBuilder.assortment(1, "aso1", 1)
-        testDataBuilder.assortment(2, "aso2", 1)
-        testDataBuilder.assortment(3, "aso3", 1)
-        testDataBuilder.shopItem(1, 1)
-        testDataBuilder.shopItem(1, 2)
-        testDataBuilder.shopItem(1, 3)
+        testDataBuilder.givenDefaultFinanceContext()
+        testDataBuilder.givenShopWithAssortment(assortmentId = 1, assortmentName = "aso1", createShop = false)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 2, assortmentName = "aso2", createShop = false, createCategory = false)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 3, assortmentName = "aso3", createShop = false, createCategory = false)
 
         testDataBuilder.invoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
         testDataBuilder.invoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)
@@ -125,16 +136,10 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should fetch shop month items summary`() {
-        testDataBuilder.shop()
-        testDataBuilder.accountOwner(1)
-        testDataBuilder.account(1)
-        testDataBuilder.category(1)
-        testDataBuilder.assortment(1, "aso1", 1)
-        testDataBuilder.assortment(2, "aso2", 1)
-        testDataBuilder.assortment(3, "aso3", 1)
-        testDataBuilder.shopItem(1, 1)
-        testDataBuilder.shopItem(1, 2)
-        testDataBuilder.shopItem(1, 3)
+        testDataBuilder.givenDefaultFinanceContext()
+        testDataBuilder.givenShopWithAssortment(assortmentId = 1, assortmentName = "aso1", createShop = false)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 2, assortmentName = "aso2", createShop = false, createCategory = false)
+        testDataBuilder.givenShopWithAssortment(assortmentId = 3, assortmentName = "aso3", createShop = false, createCategory = false)
 
         testDataBuilder.invoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
         testDataBuilder.invoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)

@@ -59,6 +59,53 @@ class TestDataBuilder(private val fixtures: TestDataFixtures) {
         }
     }
 
+    fun givenInvoiceWithTwoItems(
+        invoiceId: Int = 1,
+        accountId: Int = 1,
+        shopId: Int = 1,
+        date: LocalDate = fixtures.today(),
+        firstItem: InvoiceItemSeed,
+        secondItem: InvoiceItemSeed
+    ) {
+        givenInvoiceWithItems(
+            invoiceId = invoiceId,
+            accountId = accountId,
+            shopId = shopId,
+            date = date,
+            items = listOf(firstItem, secondItem)
+        )
+    }
+
+    fun givenShopWithAssortment(
+        shopId: Int = 1,
+        shopName: String = "ShopName",
+        assortmentId: Int = 1,
+        assortmentName: String = "item",
+        categoryId: Int = 1,
+        categoryName: String = "Unknown",
+        createShop: Boolean = true,
+        createCategory: Boolean = true,
+        linkToShop: Boolean = true
+    ) {
+        if (createShop) shop(shopId, shopName)
+        if (createCategory) category(categoryId, categoryName)
+        assortment(assortmentId, assortmentName, categoryId)
+        if (linkToShop) shopItem(shopId, assortmentId)
+    }
+
+    fun givenAccountWithIncome(
+        ownerId: Int = 1,
+        ownerName: String = "owner1",
+        accountId: Int = 1,
+        accountName: String = "account1",
+        accountAmount: BigDecimal = BigDecimal("100.00"),
+        incomes: List<Pair<BigDecimal, LocalDate>>
+    ) {
+        accountOwner(ownerId, ownerName)
+        account(accountId, accountAmount, accountName)
+        incomes.forEach { (amount, date) -> income(accountId, amount, date) }
+    }
+
     fun givenCategoryBase(now: String = "2022-05-01T00:00:00.00Z") {
         fixtures.setTime(now)
         shop()

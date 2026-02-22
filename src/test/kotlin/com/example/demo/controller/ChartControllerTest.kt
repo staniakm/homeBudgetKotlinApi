@@ -28,13 +28,11 @@ class ChartControllerTest : IntegrationTest() {
             CatalogSeedItem(1, "Milk", 1, "Food"),
             CatalogSeedItem(2, "Soap", 2, "Home")
         )
-        testDataBuilder.givenInvoiceWithItems(
+        testDataBuilder.givenInvoiceWithTwoItems(
             invoiceId = 1,
             date = now.withDayOfMonth(10),
-            items = listOf(
-                InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1),
-                InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal("20.00"), BigDecimal.ZERO, 2, 2)
-            )
+            firstItem = InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1),
+            secondItem = InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal("20.00"), BigDecimal.ZERO, 2, 2)
         )
         testDataBuilder.givenInvoiceWithItems(
             invoiceId = 2,

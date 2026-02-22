@@ -56,11 +56,9 @@ class InvoiceRepositoryWriteTest(
     fun `should recalculate invoice`() {
         testDataBuilder.category(1, "Cat1")
         testDataBuilder.givenCatalog(CatalogSeedItem(1, "aso1", 2, "Cat2"))
-        testDataBuilder.givenInvoiceWithItems(
-            items = listOf(
-                InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1),
-                InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
-            )
+        testDataBuilder.givenInvoiceWithTwoItems(
+            firstItem = InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1),
+            secondItem = InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
         )
 
         invoiceRepository.recaculatInvoice(1)
