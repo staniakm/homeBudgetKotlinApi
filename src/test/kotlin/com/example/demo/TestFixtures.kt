@@ -3,6 +3,23 @@ package com.example.demo
 import java.math.BigDecimal
 import java.time.LocalDate
 
+data class CatalogSeedItem(
+    val assortmentId: Int,
+    val assortmentName: String,
+    val categoryId: Int,
+    val categoryName: String
+)
+
+data class InvoiceItemSeed(
+    val id: Int,
+    val price: BigDecimal,
+    val amount: BigDecimal,
+    val unitPrice: BigDecimal,
+    val discount: BigDecimal,
+    val categoryId: Int,
+    val assortmentId: Int
+)
+
 fun IntegrationTest.givenOwnerAndPrimaryAccount(now: String = "2022-05-20T00:00:00.00Z") {
     clockProvider.setTime(now)
     createAccountOwner(1, "owner1")
@@ -13,6 +30,40 @@ fun IntegrationTest.givenOwnerWithTwoAccounts() {
     createAccountOwner(1, "owner1")
     createAccount(1, BigDecimal("150.00"), "account1")
     createAccount(2, BigDecimal("110.00"), "account2")
+}
+
+fun IntegrationTest.givenDefaultFinanceContext() {
+    createAccountOwner()
+    createAccount()
+    createShop()
+}
+
+fun IntegrationTest.givenCatalog(vararg items: CatalogSeedItem) {
+    val categories = items.map { it.categoryId to it.categoryName }.distinctBy { it.first }
+    categories.forEach { (id, name) -> createCategory(id, name) }
+    items.forEach { item -> createAssortment(item.assortmentId, item.assortmentName, item.categoryId) }
+}
+
+fun IntegrationTest.givenInvoiceWithItems(
+    invoiceId: Int = 1,
+    accountId: Int = 1,
+    shopId: Int = 1,
+    date: LocalDate = clockProvider.getDate(),
+    items: List<InvoiceItemSeed>
+) {
+    createInvoice(invoiceId = invoiceId, accountId = accountId, date = date, amount = items.sumOf { it.price }, shopId = shopId)
+    items.forEach { item ->
+        createInvoiceItem(
+            id = item.id,
+            invoiceId = invoiceId,
+            price = item.price,
+            amount = item.amount,
+            unitPrice = item.unitPrice,
+            discount = item.discount,
+            categoryId = item.categoryId,
+            assortment = item.assortmentId
+        )
+    }
 }
 
 fun IntegrationTest.seedCategoryBase(now: String = "2022-05-01T00:00:00.00Z") {

@@ -1,7 +1,12 @@
 package com.example.demo.repository
 
 import com.example.demo.IntegrationTest
+import com.example.demo.CatalogSeedItem
+import com.example.demo.InvoiceItemSeed
 import com.example.demo.entity.*
+import com.example.demo.givenCatalog
+import com.example.demo.givenDefaultFinanceContext
+import com.example.demo.givenInvoiceWithItems
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.shouldBe
@@ -20,9 +25,7 @@ class InvoiceRepositoryWriteTest(
 
     @BeforeEach
     internal fun setUp() {
-        createAccountOwner()
-        createAccount()
-        createShop()
+        givenDefaultFinanceContext()
     }
 
     @Test
@@ -55,11 +58,13 @@ class InvoiceRepositoryWriteTest(
     @Test
     fun `should recalculate invoice`() {
         createCategory(1, "Cat1")
-        createCategory(2, "Cat2")
-        createAssortment(1, "aso1", 2)
-        createInvoice(amount = BigDecimal.ZERO)
-        createInvoiceItem(1, 1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1)
-        createInvoiceItem(2, 1, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
+        givenCatalog(CatalogSeedItem(1, "aso1", 2, "Cat2"))
+        givenInvoiceWithItems(
+            items = listOf(
+                InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1),
+                InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
+            )
+        )
 
         invoiceRepository.recaculatInvoice(1)
 
@@ -114,10 +119,10 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should create batch invoice details`() {
-        createCategory(1, "Cat1")
-        createCategory(2, "Cat2")
-        createAssortment(1, "aso1", 2)
-        createAssortment(2, "aso2", 2)
+        givenCatalog(
+            CatalogSeedItem(1, "aso1", 2, "Cat2"),
+            CatalogSeedItem(2, "aso2", 2, "Cat2")
+        )
         createShopItem(1, 1)
         createShopItem(1, 2)
         createInvoice(invoiceId = 10, amount = BigDecimal.ZERO)

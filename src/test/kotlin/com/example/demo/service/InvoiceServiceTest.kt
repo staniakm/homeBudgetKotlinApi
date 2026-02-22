@@ -1,7 +1,10 @@
 package com.example.demo.service
 
 import com.example.demo.IntegrationTest
+import com.example.demo.CatalogSeedItem
 import com.example.demo.entity.*
+import com.example.demo.givenCatalog
+import com.example.demo.givenDefaultFinanceContext
 import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
@@ -19,16 +22,15 @@ class InvoiceServiceTest(
 
     @BeforeEach
     internal fun setUp() {
-        createAccountOwner()
-        createAccount()
-        createShop()
+        givenDefaultFinanceContext()
     }
 
     @Test
     fun `should create new invoice with item`() {
-        createCategory(1, "")
-        createAssortment(1, "", 1)
-        createAssortment(2, "aso2", 1)
+        givenCatalog(
+            CatalogSeedItem(1, "", 1, ""),
+            CatalogSeedItem(2, "aso2", 1, "")
+        )
         createShopItem(1, 1)
         createShopItem(1, 2)
         val request = NewInvoiceRequest(
