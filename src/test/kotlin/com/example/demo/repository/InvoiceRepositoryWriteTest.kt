@@ -4,9 +4,6 @@ import com.example.demo.IntegrationTest
 import com.example.demo.CatalogSeedItem
 import com.example.demo.InvoiceItemSeed
 import com.example.demo.entity.*
-import com.example.demo.givenCatalog
-import com.example.demo.givenDefaultFinanceContext
-import com.example.demo.givenInvoiceWithItems
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.shouldBe
@@ -25,7 +22,7 @@ class InvoiceRepositoryWriteTest(
 
     @BeforeEach
     internal fun setUp() {
-        givenDefaultFinanceContext()
+        testDataBuilder.givenDefaultFinanceContext()
     }
 
     @Test
@@ -58,8 +55,8 @@ class InvoiceRepositoryWriteTest(
     @Test
     fun `should recalculate invoice`() {
         testDataBuilder.category(1, "Cat1")
-        givenCatalog(CatalogSeedItem(1, "aso1", 2, "Cat2"))
-        givenInvoiceWithItems(
+        testDataBuilder.givenCatalog(CatalogSeedItem(1, "aso1", 2, "Cat2"))
+        testDataBuilder.givenInvoiceWithItems(
             items = listOf(
                 InvoiceItemSeed(1, BigDecimal("10.00"), BigDecimal("2"), BigDecimal("10.00"), BigDecimal.ONE, 1, 1),
                 InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal("1"), BigDecimal("12.00"), BigDecimal.ONE, 1, 1)
@@ -119,7 +116,8 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should create batch invoice details`() {
-        givenCatalog(
+        testDataBuilder.category(1, "Cat1")
+        testDataBuilder.givenCatalog(
             CatalogSeedItem(1, "aso1", 2, "Cat2"),
             CatalogSeedItem(2, "aso2", 2, "Cat2")
         )

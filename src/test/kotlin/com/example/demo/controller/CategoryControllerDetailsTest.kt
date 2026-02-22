@@ -1,9 +1,6 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.seedCategoryBase
-import com.example.demo.seedCategoryInvoicesForAprilAndMay
-import com.example.demo.seedThreeCategoriesWithAssortments
 import com.example.demo.entity.CategoryDetails
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
@@ -75,8 +72,8 @@ class CategoryControllerDetailsTest : IntegrationTest() {
     }
 
     private fun seedCategoryDataForDetails() {
-        seedCategoryBase()
-        seedThreeCategoriesWithAssortments()
-        seedCategoryInvoicesForAprilAndMay()
+        testDataBuilder.givenCategoryBase()
+        testDataBuilder.givenThreeCategoriesWithAssortments()
+        testDataBuilder.givenCategoryInvoicesForAprilAndMay()
     }
 }

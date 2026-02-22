@@ -88,4 +88,8 @@ abstract class IntegrationTest : TestDataFixtures() {
     }
 
     override fun currentDate(): LocalDate = clockProvider.getDate()
+
+    override fun setTime(timestamp: String) {
+        clockProvider.setTime(timestamp)
+    }
 }

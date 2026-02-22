@@ -4,9 +4,6 @@ import com.example.demo.IntegrationTest
 import com.example.demo.CatalogSeedItem
 import com.example.demo.InvoiceItemSeed
 import com.example.demo.entity.ChartData
-import com.example.demo.givenCatalog
-import com.example.demo.givenDefaultFinanceContext
-import com.example.demo.givenInvoiceWithItems
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -26,12 +23,12 @@ class ChartControllerTest : IntegrationTest() {
     @Test
     fun `should return chart summary for selected month`() {
         val now = clockProvider.getDate()
-        givenDefaultFinanceContext()
-        givenCatalog(
+        testDataBuilder.givenDefaultFinanceContext()
+        testDataBuilder.givenCatalog(
             CatalogSeedItem(1, "Milk", 1, "Food"),
             CatalogSeedItem(2, "Soap", 2, "Home")
         )
-        givenInvoiceWithItems(
+        testDataBuilder.givenInvoiceWithItems(
             invoiceId = 1,
             date = now.withDayOfMonth(10),
             items = listOf(
@@ -39,7 +36,7 @@ class ChartControllerTest : IntegrationTest() {
                 InvoiceItemSeed(2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal("20.00"), BigDecimal.ZERO, 2, 2)
             )
         )
-        givenInvoiceWithItems(
+        testDataBuilder.givenInvoiceWithItems(
             invoiceId = 2,
             date = now.minusMonths(1).withDayOfMonth(10),
             items = listOf(

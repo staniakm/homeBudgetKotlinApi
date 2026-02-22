@@ -1,9 +1,6 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.seedCategoryBase
-import com.example.demo.seedCategoryInvoicesForAprilAndMay
-import com.example.demo.seedThreeCategoriesWithAssortments
 import com.example.demo.entity.CategorySummary
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -54,8 +51,8 @@ class CategoryControllerByIdTest : IntegrationTest() {
     }
 
     private fun seedCategoryData() {
-        seedCategoryBase()
-        seedThreeCategoriesWithAssortments()
-        seedCategoryInvoicesForAprilAndMay()
+        testDataBuilder.givenCategoryBase()
+        testDataBuilder.givenThreeCategoriesWithAssortments()
+        testDataBuilder.givenCategoryInvoicesForAprilAndMay()
     }
 }

@@ -1,9 +1,6 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.seedCategoryBase
-import com.example.demo.seedCategoryInvoicesForAprilAndMay
-import com.example.demo.seedThreeCategoriesWithAssortments
 import com.example.demo.entity.CategorySummary
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -48,8 +45,8 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories with calculated outcome for default month`() {
-        seedCategoryBase()
-        seedThreeCategoriesWithAssortments()
+        testDataBuilder.givenCategoryBase()
+        testDataBuilder.givenThreeCategoriesWithAssortments()
         testDataBuilder.invoice(1, 1, LocalDate.of(2022, 1, 1), BigDecimal.TEN, 1)
         testDataBuilder.invoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
         testDataBuilder.invoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 3, 3)
@@ -79,9 +76,9 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories with calculated month summary for selected month`() {
-        seedCategoryBase()
-        seedThreeCategoriesWithAssortments()
-        seedCategoryInvoicesForAprilAndMay()
+        testDataBuilder.givenCategoryBase()
+        testDataBuilder.givenThreeCategoriesWithAssortments()
+        testDataBuilder.givenCategoryInvoicesForAprilAndMay()
 
         val allCategories = restTemplate.getForEntity("/api/category?month=-1", Array<CategorySummary>::class.java)
 
@@ -105,9 +102,9 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories skipping categories without outcome in selected month`() {
-        seedCategoryBase()
-        seedThreeCategoriesWithAssortments()
-        seedCategoryInvoicesForAprilAndMay()
+        testDataBuilder.givenCategoryBase()
+        testDataBuilder.givenThreeCategoriesWithAssortments()
+        testDataBuilder.givenCategoryInvoicesForAprilAndMay()
 
         val allCategories = restTemplate.getForEntity(
             "/api/category?month=-1&skipZero=true",

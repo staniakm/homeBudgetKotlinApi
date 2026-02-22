@@ -3,8 +3,6 @@ package com.example.demo.service
 import com.example.demo.IntegrationTest
 import com.example.demo.CatalogSeedItem
 import com.example.demo.entity.*
-import com.example.demo.givenCatalog
-import com.example.demo.givenDefaultFinanceContext
 import com.example.demo.repository.AccountRepository
 import com.example.demo.repository.InvoiceRepository
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
@@ -22,12 +20,12 @@ class InvoiceServiceTest(
 
     @BeforeEach
     internal fun setUp() {
-        givenDefaultFinanceContext()
+        testDataBuilder.givenDefaultFinanceContext()
     }
 
     @Test
     fun `should create new invoice with item`() {
-        givenCatalog(
+        testDataBuilder.givenCatalog(
             CatalogSeedItem(1, "", 1, ""),
             CatalogSeedItem(2, "aso2", 1, "")
         )

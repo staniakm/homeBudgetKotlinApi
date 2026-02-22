@@ -7,6 +7,7 @@ abstract class TestDataFixtures {
 
     protected abstract fun executeInsert(query: String)
     protected abstract fun currentDate(): LocalDate
+    abstract fun setTime(timestamp: String)
 
     fun today(): LocalDate = currentDate()
 

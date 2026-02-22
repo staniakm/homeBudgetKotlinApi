@@ -1,8 +1,6 @@
 package com.example.demo.controller
 
 import com.example.demo.IntegrationTest
-import com.example.demo.givenOwnerAndPrimaryAccount
-import com.example.demo.givenOwnerWithTwoAccounts
 import com.example.demo.entity.*
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
@@ -15,7 +13,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch empty list when no income exists for selected account and month`() {
-        givenOwnerAndPrimaryAccount()
+        testDataBuilder.givenOwnerAndPrimaryAccount()
         testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 4, 10))
         testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 3, 5))
 
@@ -27,7 +25,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch account incomes for selected account and month`() {
-        givenOwnerAndPrimaryAccount()
+        testDataBuilder.givenOwnerAndPrimaryAccount()
         testDataBuilder.account(2, BigDecimal("100.00"), "account1")
         testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
         testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
@@ -47,7 +45,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should add new account income`() {
-        givenOwnerAndPrimaryAccount()
+        testDataBuilder.givenOwnerAndPrimaryAccount()
 
         val addIncome = restTemplate.postForEntity(
             "/api/account/1",
@@ -90,7 +88,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should transfer money from one account to another`() {
-        givenOwnerWithTwoAccounts()
+        testDataBuilder.givenOwnerWithTwoAccounts()
 
         restTemplate.put("/api/account/1/transfer", TransferMoneyRequest(1, BigDecimal("50.00"), 2))
 
@@ -101,7 +99,7 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should post request for transfer money between accounts and return updated source account`() {
-        givenOwnerWithTwoAccounts()
+        testDataBuilder.givenOwnerWithTwoAccounts()
 
         val transferMoney = restTemplate.postForEntity(
             "/api/account/transfer",
