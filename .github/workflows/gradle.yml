@@ -20,12 +20,16 @@ permissions:
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [ '17', '21' ]
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
     - name: Make gradlew executable
       run: chmod +x ./gradlew
@@ -34,12 +38,16 @@ jobs:
 
   integration-quality:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [ '17', '21' ]
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
     - name: Make gradlew executable
       run: chmod +x ./gradlew
@@ -49,13 +57,13 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: jacoco-reports
+        name: jacoco-reports-jdk-${{ matrix.java-version }}
         path: |
           build/reports/jacoco/test/
           build/reports/tests/test/
         if-no-files-found: warn
     - name: Build coverage summary
-      if: always() && github.event_name == 'pull_request'
+      if: always() && github.event_name == 'pull_request' && matrix.java-version == '21'
       run: |
         python - <<'PY'
         import xml.etree.ElementTree as ET
@@ -109,7 +117,7 @@ jobs:
         out.write_text('\n'.join(lines) + '\n', encoding='utf-8')
         PY
     - name: Publish coverage comment
-      if: always() && github.event_name == 'pull_request'
+      if: always() && github.event_name == 'pull_request' && matrix.java-version == '21'
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: coverage-report
