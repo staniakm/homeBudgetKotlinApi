@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   unit-tests:
@@ -53,3 +54,63 @@ jobs:
           build/reports/jacoco/test/
           build/reports/tests/test/
         if-no-files-found: warn
+    - name: Build coverage summary
+      if: always() && github.event_name == 'pull_request'
+      run: |
+        python - <<'PY'
+        import xml.etree.ElementTree as ET
+        from pathlib import Path
+
+        report = Path('build/reports/jacoco/test/jacocoTestReport.xml')
+        out = Path('coverage-comment.md')
+
+        if not report.exists():
+            out.write_text('## Coverage\n\nJaCoCo report not found.\n')
+            raise SystemExit(0)
+
+        root = ET.parse(report).getroot()
+
+        def ratio(node):
+            c = node.find("counter[@type='LINE']")
+            if c is None:
+                return 100.0, 0, 0
+            missed = int(c.get('missed'))
+            covered = int(c.get('covered'))
+            total = missed + covered
+            return (covered / total * 100.0 if total else 100.0), covered, total
+
+        total_pct, cov, tot = ratio(root)
+
+        package_targets = {
+            'com/example/demo/controller': 'controller',
+            'com/example/demo/repository': 'repository',
+            'com/example/demo/service': 'service',
+        }
+
+        package_rows = []
+        for p in root.findall('package'):
+            name = p.get('name')
+            if name in package_targets:
+                pct, pcov, ptot = ratio(p)
+                package_rows.append((package_targets[name], pct, pcov, ptot))
+
+        package_rows.sort(key=lambda x: x[0])
+
+        lines = []
+        lines.append('## Coverage Report')
+        lines.append('')
+        lines.append(f'- Total line coverage: **{total_pct:.2f}%** ({cov}/{tot})')
+        lines.append('')
+        lines.append('| Package | Line coverage | Covered/Total |')
+        lines.append('|---|---:|---:|')
+        for name, pct, pcov, ptot in package_rows:
+            lines.append(f'| `{name}` | **{pct:.2f}%** | {pcov}/{ptot} |')
+
+        out.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+        PY
+    - name: Publish coverage comment
+      if: always() && github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: coverage-report
+        path: coverage-comment.md
