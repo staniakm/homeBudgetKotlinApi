@@ -65,6 +65,19 @@ tasks.named('test') {
 	finalizedBy tasks.named('jacocoTestReport')
 }
 
+tasks.register('unitTest', Test) {
+	group = 'verification'
+	description = 'Runs fast unit-style tests only'
+	useJUnitPlatform()
+	include '**/*UnitTest.class'
+	include '**/AutomaticInvoiceServiceTest.class'
+	include '**/ClockProviderTest.class'
+	include '**/AssortmentServiceTest.class'
+	include '**/BudgetServiceTest.class'
+	include '**/MediaServiceTest.class'
+	include '**/RepositoryHelperTest.class'
+}
+
 tasks.named('jacocoTestReport') {
 	dependsOn tasks.named('test')
 	reports {
