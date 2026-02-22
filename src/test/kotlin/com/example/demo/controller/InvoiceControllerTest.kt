@@ -22,12 +22,12 @@ class InvoiceControllerTest : IntegrationTest() {
     @Test
     fun `should return invoices for selected month`() {
         clockProvider.setTime("2022-05-15T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createShop(1, "shop1")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 11), BigDecimal("20.20"), 1)
-        createInvoice(3, 1, LocalDate.of(2022, 4, 11), BigDecimal("30.30"), 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 11), BigDecimal("20.20"), 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2022, 4, 11), BigDecimal("30.30"), 1)
 
         val response = restTemplate.getForEntity("/api/invoice?month=0", Array<ShoppingInvoice>::class.java)
 
@@ -39,11 +39,11 @@ class InvoiceControllerTest : IntegrationTest() {
     @Test
     fun `should update invoice account`() {
         clockProvider.setTime("2022-05-15T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createAccount(2, BigDecimal("200.00"), "account2")
-        createShop(1, "shop1")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.account(2, BigDecimal("200.00"), "account2")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
 
         val response = restTemplate.exchange(
             "/api/invoice/1",
@@ -62,13 +62,13 @@ class InvoiceControllerTest : IntegrationTest() {
 
     @Test
     fun `should return invoice details`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createShop(1, "shop1")
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal("10.10"), BigDecimal.ZERO, 1, 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.10"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal("10.10"), BigDecimal.ZERO, 1, 1)
 
         val response = restTemplate.getForEntity("/api/invoice/1", Array<InvoiceItem>::class.java)
 
@@ -80,12 +80,12 @@ class InvoiceControllerTest : IntegrationTest() {
     @Test
     fun `should create and delete invoice`() {
         clockProvider.setTime("2022-05-15T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("200.00"), "account1")
-        createShop(1, "shop1")
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
-        createShopItem(1, 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("200.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
+        testDataBuilder.shopItem(1, 1)
 
         val create = restTemplate.postForEntity(
             "/api/invoice",

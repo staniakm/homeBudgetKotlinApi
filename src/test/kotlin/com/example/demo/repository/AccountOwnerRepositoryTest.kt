@@ -12,9 +12,9 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
 
     @Test
     fun `should get all owners`() {
-        createAccountOwner(1, "Owner1")
-        createAccountOwner(2, "owner2")
-        createAccountOwner(3, "owner3")
+        testDataBuilder.accountOwner(1, "Owner1")
+        testDataBuilder.accountOwner(2, "owner2")
+        testDataBuilder.accountOwner(3, "owner3")
 
         val findAllAccounts = accountOwnerRepository.findAllOwners()
 
@@ -33,7 +33,7 @@ class AccountOwnerRepositoryTest(@Autowired private val accountOwnerRepository: 
 
     @Test
     fun `should return null when owner already exists`() {
-        createAccountOwner(1, "Owner1")
+        testDataBuilder.accountOwner(1, "Owner1")
 
         val owner = accountOwnerRepository.createNewOwner("Owner1", "Father")
 

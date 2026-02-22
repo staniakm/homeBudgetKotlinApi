@@ -1,6 +1,7 @@
 package com.example.demo
 
 import com.example.demo.config.TestConfig
+import com.example.demo.fixtures.TestDataBuilder
 import com.example.demo.fixtures.TestDataFixtures
 import com.example.demo.fixtures.TestDatabaseCleanup
 import org.junit.jupiter.api.AfterEach
@@ -22,6 +23,8 @@ import java.util.logging.Logger
 @Testcontainers
 @ActiveProfiles("test")
 abstract class IntegrationTest : TestDataFixtures() {
+
+    val testDataBuilder = TestDataBuilder(this)
 
     @Autowired
     private lateinit var client: JdbcTemplate

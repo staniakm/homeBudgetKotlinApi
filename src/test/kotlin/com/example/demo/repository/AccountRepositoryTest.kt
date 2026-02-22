@@ -19,8 +19,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should get all accounts`() {
-        createAccountOwner()
-        createAccount()
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
 
         val findAllAccounts = accountRepository.findAllAccounts()
 
@@ -30,8 +30,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
     @Test
     fun `should find account by id`() {
 
-        createAccountOwner()
-        createAccount()
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
 
         val account = accountRepository.findById(1)
 
@@ -44,8 +44,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should set new money value and name for selected account`() {
-        createAccountOwner()
-        createAccount()
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
 
         accountRepository.update(Account(1, "new name", BigDecimal("1.23"), 1))
         val account = accountRepository.findById(1)
@@ -59,9 +59,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should get account income for selected month`() {
-        createAccountOwner()
-        createAccount()
-        createIncome(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.income(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
 
         val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
@@ -71,11 +71,11 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should get account income for selected month with multiple incomes`() {
-        createAccountOwner()
-        createAccount()
-        createIncome(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
-        createIncome(1, BigDecimal("100.10"), LocalDate.of(2021, 11, 1))
-        createIncome(1, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.income(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
+        testDataBuilder.income(1, BigDecimal("100.10"), LocalDate.of(2021, 11, 1))
+        testDataBuilder.income(1, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
 
         val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
@@ -85,12 +85,12 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should get account income for selected month with multiple incomes from different months and accounts`() {
-        createAccountOwner()
-        createAccount()
-        createAccount(2)
-        createIncome(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
-        createIncome(1, BigDecimal("100.10"), LocalDate.of(2021, 12, 1))
-        createIncome(2, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.account(2)
+        testDataBuilder.income(1, BigDecimal("112.10"), LocalDate.of(2021, 11, 12))
+        testDataBuilder.income(1, BigDecimal("100.10"), LocalDate.of(2021, 12, 1))
+        testDataBuilder.income(2, BigDecimal("200.10"), LocalDate.of(2021, 11, 30))
 
         val income = accountRepository.getAccountIncome(1, LocalDate.of(2021, 11, 30))
 
@@ -100,8 +100,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should add income with account money increase`() {
-        createAccountOwner()
-        createAccount(1)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(1)
 
         accountRepository.addIncome(
             AccountIncomeRequest(
@@ -123,9 +123,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should transfer money`() {
-        createAccountOwner()
-        createAccount(1, BigDecimal(120))
-        createAccount(2, BigDecimal(50))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(1, BigDecimal(120))
+        testDataBuilder.account(2, BigDecimal(50))
 
         accountRepository.transferMoney(1, BigDecimal(50), 2)
 
@@ -138,11 +138,11 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should return account summary for month for one existing account`() {
-        createAccountOwner()
-        createAccount(2, amount = BigDecimal(100))
-        createIncome(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
-        createShop()
-        createInvoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(2, amount = BigDecimal(100))
+        testDataBuilder.income(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.shop()
+        testDataBuilder.invoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("100.10"))
 
         val accounts =
             accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
@@ -156,15 +156,15 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should return account summary for month for one account with multiple income and outcome`() {
-        createAccountOwner()
-        createAccount(2, amount = BigDecimal(100))
-        createIncome(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
-        createIncome(2, BigDecimal("200"), LocalDate.of(2021, 10, 10))
-        createIncome(2, BigDecimal("300"), LocalDate.of(2021, 11, 10))
-        createShop()
-        createInvoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(2, amount = BigDecimal(100))
+        testDataBuilder.income(2, BigDecimal("100"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.income(2, BigDecimal("200"), LocalDate.of(2021, 10, 10))
+        testDataBuilder.income(2, BigDecimal("300"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.shop()
+        testDataBuilder.invoice(1, 2, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        testDataBuilder.invoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        testDataBuilder.invoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts =
             accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
@@ -177,16 +177,16 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should return account summary for month for many accounts with multiple income and outcome`() {
-        createAccountOwner()
-        createAccount(2, amount = BigDecimal(200), name = "B account")
-        createAccount(3, amount = BigDecimal(100), name = "A Account")
-        createIncome(3, BigDecimal("100"), LocalDate.of(2021, 11, 10))
-        createIncome(2, BigDecimal("200"), LocalDate.of(2021, 11, 10))
-        createIncome(3, BigDecimal("300"), LocalDate.of(2021, 10, 10))
-        createShop()
-        createInvoice(1, 3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(2, amount = BigDecimal(200), name = "B account")
+        testDataBuilder.account(3, amount = BigDecimal(100), name = "A Account")
+        testDataBuilder.income(3, BigDecimal("100"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.income(2, BigDecimal("200"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.income(3, BigDecimal("300"), LocalDate.of(2021, 10, 10))
+        testDataBuilder.shop()
+        testDataBuilder.invoice(1, 3, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        testDataBuilder.invoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        testDataBuilder.invoice(3, 2, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val accounts =
             accountRepository.getAccountsSummaryForMonthSkipDefaultAccount(LocalDate.of(2021, 11, 1))
@@ -209,8 +209,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should decrease account money`() {
-        createAccountOwner()
-        createAccount(amount = BigDecimal(200))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(amount = BigDecimal(200))
 
         accountRepository.decreaseMoney(1, BigDecimal(100))
         val account = accountRepository.findById(1)
@@ -220,16 +220,16 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should fetch last x operations for account`() {
-        createAccountOwner()
-        createAccount()
-        createAccount(accountId = 2)
-        createShop()
-        createIncomeWithId(1, 1, BigDecimal("100"), LocalDate.of(2021, 11, 10))
-        createIncomeWithId(2, 1, BigDecimal("200"), LocalDate.of(2021, 11, 10))
-        createIncomeWithId(3, 2, BigDecimal("300"), LocalDate.of(2021, 10, 10))
-        createInvoice(1, 1, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
-        createInvoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
-        createInvoice(3, 1, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.account(accountId = 2)
+        testDataBuilder.shop()
+        testDataBuilder.incomeWithId(1, 1, BigDecimal("100"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.incomeWithId(2, 1, BigDecimal("200"), LocalDate.of(2021, 11, 10))
+        testDataBuilder.incomeWithId(3, 2, BigDecimal("300"), LocalDate.of(2021, 10, 10))
+        testDataBuilder.invoice(1, 1, LocalDate.of(2021, 11, 20), BigDecimal("120.10"))
+        testDataBuilder.invoice(2, 2, LocalDate.of(2021, 10, 20), BigDecimal("10"))
+        testDataBuilder.invoice(3, 1, LocalDate.of(2021, 11, 1), BigDecimal("150.11"))
 
         val operations = accountRepository.getOperations(1, 10)
         operations.size shouldBe 4
@@ -243,8 +243,8 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should get income types`() {
-        createSalaryIncomeType(1, "type1")
-        createSalaryIncomeType(2, "type2")
+        testDataBuilder.salaryIncomeType(1, "type1")
+        testDataBuilder.salaryIncomeType(2, "type2")
 
         val incomeTypes = accountRepository.getIncomeTypes()
 
@@ -264,9 +264,9 @@ class AccountRepositoryTest(@Autowired private val accountRepository: AccountRep
 
     @Test
     fun `should increase account money amount`(){
-        createAccountOwner()
-        createAccount(amount = BigDecimal(200))
-        createAccount(accountId = 2, amount = BigDecimal(200))
+        testDataBuilder.accountOwner()
+        testDataBuilder.account(amount = BigDecimal(200))
+        testDataBuilder.account(accountId = 2, amount = BigDecimal(200))
 
         accountRepository.increaseMoney(1, BigDecimal(100))
         val account = accountRepository.findById(1)

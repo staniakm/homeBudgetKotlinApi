@@ -27,24 +27,24 @@ class CategoryControllerDetailsTest : IntegrationTest() {
     @Test
     fun `should get list of category details for selected month`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop()
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal.TEN)
-        createCategory(1, "category1")
-        createCategory(2, "category2")
+        testDataBuilder.shop()
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal.TEN)
+        testDataBuilder.category(1, "category1")
+        testDataBuilder.category(2, "category2")
 
-        createAssortment(1, "assortment1", 1)
-        createAssortment(2, "assortment2", 2)
-        createAssortment(3, "assortment3", 2)
+        testDataBuilder.assortment(1, "assortment1", 1)
+        testDataBuilder.assortment(2, "assortment2", 2)
+        testDataBuilder.assortment(3, "assortment3", 2)
 
-        createInvoice(1, 1, LocalDate.of(2022, 4, 1), BigDecimal.TEN, 1)
-        createInvoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 2, 3)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 4, 1), BigDecimal.TEN, 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 2, 3)
 
-        createInvoice(2, 1, LocalDate.of(2022, 4, 5), BigDecimal("20.10"), 1)
-        createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
-        createInvoiceItem(5, 2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 3)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 4, 5), BigDecimal("20.10"), 1)
+        testDataBuilder.invoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
+        testDataBuilder.invoiceItem(5, 2, BigDecimal("20.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 3)
 
         val details = restTemplate.getForEntity("/api/category/2/details?month=-1", Array<CategoryDetails>::class.java)
 
@@ -59,13 +59,13 @@ class CategoryControllerDetailsTest : IntegrationTest() {
     @Test
     fun `should get category details for default month parameter`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop()
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal.TEN)
-        createCategory(1, "category1")
-        createAssortment(1, "assortment1", 1)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 5), BigDecimal("10.10"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.shop()
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal.TEN)
+        testDataBuilder.category(1, "category1")
+        testDataBuilder.assortment(1, "assortment1", 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 5), BigDecimal("10.10"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
 
         val details = restTemplate.getForEntity("/api/category/1/details", Array<CategoryDetails>::class.java)
 

@@ -19,8 +19,8 @@ class AssortmentControllerTest : IntegrationTest() {
 
     @Test
     fun `should return assortment details`() {
-        createCategory(1, "cat1")
-        createAssortment(1, "aso1", 1)
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.assortment(1, "aso1", 1)
 
         val response = restTemplate.getForEntity("/api/assortment/1", AssortmentDetailsResponse::class.java)
 
@@ -34,8 +34,8 @@ class AssortmentControllerTest : IntegrationTest() {
 
     @Test
     fun `should return not found when assortment not exists`() {
-        createCategory(1, "cat1")
-        createAssortment(1, "aso1", 1)
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.assortment(1, "aso1", 1)
 
         val response = restTemplate.getForEntity("/api/assortment/2", String::class.java)
 
@@ -44,9 +44,9 @@ class AssortmentControllerTest : IntegrationTest() {
 
     @Test
     fun `should change assortment category`() {
-        createCategory(1, "cat1")
-        createCategory(2, "cat2")
-        createAssortment(1, "aso1", 1)
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.category(2, "cat2")
+        testDataBuilder.assortment(1, "aso1", 1)
 
         val request = AssortmentChangeCategoryRequest(1, 2)
 
@@ -74,9 +74,9 @@ class AssortmentControllerTest : IntegrationTest() {
 
     @Test
     fun `should return bad request when assortment not exists`() {
-        createCategory(1, "cat1")
-        createCategory(2, "cat2")
-        createAssortment(1, "aso1", 1)
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.category(2, "cat2")
+        testDataBuilder.assortment(1, "aso1", 1)
 
         val request = AssortmentChangeCategoryRequest(2, 2)
 
@@ -90,8 +90,8 @@ class AssortmentControllerTest : IntegrationTest() {
     }
     @Test
     fun `should return bad request when destination category not exists`() {
-        createCategory(1, "cat1")
-        createAssortment(1, "aso1", 1)
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.assortment(1, "aso1", 1)
 
         val request = AssortmentChangeCategoryRequest(2, 2)
 

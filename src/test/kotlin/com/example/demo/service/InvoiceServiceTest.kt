@@ -31,8 +31,8 @@ class InvoiceServiceTest(
             CatalogSeedItem(1, "", 1, ""),
             CatalogSeedItem(2, "aso2", 1, "")
         )
-        createShopItem(1, 1)
-        createShopItem(1, 2)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
         val request = NewInvoiceRequest(
             1, 1, clockProvider.getDate(), listOf(
                 NewInvoiceItemRequest(
@@ -68,7 +68,7 @@ class InvoiceServiceTest(
 
     @Test
     fun `should delete existing invoice`() {
-        createInvoice(1)
+        testDataBuilder.invoice(1)
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
         val invoiceId: Long? = invoiceService.deleteInvoice(1)
@@ -79,11 +79,11 @@ class InvoiceServiceTest(
 
     @Test
     fun `should delete existing invoice with details`() {
-        createCategory(1, "")
-        createAssortment(1, "", 1)
-        createShopItem(1, 1)
-        createInvoice(1)
-        createInvoiceItem(1, 1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.category(1, "")
+        testDataBuilder.assortment(1, "", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.invoice(1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ZERO, 1, 1)
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
         val itemsCount = invoiceRepository.getInvoiceDetails(1)
@@ -98,11 +98,11 @@ class InvoiceServiceTest(
 
     @Test
     fun `should delete existing invoice with details and update account money amount`() {
-        createCategory(1, "")
-        createAssortment(1, "", 1)
-        createShopItem(1, 1)
-        createInvoice(1)
-        createInvoiceItem(1, 1, BigDecimal("10.0"), BigDecimal("2"), BigDecimal("5"), BigDecimal.ZERO, 1, 1)
+        testDataBuilder.category(1, "")
+        testDataBuilder.assortment(1, "", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.invoice(1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.0"), BigDecimal("2"), BigDecimal("5"), BigDecimal.ZERO, 1, 1)
         val existingInvoice: Invoice? = invoiceRepository.getInvoice(1)
         existingInvoice?.id shouldBe 1
         val itemsCount = invoiceRepository.getInvoiceDetails(1)

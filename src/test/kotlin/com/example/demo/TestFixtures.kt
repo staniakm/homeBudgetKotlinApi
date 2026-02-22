@@ -22,26 +22,26 @@ data class InvoiceItemSeed(
 
 fun IntegrationTest.givenOwnerAndPrimaryAccount(now: String = "2022-05-20T00:00:00.00Z") {
     clockProvider.setTime(now)
-    createAccountOwner(1, "owner1")
-    createAccount(1, BigDecimal("100.00"), "account1")
+    testDataBuilder.accountOwner(1, "owner1")
+    testDataBuilder.account(1, BigDecimal("100.00"), "account1")
 }
 
 fun IntegrationTest.givenOwnerWithTwoAccounts() {
-    createAccountOwner(1, "owner1")
-    createAccount(1, BigDecimal("150.00"), "account1")
-    createAccount(2, BigDecimal("110.00"), "account2")
+    testDataBuilder.accountOwner(1, "owner1")
+    testDataBuilder.account(1, BigDecimal("150.00"), "account1")
+    testDataBuilder.account(2, BigDecimal("110.00"), "account2")
 }
 
 fun IntegrationTest.givenDefaultFinanceContext() {
-    createAccountOwner()
-    createAccount()
-    createShop()
+    testDataBuilder.accountOwner()
+    testDataBuilder.account()
+    testDataBuilder.shop()
 }
 
 fun IntegrationTest.givenCatalog(vararg items: CatalogSeedItem) {
     val categories = items.map { it.categoryId to it.categoryName }.distinctBy { it.first }
-    categories.forEach { (id, name) -> createCategory(id, name) }
-    items.forEach { item -> createAssortment(item.assortmentId, item.assortmentName, item.categoryId) }
+    categories.forEach { (id, name) -> testDataBuilder.category(id, name) }
+    items.forEach { item -> testDataBuilder.assortment(item.assortmentId, item.assortmentName, item.categoryId) }
 }
 
 fun IntegrationTest.givenInvoiceWithItems(
@@ -51,9 +51,9 @@ fun IntegrationTest.givenInvoiceWithItems(
     date: LocalDate = clockProvider.getDate(),
     items: List<InvoiceItemSeed>
 ) {
-    createInvoice(invoiceId = invoiceId, accountId = accountId, date = date, amount = items.sumOf { it.price }, shopId = shopId)
+    testDataBuilder.invoice(invoiceId = invoiceId, accountId = accountId, date = date, amount = items.sumOf { it.price }, shopId = shopId)
     items.forEach { item ->
-        createInvoiceItem(
+        testDataBuilder.invoiceItem(
             id = item.id,
             invoiceId = invoiceId,
             price = item.price,
@@ -68,26 +68,26 @@ fun IntegrationTest.givenInvoiceWithItems(
 
 fun IntegrationTest.seedCategoryBase(now: String = "2022-05-01T00:00:00.00Z") {
     clockProvider.setTime(now)
-    createShop()
-    createAccountOwner(1, "owner1")
-    createAccount(1, BigDecimal.TEN)
+    testDataBuilder.shop()
+    testDataBuilder.accountOwner(1, "owner1")
+    testDataBuilder.account(1, BigDecimal.TEN)
 }
 
 fun IntegrationTest.seedThreeCategoriesWithAssortments() {
-    createCategory(1, "category1")
-    createCategory(2, "category2")
-    createCategory(3, "category3")
-    createAssortment(1, "assortment1", 1)
-    createAssortment(2, "assortment2", 2)
-    createAssortment(3, "assortment2", 3)
+    testDataBuilder.category(1, "category1")
+    testDataBuilder.category(2, "category2")
+    testDataBuilder.category(3, "category3")
+    testDataBuilder.assortment(1, "assortment1", 1)
+    testDataBuilder.assortment(2, "assortment2", 2)
+    testDataBuilder.assortment(3, "assortment2", 3)
 }
 
 fun IntegrationTest.seedCategoryInvoicesForAprilAndMay() {
-    createInvoice(1, 1, LocalDate.of(2022, 4, 1), BigDecimal.TEN, 1)
-    createInvoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-    createInvoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 3, 3)
+    testDataBuilder.invoice(1, 1, LocalDate.of(2022, 4, 1), BigDecimal.TEN, 1)
+    testDataBuilder.invoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+    testDataBuilder.invoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 3, 3)
 
-    createInvoice(2, 1, LocalDate.of(2022, 5, 1), BigDecimal("20.10"), 1)
-    createInvoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-    createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
+    testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 1), BigDecimal("20.10"), 1)
+    testDataBuilder.invoiceItem(2, 2, BigDecimal("20.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+    testDataBuilder.invoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 }

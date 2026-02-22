@@ -38,10 +38,10 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should create invoice items`() {
-        createCategory()
-        createAssortment(1, "item1", 1)
-        createAssortment(2, "item2", 1)
-        createInvoice()
+        testDataBuilder.category()
+        testDataBuilder.assortment(1, "item1", 1)
+        testDataBuilder.assortment(2, "item2", 1)
+        testDataBuilder.invoice()
         val item1 = NewInvoiceItemRequest(ShopItem(1, "item1"), BigDecimal(10), BigDecimal("0.5"), BigDecimal.ZERO, BigDecimal("5"))
         val item2 = NewInvoiceItemRequest(ShopItem(2, "item2"), BigDecimal(10), BigDecimal("0.5"), BigDecimal.ZERO, BigDecimal("5"))
 
@@ -57,7 +57,7 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should recalculate invoice`() {
-        createCategory(1, "Cat1")
+        testDataBuilder.category(1, "Cat1")
         givenCatalog(CatalogSeedItem(1, "aso1", 2, "Cat2"))
         givenInvoiceWithItems(
             items = listOf(
@@ -78,8 +78,8 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should create automatic invoice with zero sum when no automatic entries exists`() {
-        createAccount(accountId = 3)
-        createShop(shopId = 8)
+        testDataBuilder.account(accountId = 3)
+        testDataBuilder.shop(shopId = 8)
 
         invoiceRepository.createAutoInvoice()
 
@@ -95,13 +95,13 @@ class InvoiceRepositoryWriteTest(
 
     @Test
     fun `should create automatic invoice`() {
-        createAccount(accountId = 3, amount = BigDecimal("100"))
-        createShop(shopId = 8)
-        createCategory(2, "Cat2")
-        createAssortment(1, "aso1", 2)
-        createAssortment(2, "aso2", 2)
-        createAutoinvoiceEntry(asoId = 1, price = BigDecimal("1.2"), quantity = BigDecimal.ONE)
-        createAutoinvoiceEntry(asoId = 2, price = BigDecimal("8.9"), quantity = BigDecimal.ONE)
+        testDataBuilder.account(accountId = 3, amount = BigDecimal("100"))
+        testDataBuilder.shop(shopId = 8)
+        testDataBuilder.category(2, "Cat2")
+        testDataBuilder.assortment(1, "aso1", 2)
+        testDataBuilder.assortment(2, "aso2", 2)
+        testDataBuilder.autoinvoiceEntry(asoId = 1, price = BigDecimal("1.2"), quantity = BigDecimal.ONE)
+        testDataBuilder.autoinvoiceEntry(asoId = 2, price = BigDecimal("8.9"), quantity = BigDecimal.ONE)
 
         invoiceRepository.createAutoInvoice()
 
@@ -123,9 +123,9 @@ class InvoiceRepositoryWriteTest(
             CatalogSeedItem(1, "aso1", 2, "Cat2"),
             CatalogSeedItem(2, "aso2", 2, "Cat2")
         )
-        createShopItem(1, 1)
-        createShopItem(1, 2)
-        createInvoice(invoiceId = 10, amount = BigDecimal.ZERO)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
+        testDataBuilder.invoice(invoiceId = 10, amount = BigDecimal.ZERO)
 
         invoiceRepository.createInvoiceItems(
             10,

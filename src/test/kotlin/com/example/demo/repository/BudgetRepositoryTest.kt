@@ -12,10 +12,10 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
 
     @Test
     fun `should get single budget item`() {
-        createCategory(1, "categoryName")
-        createCategory(2, "categoryName2")
-        createBudgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
-        createBudgetItem(2, 2, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
+        testDataBuilder.category(1, "categoryName")
+        testDataBuilder.category(2, "categoryName2")
+        testDataBuilder.budgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
+        testDataBuilder.budgetItem(2, 2, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
 
         val result = budgetRepository.getSelectedBudgetItem(1)
 
@@ -36,12 +36,12 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
             withName = "account owner 1"
             withEmptyDescription()
         }
-        createAccount()
-        createIncome(1, BigDecimal("30"), LocalDate.of(2021, 11, 1))
-        createCategory(1, "categoryName")
-        createCategory(2, "categoryName2")
-        createBudgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
-        createBudgetItem(2, 2, 11, 2021, BigDecimal("30"), BigDecimal("21.00"), 65)
+        testDataBuilder.account()
+        testDataBuilder.income(1, BigDecimal("30"), LocalDate.of(2021, 11, 1))
+        testDataBuilder.category(1, "categoryName")
+        testDataBuilder.category(2, "categoryName2")
+        testDataBuilder.budgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal.ONE, 10)
+        testDataBuilder.budgetItem(2, 2, 11, 2021, BigDecimal("30"), BigDecimal("21.00"), 65)
 
         val result = budgetRepository.getBudgetForMonth(LocalDate.of(2021, 11, 10))
 
@@ -72,8 +72,8 @@ class BudgetRepositoryTest(@Autowired private val budgetRepository: BudgetReposi
 
     @Test
     fun `should update planned for selected budget`() {
-        createCategory(1, "categoryName")
-        createBudgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal("10.00"), 10)
+        testDataBuilder.category(1, "categoryName")
+        testDataBuilder.budgetItem(1, 1, 11, 2021, BigDecimal("10"), BigDecimal("10.00"), 10)
         budgetRepository.updateBudget(UpdateBudgetDto(1, BigDecimal("200.00")))
 
         val result = budgetRepository.getSelectedBudgetItem(1)

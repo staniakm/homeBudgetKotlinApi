@@ -16,8 +16,8 @@ class MediaControllerTest : IntegrationTest() {
 
     @Test
     fun `should return all media types`() {
-        createMediaType(1, "POWER")
-        createMediaType(2, "WATER")
+        testDataBuilder.mediaType(1, "POWER")
+        testDataBuilder.mediaType(2, "WATER")
 
         val response = restTemplate.getForEntity("/api/media/type/all", Array<MediaType>::class.java)
 
@@ -59,7 +59,7 @@ class MediaControllerTest : IntegrationTest() {
 
     @Test
     fun `should register and delete media usage`() {
-        createMediaType(1, "POWER")
+        testDataBuilder.mediaType(1, "POWER")
         clockProvider.setTime("2022-11-20T00:00:00.00Z")
 
         val created = restTemplate.postForEntity(

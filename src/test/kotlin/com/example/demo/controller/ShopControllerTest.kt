@@ -18,10 +18,10 @@ class ShopControllerTest : IntegrationTest() {
     @Test
     fun `should return month shop summaries`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createShop(1, "ShopOne")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("25.00"), 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.shop(1, "ShopOne")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("25.00"), 1)
 
         val response = restTemplate.getForEntity("/api/shop?month=0", Array<ShopSummary>::class.java)
 
@@ -52,9 +52,9 @@ class ShopControllerTest : IntegrationTest() {
 
     @Test
     fun `should create new shop item`() {
-        createShop(1, "ShopName")
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
+        testDataBuilder.shop(1, "ShopName")
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
 
         val createdItem = restTemplate.postForEntity(
             "/api/shop/newItem",
@@ -73,14 +73,14 @@ class ShopControllerTest : IntegrationTest() {
     @Test
     fun `should return month and year shop details`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createShop(1, "ShopName")
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
-        createShopItem(1, 1)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.00"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.shop(1, "ShopName")
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.00"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1)
 
         val month = restTemplate.getForEntity("/api/shop/1/month?month=0", Array<ShopItemsSummary>::class.java)
         month.statusCode shouldBe HttpStatus.OK

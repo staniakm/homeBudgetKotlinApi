@@ -16,8 +16,8 @@ class AccountControllerOperationsTest : IntegrationTest() {
     @Test
     fun `should fetch empty list when no income exists for selected account and month`() {
         givenOwnerAndPrimaryAccount()
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 4, 10))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 3, 5))
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 4, 10))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 3, 5))
 
         val findAllIncomes = restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java)
 
@@ -28,11 +28,11 @@ class AccountControllerOperationsTest : IntegrationTest() {
     @Test
     fun `should fetch account incomes for selected account and month`() {
         givenOwnerAndPrimaryAccount()
-        createAccount(2, BigDecimal("100.00"), "account1")
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 5))
-        createIncome(2, BigDecimal("200.99"), LocalDate.of(2022, 5, 5))
+        testDataBuilder.account(2, BigDecimal("100.00"), "account1")
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 5))
+        testDataBuilder.income(2, BigDecimal("200.99"), LocalDate.of(2022, 5, 5))
 
         val findAllIncomes = restTemplate.getForEntity("/api/account/1/income?month=0", Array<AccountIncome>::class.java)
 
@@ -70,8 +70,8 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch list of income types`() {
-        createIncomeType(1, "type1")
-        createIncomeType(2, "type2")
+        testDataBuilder.incomeType(1, "type1")
+        testDataBuilder.incomeType(2, "type2")
 
         val findAllIncomeTypes = restTemplate.getForEntity("/api/account/income/type", Array<IncomeType>::class.java)
 
@@ -119,8 +119,8 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should get empty list when try to fetch operations when no data exists`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("150.00"), "account1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("150.00"), "account1")
 
         val findAllOperations = restTemplate.getForEntity("/api/account/1/operations", Array<AccountOperation>::class.java)
 
@@ -130,11 +130,11 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch income operations when no other operations exist`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("150.00"), "account1")
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 5))
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("150.00"), "account1")
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 5))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 5))
 
         val findAllOperations = restTemplate.getForEntity("/api/account/1/operations", Array<AccountOperation>::class.java)
 
@@ -150,12 +150,12 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should fetch only outcome operations when no other operations exist`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("150.00"), "account1")
-        createShop(1, "shop1")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
-        createInvoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("150.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("100.99"), 1)
 
         val findAllOperations = restTemplate.getForEntity("/api/account/1/operations", Array<AccountOperation>::class.java)
 
@@ -171,15 +171,15 @@ class AccountControllerOperationsTest : IntegrationTest() {
 
     @Test
     fun `should find mixed list of operations sorted by date and limited to 5`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("150.00"), "account1")
-        createShop(1, "shop1")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
-        createInvoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("100.99"), 1)
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 11))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 6))
-        createIncome(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 6))
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("150.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 11))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 5, 6))
+        testDataBuilder.income(1, BigDecimal("100.99"), LocalDate.of(2022, 4, 6))
 
         val findAllOperations = restTemplate.getForEntity("/api/account/1/operations?limit=5", Array<AccountOperation>::class.java)
 

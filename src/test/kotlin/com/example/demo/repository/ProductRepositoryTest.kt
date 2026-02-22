@@ -11,21 +11,21 @@ class ProductRepositoryTest(@Autowired private val productRepository: ProductRep
 
     @Test
     fun `should fetch selected item history`() {
-        createAccountOwner()
-        createAccount()
-        createShop()
-        createCategory(1)
-        createAssortment(1, "Aso", 1)
-        createAssortment(2, "Aso2", 1)
-        createInvoice(1)
-        createInvoice(2)
-        createInvoice(3)
-        createInvoiceItem(1, 1, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(2, 1, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 2)
-        createInvoiceItem(3, 2, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 2)
-        createInvoiceItem(4, 2, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(5, 3, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(6, 3, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "Aso", 1)
+        testDataBuilder.assortment(2, "Aso2", 1)
+        testDataBuilder.invoice(1)
+        testDataBuilder.invoice(2)
+        testDataBuilder.invoice(3)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(2, 1, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 2)
+        testDataBuilder.invoiceItem(3, 2, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 2)
+        testDataBuilder.invoiceItem(4, 2, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(5, 3, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(6, 3, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
 
         val history = productRepository.getProductHistory(1)
 
@@ -36,13 +36,13 @@ class ProductRepositoryTest(@Autowired private val productRepository: ProductRep
 
     @Test
     fun `should fetch assortment by id`() {
-        createAccountOwner()
-        createAccount()
-        createShop()
-        createCategory(1, "CATEGORY_1")
-        createCategory(2, "CATEGORY_2")
-        createAssortment(1, "Aso", 1)
-        createAssortment(2, "Aso2", 2)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
+        testDataBuilder.category(1, "CATEGORY_1")
+        testDataBuilder.category(2, "CATEGORY_2")
+        testDataBuilder.assortment(1, "Aso", 1)
+        testDataBuilder.assortment(2, "Aso2", 2)
 
         val assortment = productRepository.getProduct(2)
 
@@ -53,13 +53,13 @@ class ProductRepositoryTest(@Autowired private val productRepository: ProductRep
 
     @Test
     fun `should fetch null when product not exists`() {
-        createAccountOwner()
-        createAccount()
-        createShop()
-        createCategory(1, "CATEGORY_1")
-        createCategory(2, "CATEGORY_2")
-        createAssortment(1, "Aso", 1)
-        createAssortment(2, "Aso2", 2)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
+        testDataBuilder.category(1, "CATEGORY_1")
+        testDataBuilder.category(2, "CATEGORY_2")
+        testDataBuilder.assortment(1, "Aso", 1)
+        testDataBuilder.assortment(2, "Aso2", 2)
 
         val assortment = productRepository.getProduct(3)
 
@@ -68,13 +68,13 @@ class ProductRepositoryTest(@Autowired private val productRepository: ProductRep
 
     @Test
     fun `should update category`() {
-        createAccountOwner()
-        createAccount()
-        createShop()
-        createCategory(1)
-        createCategory(2, "CATEGORY_2")
-        createAssortment(1, "Aso", 1)
-        createAssortment(2, "Aso2", 1)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
+        testDataBuilder.category(1)
+        testDataBuilder.category(2, "CATEGORY_2")
+        testDataBuilder.assortment(1, "Aso", 1)
+        testDataBuilder.assortment(2, "Aso2", 1)
 
         productRepository.updateCategory(1, 2)
 

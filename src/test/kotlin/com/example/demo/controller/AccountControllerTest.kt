@@ -23,10 +23,10 @@ class AccountControllerTest : IntegrationTest() {
 
     @Test
     fun `should get all accounts`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createAccount(2, BigDecimal("11.21"), "account2")
-        createAccount(3, BigDecimal("12.22"), "account3")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.account(2, BigDecimal("11.21"), "account2")
+        testDataBuilder.account(3, BigDecimal("12.22"), "account3")
         val findAllAccounts = restTemplate.getForEntity("/api/account/all", Array<Account>::class.java)
 
         findAllAccounts.statusCode shouldBe HttpStatus.OK
@@ -54,11 +54,11 @@ class AccountControllerTest : IntegrationTest() {
     @Test
     fun `should return empty list when account summary exists but not for selected month`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop(1, "shop1")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
         val findAllAccounts = restTemplate.getForEntity("/api/account?month=-1", Array<Account>::class.java)
 
         findAllAccounts.statusCode shouldBe HttpStatus.OK
@@ -68,13 +68,13 @@ class AccountControllerTest : IntegrationTest() {
     @Test
     fun `should return list of accounts summary for selected month`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop(1, "shop1")
-        createAccountOwner(1, "owner1")
-        createAccount(2, BigDecimal("21.99"), "account2")
-        createAccount(3, BigDecimal("221.99"), "account3")
-        createIncome(2, BigDecimal("100.01"), LocalDate.of(2022, 5, 10))
-        createInvoice(1, 2, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
-        createInvoice(2, 3, LocalDate.of(2022, 5, 20), BigDecimal("100.00"), 1)
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(2, BigDecimal("21.99"), "account2")
+        testDataBuilder.account(3, BigDecimal("221.99"), "account3")
+        testDataBuilder.income(2, BigDecimal("100.01"), LocalDate.of(2022, 5, 10))
+        testDataBuilder.invoice(1, 2, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.invoice(2, 3, LocalDate.of(2022, 5, 20), BigDecimal("100.00"), 1)
         val findAllAccounts = restTemplate.getForEntity("/api/account?month=0", Array<MonthAccountSummary>::class.java)
 
         findAllAccounts.statusCode shouldBe HttpStatus.OK
@@ -98,12 +98,12 @@ class AccountControllerTest : IntegrationTest() {
     @Test
     fun `should fetch accounts summary and skip default account with id 1`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop(1, "shop1")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createAccount(2, BigDecimal("11.21"), "account2")
-        createIncome(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
-        createInvoice(1, 2, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.account(2, BigDecimal("11.21"), "account2")
+        testDataBuilder.income(1, BigDecimal("100.00"), LocalDate.of(2022, 5, 10))
+        testDataBuilder.invoice(1, 2, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
         val findAllAccounts = restTemplate.getForEntity("/api/account?month=0", Array<MonthAccountSummary>::class.java)
 
         findAllAccounts.statusCode shouldBe HttpStatus.OK
@@ -122,11 +122,11 @@ class AccountControllerTest : IntegrationTest() {
     @Test
     fun `should return empty list of invoices if for selected account when no invoices exists`() {
         clockProvider.setTime("2022-05-20T00:00:00.00Z")
-        createShop(1, "shop1")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
         val findAllInvoices = restTemplate.getForEntity("/api/account/1?month=-1", Array<ShoppingInvoice>::class.java)
 
         findAllInvoices.statusCode shouldBe HttpStatus.OK
@@ -136,14 +136,14 @@ class AccountControllerTest : IntegrationTest() {
     @Test
     fun `should return list of account invoices for selected month`() {
         clockProvider.setTime("2022-05-20T00:00:00.00Z")
-        createShop(1, "shop1")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createAccount(2, BigDecimal("10.00"), "account2")
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
-        createInvoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("200.99"), 1)
-        createInvoice(4, 2, LocalDate.of(2022, 5, 5), BigDecimal("200.99"), 1)
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.account(2, BigDecimal("10.00"), "account2")
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("100.00"), 1)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 5), BigDecimal("100.99"), 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2022, 4, 5), BigDecimal("200.99"), 1)
+        testDataBuilder.invoice(4, 2, LocalDate.of(2022, 5, 5), BigDecimal("200.99"), 1)
         val findAllInvoices = restTemplate.getForEntity("/api/account/1?month=0", Array<ShoppingInvoice>::class.java)
         findAllInvoices.statusCode shouldBe HttpStatus.OK
         findAllInvoices.body!!.size shouldBe 2
@@ -158,8 +158,8 @@ class AccountControllerTest : IntegrationTest() {
 
     @Test
     fun `should return bad request response if update account request contains invalid id`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
         val updateAccount = restTemplate.exchange(
             "/api/account/2",
             HttpMethod.PUT,
@@ -172,8 +172,8 @@ class AccountControllerTest : IntegrationTest() {
 
     @Test
     fun `should update account data`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("200.00"), "account1")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("200.00"), "account1")
         val updateAccount = restTemplate.exchange(
             "/api/account/1",
             HttpMethod.PUT,

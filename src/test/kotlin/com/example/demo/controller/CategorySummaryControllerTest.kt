@@ -22,9 +22,9 @@ class CategorySummaryControllerTest : IntegrationTest() {
 
     @Test
     fun `should return list of categories with zero outcome when no invoices exists`() {
-        createCategory(1, "category1")
-        createCategory(2, "category2")
-        createCategory(3, "category3")
+        testDataBuilder.category(1, "category1")
+        testDataBuilder.category(2, "category2")
+        testDataBuilder.category(3, "category3")
 
         val findAllCategories = restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
 
@@ -50,12 +50,12 @@ class CategorySummaryControllerTest : IntegrationTest() {
     fun `should return list of categories with calculated outcome for default month`() {
         seedCategoryBase()
         seedThreeCategoriesWithAssortments()
-        createInvoice(1, 1, LocalDate.of(2022, 1, 1), BigDecimal.TEN, 1)
-        createInvoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 3, 3)
-        createInvoice(2, 1, LocalDate.of(2022, 5, 1), BigDecimal("20.10"), 1)
-        createInvoiceItem(2, 2, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
-        createInvoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 1, 1), BigDecimal.TEN, 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.1"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(4, 1, BigDecimal("100.00"), BigDecimal.ONE, BigDecimal("100"), BigDecimal.ZERO, 3, 3)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2022, 5, 1), BigDecimal("20.10"), 1)
+        testDataBuilder.invoiceItem(2, 2, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.invoiceItem(3, 2, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 2, 2)
 
         val findAllCategories = restTemplate.getForEntity("/api/category", Array<CategorySummary>::class.java)
 

@@ -18,13 +18,13 @@ class BudgetControllerTest : IntegrationTest() {
     @Test
     fun `should return month budget for selected month`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createIncome(1, BigDecimal("500.00"), LocalDate.of(2022, 5, 2))
-        createCategory(1, "Food")
-        createCategory(2, "Bills")
-        createBudgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("20.00"), 20)
-        createBudgetItem(2, 2, 5, 2022, BigDecimal("50.00"), BigDecimal("10.00"), 20)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.income(1, BigDecimal("500.00"), LocalDate.of(2022, 5, 2))
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.category(2, "Bills")
+        testDataBuilder.budgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("20.00"), 20)
+        testDataBuilder.budgetItem(2, 2, 5, 2022, BigDecimal("50.00"), BigDecimal("10.00"), 20)
 
         val response = restTemplate.getForEntity("/api/budget?month=0", MonthBudget::class.java)
 
@@ -49,14 +49,14 @@ class BudgetControllerTest : IntegrationTest() {
 
     @Test
     fun `should return invoice items for selected budget item`() {
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal("100.00"), "account1")
-        createShop(1, "shop1")
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
-        createBudgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("20.00"), 20)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.00"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1)
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal("100.00"), "account1")
+        testDataBuilder.shop(1, "shop1")
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
+        testDataBuilder.budgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("20.00"), 20)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("10.00"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.00"), BigDecimal.ONE, BigDecimal("10.00"), BigDecimal.ZERO, 1, 1)
 
         val response = restTemplate.getForEntity("/api/budget/1", Array<InvoiceItem>::class.java)
 
@@ -68,8 +68,8 @@ class BudgetControllerTest : IntegrationTest() {
     @Test
     fun `should update budget planned value`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createCategory(1, "Food")
-        createBudgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("10.00"), 10)
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.budgetItem(1, 1, 5, 2022, BigDecimal("100.00"), BigDecimal("10.00"), 10)
 
         val update = restTemplate.exchange(
             "/api/budget",

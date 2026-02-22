@@ -19,17 +19,17 @@ class InvoiceRepositoryTest(
 
     @BeforeEach
     internal fun setUp() {
-        createAccountOwner()
-        createAccount()
-        createShop()
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
     }
 
     @Test
     fun `should fetch invoices for selected month`() {
-        createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
-        createInvoice(invoiceId = 2, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"))
-        createInvoice(invoiceId = 3, date = LocalDate.of(2021, 11, 3), amount = BigDecimal("30.03"))
-        createInvoice(invoiceId = 4, date = LocalDate.of(2021, 12, 3))
+        testDataBuilder.invoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
+        testDataBuilder.invoice(invoiceId = 2, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"))
+        testDataBuilder.invoice(invoiceId = 3, date = LocalDate.of(2021, 11, 3), amount = BigDecimal("30.03"))
+        testDataBuilder.invoice(invoiceId = 4, date = LocalDate.of(2021, 12, 3))
 
         val invoices = invoiceRepository.getInvoicesForMonth(LocalDate.of(2021, 11, 30))
 
@@ -43,16 +43,16 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should fetch invoice details`() {
-        createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
-        createCategory(1, "cat1")
-        createCategory(2, "cat2")
-        createCategory(3, "cat3")
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 2)
-        createAssortment(3, "aso3", 3)
-        createInvoiceItem(1, 1, BigDecimal("1.01"), BigDecimal("1.00"), "1.01".toBigDecimal(), "0.00".toBigDecimal(), 1, 1)
-        createInvoiceItem(2, 1, BigDecimal("2.01"), BigDecimal("2.00"), "1.02".toBigDecimal(), "0.00".toBigDecimal(), 2, 2)
-        createInvoiceItem(3, 1, BigDecimal("3.01"), BigDecimal("3.00"), "1.03".toBigDecimal(), "1.10".toBigDecimal(), 3, 3)
+        testDataBuilder.invoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
+        testDataBuilder.category(1, "cat1")
+        testDataBuilder.category(2, "cat2")
+        testDataBuilder.category(3, "cat3")
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 2)
+        testDataBuilder.assortment(3, "aso3", 3)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("1.01"), BigDecimal("1.00"), "1.01".toBigDecimal(), "0.00".toBigDecimal(), 1, 1)
+        testDataBuilder.invoiceItem(2, 1, BigDecimal("2.01"), BigDecimal("2.00"), "1.02".toBigDecimal(), "0.00".toBigDecimal(), 2, 2)
+        testDataBuilder.invoiceItem(3, 1, BigDecimal("3.01"), BigDecimal("3.00"), "1.03".toBigDecimal(), "1.10".toBigDecimal(), 3, 3)
 
         val invoiceDetails = invoiceRepository.getInvoiceDetails(1)
 
@@ -64,7 +64,7 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should fetch selected invoice`() {
-        createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
+        testDataBuilder.invoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
 
         val invoice = invoiceRepository.getInvoice(1)
 
@@ -73,10 +73,10 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should fetch account invoice for month`() {
-        createAccount(2, name = "account 2")
-        createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
-        createInvoice(invoiceId = 2, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"))
-        createInvoice(invoiceId = 3, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"), accountId = 2)
+        testDataBuilder.account(2, name = "account 2")
+        testDataBuilder.invoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.01"))
+        testDataBuilder.invoice(invoiceId = 2, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"))
+        testDataBuilder.invoice(invoiceId = 3, date = LocalDate.of(2021, 11, 2), amount = BigDecimal("20.02"), accountId = 2)
 
         val invoices = invoiceRepository.getAccountInvoices(1, LocalDate.of(2021, 11, 1))
 
@@ -89,8 +89,8 @@ class InvoiceRepositoryTest(
 
     @Test
     fun `should change invoice account`() {
-        createAccount(2, name = "account 2", amount = "100.00".toBigDecimal())
-        createInvoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.00"))
+        testDataBuilder.account(2, name = "account 2", amount = "100.00".toBigDecimal())
+        testDataBuilder.invoice(invoiceId = 1, date = LocalDate.of(2021, 11, 1), amount = BigDecimal("10.00"))
 
         invoiceRepository.updateInvoiceAccount(1, 2)
         val invoice = invoiceRepository.getInvoice(1)

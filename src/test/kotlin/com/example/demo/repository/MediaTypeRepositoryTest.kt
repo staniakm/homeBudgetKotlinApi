@@ -23,7 +23,7 @@ class MediaTypeRepositoryTest(@Autowired private val mediaTypeRepository: MediaT
 
     @Test
     fun `should fetch existing media type by id`() {
-        createMediaType(2, "POWER")
+        testDataBuilder.mediaType(2, "POWER")
 
         val mediaType = mediaTypeRepository.findById(2)
 
@@ -33,9 +33,9 @@ class MediaTypeRepositoryTest(@Autowired private val mediaTypeRepository: MediaT
 
     @Test
     fun `should fetch all media types`() {
-        createMediaType(1, "WATER")
-        createMediaType(2, "POWER")
-        createMediaType(3, "GAS")
+        testDataBuilder.mediaType(1, "WATER")
+        testDataBuilder.mediaType(2, "POWER")
+        testDataBuilder.mediaType(3, "GAS")
 
         val mediaTypes = mediaTypeRepository.findAll()
 

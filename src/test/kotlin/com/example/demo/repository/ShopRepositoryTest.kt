@@ -16,8 +16,8 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should get all shops`() {
-        createShop(1, "Shop1")
-        createShop(2, "shop2")
+        testDataBuilder.shop(1, "Shop1")
+        testDataBuilder.shop(2, "shop2")
 
         val shops = shopRepository.getAllShops()
 
@@ -41,13 +41,13 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should get shop items`() {
-        createShop()
-        createCategory(1)
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 1)
-        createAssortment(3, "aso2", 1)
-        createShopItem(1, 1)
-        createShopItem(1, 2)
+        testDataBuilder.shop()
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 1)
+        testDataBuilder.assortment(3, "aso2", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
 
         val items = shopRepository.getShopItems(1)
 
@@ -60,11 +60,11 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should create shop item`() {
-        createShop()
-        createCategory(1)
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 1)
-        createAssortment(3, "aso3", 1)
+        testDataBuilder.shop()
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 1)
+        testDataBuilder.assortment(3, "aso3", 1)
 
         val item = shopRepository.createShopItem(1, "aso2")
 
@@ -79,29 +79,29 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should fetch shop year items summary`() {
-        createShop()
-        createAccountOwner(1)
-        createAccount(1)
-        createCategory(1)
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 1)
-        createAssortment(3, "aso3", 1)
-        createShopItem(1, 1)
-        createShopItem(1, 2)
-        createShopItem(1, 3)
+        testDataBuilder.shop()
+        testDataBuilder.accountOwner(1)
+        testDataBuilder.account(1)
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 1)
+        testDataBuilder.assortment(3, "aso3", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
+        testDataBuilder.shopItem(1, 3)
 
-        createInvoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
-        createInvoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)
-        createInvoiceItem(2, 1, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 2)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
+        testDataBuilder.invoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)
+        testDataBuilder.invoiceItem(2, 1, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 2)
 
-        createInvoice(2, 1, LocalDate.of(2021, 4, 1), BigDecimal(10))
-        createInvoiceItem(3, 2, BigDecimal(21.6), BigDecimal(4), BigDecimal(5.4), BigDecimal(1), 1, 2)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2021, 4, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(3, 2, BigDecimal(21.6), BigDecimal(4), BigDecimal(5.4), BigDecimal(1), 1, 2)
 
-        createInvoice(3, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
-        createInvoiceItem(4, 3, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 3)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(4, 3, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 3)
 
-        createInvoice(4, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
-        createInvoiceItem(5, 4, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 1)
+        testDataBuilder.invoice(4, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(5, 4, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 1)
 
         val items = shopRepository.getShopYearItems(1, LocalDate.of(2021, 2, 1))
 
@@ -125,30 +125,30 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should fetch shop month items summary`() {
-        createShop()
-        createAccountOwner(1)
-        createAccount(1)
-        createCategory(1)
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 1)
-        createAssortment(3, "aso3", 1)
-        createShopItem(1, 1)
-        createShopItem(1, 2)
-        createShopItem(1, 3)
+        testDataBuilder.shop()
+        testDataBuilder.accountOwner(1)
+        testDataBuilder.account(1)
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 1)
+        testDataBuilder.assortment(3, "aso3", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
+        testDataBuilder.shopItem(1, 3)
 
-        createInvoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
-        createInvoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)
-        createInvoiceItem(2, 1, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 2)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10))
+        testDataBuilder.invoiceItem(1, 1, BigDecimal(10.4), BigDecimal(2), BigDecimal(5.2), BigDecimal(1), 1, 1)
+        testDataBuilder.invoiceItem(2, 1, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 2)
 
-        createInvoice(2, 1, LocalDate.of(2021, 4, 1), BigDecimal(10))
-        createInvoiceItem(3, 2, BigDecimal(21.6), BigDecimal(4), BigDecimal(5.4), BigDecimal(1), 1, 2)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2021, 4, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(3, 2, BigDecimal(21.6), BigDecimal(4), BigDecimal(5.4), BigDecimal(1), 1, 2)
 
-        createInvoice(3, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
-        createInvoiceItem(4, 3, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 3)
-        createInvoiceItem(6, 3, BigDecimal(8.2), BigDecimal(2), BigDecimal(4.1), BigDecimal(2.15), 1, 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(4, 3, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 3)
+        testDataBuilder.invoiceItem(6, 3, BigDecimal(8.2), BigDecimal(2), BigDecimal(4.1), BigDecimal(2.15), 1, 1)
 
-        createInvoice(4, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
-        createInvoiceItem(5, 4, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 1)
+        testDataBuilder.invoice(4, 1, LocalDate.of(2020, 2, 1), BigDecimal(10))
+        testDataBuilder.invoiceItem(5, 4, BigDecimal(20.4), BigDecimal(4), BigDecimal(5.1), BigDecimal(1), 1, 1)
 
         val items = shopRepository.getShopMonthItems(1, LocalDate.of(2020, 2, 1))
 
@@ -172,30 +172,30 @@ class ShopRepositoryTest(@Autowired private val shopRepository: ShopRepository) 
 
     @Test
     fun `should get all shops month summary`() {
-        createShop()
-        createShop(2, "shop2")
-        createShop(3, "shop3")
-        createAccountOwner(1)
-        createAccount(1)
-        createCategory(1)
-        createAssortment(1, "aso1", 1)
-        createAssortment(2, "aso2", 1)
-        createAssortment(3, "aso3", 1)
-        createShopItem(1, 1)
-        createShopItem(1, 2)
-        createShopItem(1, 3)
+        testDataBuilder.shop()
+        testDataBuilder.shop(2, "shop2")
+        testDataBuilder.shop(3, "shop3")
+        testDataBuilder.accountOwner(1)
+        testDataBuilder.account(1)
+        testDataBuilder.category(1)
+        testDataBuilder.assortment(1, "aso1", 1)
+        testDataBuilder.assortment(2, "aso2", 1)
+        testDataBuilder.assortment(3, "aso3", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.shopItem(1, 2)
+        testDataBuilder.shopItem(1, 3)
 
         //shop 1 invoice
-        createInvoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10.11), 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2021, 1, 2), BigDecimal(10.11), 1)
 
         //shop 1 invoice
-        createInvoice(3, 1, LocalDate.of(2021, 1, 10), BigDecimal(20.24), 1)
+        testDataBuilder.invoice(3, 1, LocalDate.of(2021, 1, 10), BigDecimal(20.24), 1)
 
         //shop 1 invoice out of date
-        createInvoice(4, 1, LocalDate.of(2021, 2, 10), BigDecimal(15.77), 1)
+        testDataBuilder.invoice(4, 1, LocalDate.of(2021, 2, 10), BigDecimal(15.77), 1)
 
         //shop 2 invoice
-        createInvoice(2, 1, LocalDate.of(2021, 1, 2), BigDecimal(16.66), 2)
+        testDataBuilder.invoice(2, 1, LocalDate.of(2021, 1, 2), BigDecimal(16.66), 2)
 
 
         val items = shopRepository.getAllShopsMonthSummary(LocalDate.of(2021, 1, 1))

@@ -38,13 +38,13 @@ class CategoryControllerByIdTest : IntegrationTest() {
     @Test
     fun `should return category summary response for default month parameter`() {
         clockProvider.setTime("2022-05-01T00:00:00.00Z")
-        createShop()
-        createAccountOwner(1, "owner1")
-        createAccount(1, BigDecimal.TEN)
-        createCategory(1, "category1")
-        createAssortment(1, "assortment1", 1)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 1), BigDecimal("10.10"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
+        testDataBuilder.shop()
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.account(1, BigDecimal.TEN)
+        testDataBuilder.category(1, "category1")
+        testDataBuilder.assortment(1, "assortment1", 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 1), BigDecimal("10.10"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.10"), BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO, 1, 1)
 
         val category = restTemplate.getForEntity("/api/category/1", CategorySummary::class.java)
 

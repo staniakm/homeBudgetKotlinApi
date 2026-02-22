@@ -8,6 +8,8 @@ abstract class TestDataFixtures {
     protected abstract fun executeInsert(query: String)
     protected abstract fun currentDate(): LocalDate
 
+    fun today(): LocalDate = currentDate()
+
     fun createShop(shopId: Int = 1, shopName: String = "ShopName") {
         executeInsert("insert into shop (id, name) values ($shopId, '$shopName')")
     }

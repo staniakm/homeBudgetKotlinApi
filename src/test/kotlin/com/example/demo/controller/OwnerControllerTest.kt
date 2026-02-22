@@ -19,9 +19,9 @@ class OwnerControllerTest : IntegrationTest() {
 
     @Test
     fun `should fetch list of existing owners`() {
-        createAccountOwner(1, "owner1")
-        createAccountOwner(2, "owner2")
-        createAccountOwner(3, "owner3")
+        testDataBuilder.accountOwner(1, "owner1")
+        testDataBuilder.accountOwner(2, "owner2")
+        testDataBuilder.accountOwner(3, "owner3")
 
         val findAllOwners = restTemplate.getForEntity("/api/owner/", Array<AccountOwner>::class.java)
 
@@ -61,7 +61,7 @@ class OwnerControllerTest : IntegrationTest() {
 
     @Test
     fun `should return bad request when try to create new owner with the same name`() {
-        createAccountOwner(1, "OWNER1", "first owner")
+        testDataBuilder.accountOwner(1, "OWNER1", "first owner")
         val request = CreateOwnerRequest("owner1", "description2")
         val response = restTemplate.postForEntity("/api/owner/", request, AccountOwner::class.java)
 

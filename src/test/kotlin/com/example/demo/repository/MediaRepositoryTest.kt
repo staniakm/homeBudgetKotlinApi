@@ -12,10 +12,10 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
 
     @Test
     fun `should fetch media for selected month`() {
-        createMediaType(1, "POWER")
-        createMediaType(2, "GAS")
-        createMedia(id = 1, mediaTypeId = 1, meterRead = 11.00)
-        createMedia(2, mediaTypeId = 2, meterRead = 123.00)
+        testDataBuilder.mediaType(1, "POWER")
+        testDataBuilder.mediaType(2, "GAS")
+        testDataBuilder.media(id = 1, mediaTypeId = 1, meterRead = 11.00)
+        testDataBuilder.media(2, mediaTypeId = 2, meterRead = 123.00)
 
         val now = clockProvider.getDate()
 
@@ -31,7 +31,7 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
 
     @Test
     fun `should register new media usage and return all media usage for type`() {
-        createMediaType(1, "POWER")
+        testDataBuilder.mediaType(1, "POWER")
 
         val now = clockProvider.getDate()
 
@@ -44,10 +44,10 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
 
     @Test
     fun `should register new media usage and return all existing media for type`() {
-        createMediaType(1, "POWER")
-        createMediaType(2, "GAS")
-        createMediaType(3, "ENERGY")
-        createMedia(10, 2, meterRead = 222.11)
+        testDataBuilder.mediaType(1, "POWER")
+        testDataBuilder.mediaType(2, "GAS")
+        testDataBuilder.mediaType(3, "ENERGY")
+        testDataBuilder.media(10, 2, meterRead = 222.11)
 
         mediaRepository.createMediaUsage(1, 123.01, 2021, 11)
         val mediaReads =
@@ -62,11 +62,11 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
 
     @Test
     internal fun `should fetch list of media usage by media type`() {
-        createMediaType(1, "POWER")
-        createMedia(1, 1, meterRead = 122.11, year = 2021, month = 9)
-        createMedia(2, 1, meterRead = 142.11, year = 2021, month = 10)
-        createMedia(3, 1, meterRead = 162.11, year = 2021, month = 11)
-        createMedia(4, 1, meterRead = 182.11, year = 2021, month = 12)
+        testDataBuilder.mediaType(1, "POWER")
+        testDataBuilder.media(1, 1, meterRead = 122.11, year = 2021, month = 9)
+        testDataBuilder.media(2, 1, meterRead = 142.11, year = 2021, month = 10)
+        testDataBuilder.media(3, 1, meterRead = 162.11, year = 2021, month = 11)
+        testDataBuilder.media(4, 1, meterRead = 182.11, year = 2021, month = 12)
 
         val mediaUsage = mediaRepository.findByMediaType(1)
 
@@ -81,8 +81,8 @@ class MediaRepositoryTest(@Autowired private val mediaRepository: MediaRepositor
 
     @Test
     internal fun `should delete media usage`() {
-        createMediaType(1, "POWER")
-        createMedia(1, 1)
+        testDataBuilder.mediaType(1, "POWER")
+        testDataBuilder.media(1, 1)
 
         mediaRepository.deleteMediaUsageEntry(1)
 

@@ -13,14 +13,14 @@ class ItemControllerTest : IntegrationTest() {
 
     @Test
     fun `should return product history for selected item`() {
-        createAccountOwner()
-        createAccount()
-        createShop()
-        createCategory(1, "Food")
-        createAssortment(1, "Milk", 1)
-        createShopItem(1, 1)
-        createInvoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("20.00"), 1)
-        createInvoiceItem(1, 1, BigDecimal("10.00"), BigDecimal("2.000"), BigDecimal("5.00"), BigDecimal.ZERO, 1, 1)
+        testDataBuilder.accountOwner()
+        testDataBuilder.account()
+        testDataBuilder.shop()
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.assortment(1, "Milk", 1)
+        testDataBuilder.shopItem(1, 1)
+        testDataBuilder.invoice(1, 1, LocalDate.of(2022, 5, 10), BigDecimal("20.00"), 1)
+        testDataBuilder.invoiceItem(1, 1, BigDecimal("10.00"), BigDecimal("2.000"), BigDecimal("5.00"), BigDecimal.ZERO, 1, 1)
 
         val response = restTemplate.getForEntity("/api/item/1", Array<ProductHistory>::class.java)
 
@@ -35,9 +35,9 @@ class ItemControllerTest : IntegrationTest() {
 
     @Test
     fun `should update product category`() {
-        createCategory(1, "Food")
-        createCategory(2, "Home")
-        createAssortment(1, "Milk", 1)
+        testDataBuilder.category(1, "Food")
+        testDataBuilder.category(2, "Home")
+        testDataBuilder.assortment(1, "Milk", 1)
 
         val update = restTemplate.exchange(
             "/api/item/1/update-category?categoryId=2",
